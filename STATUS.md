@@ -62,7 +62,8 @@ Anthropic + OpenRouter   → analyzer (sonnet) + cheap slots
 | `/watchlist` | Monitored saved opportunities |
 | `/intelligence` | **Market Intelligence** (dark terminal) — buyers/categories; award data gated to intelligence tier |
 | `/pricing` | Tier cards + CliQ upgrade request |
-| `/signin` | Passwordless magic-link (Auth.js + Resend) |
+| `/signin` | Email + password login (Auth.js Credentials); magic-link fallback |
+| `/register` | Self-serve company signup (email + password → org + 14-day trial) |
 | `/onboarding` | Company profile wizard |
 | `/admin` | CliQ payment activation (operator) |
 | `/operations` | Source-health monitor (operator) |

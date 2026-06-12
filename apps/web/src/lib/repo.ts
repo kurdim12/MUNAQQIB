@@ -210,6 +210,29 @@ export async function createOrgWithTrial(
   return org.id;
 }
 
+/** True if a user already exists with this email (case-insensitive). */
+export async function emailExists(email: string): Promise<boolean> {
+  const row = await executeOne<{ x: number }>(
+    `SELECT 1 AS x FROM users WHERE lower(email) = lower(?) LIMIT 1`,
+    [email],
+  );
+  return Boolean(row);
+}
+
+/** Create a credentials user (email + scrypt password hash). Returns the new id. */
+export async function createCredentialUser(
+  email: string,
+  passwordHash: string,
+  name: string | null,
+): Promise<string> {
+  const id = crypto.randomUUID();
+  await execute(
+    `INSERT INTO users (id, name, email, password_hash) VALUES (?, ?, ?, ?)`,
+    [id, name, email.toLowerCase(), passwordHash],
+  );
+  return id;
+}
+
 // ---------------------------------------------------------------------------
 // Subscriptions
 // ---------------------------------------------------------------------------

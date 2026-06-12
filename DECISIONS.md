@@ -235,3 +235,21 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   days), school 53/2026, hazardous-waste infrastructure 47/2026, environmental park
   54/2026, supervision 48/2026 — matched and interleaved with the JONEPS items so the
   dashboard leads with genuinely relevant, time-sensitive opportunities from both sources.
+
+## 2026-06-12 — Email+password login (Credentials) added alongside magic-links
+
+- **Why:** magic-link sign-in depends on Resend deliverability (test mode only
+  reaches the account address until a domain is verified), which blocked real
+  logins. Added an Auth.js **Credentials** provider so companies log in with
+  email + password — no email round-trip. The Resend magic-link is kept as a
+  fallback provider.
+- **Hashing:** scrypt via `node:crypto` (`apps/web/src/lib/password.ts`), stored
+  as `saltHex:keyHex` in `users.password_hash` (migration `0003_credentials.sql`).
+  No new dependency; runs only in the Node auth route handler (there is no
+  middleware importing auth, so it never hits the edge runtime).
+- **Self-serve signup:** `/register` creates the credentials user + an org with a
+  14-day trial + owner membership, then signs in. `/signin` is now email+password
+  with a link to register.
+- **mkurdi account:** `info@mkurdi.com` (owner of the seeded mkurdi org, Pro/active)
+  now has a password set, so it can log in immediately — no domain verification
+  needed for sign-in anymore.
