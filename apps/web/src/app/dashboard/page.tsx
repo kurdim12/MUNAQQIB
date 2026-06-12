@@ -2,11 +2,13 @@ import { Paywall } from "@/components/Paywall";
 import { TenderCard } from "@/components/TenderCard";
 import { TrialBanner } from "@/components/TrialBanner";
 import { can, hasAccess } from "@/lib/entitlements";
+import { scorePct } from "@/lib/format";
 import {
   getCurrentOrgId,
   getMatchedTenders,
   getSubscription,
   isConfigured,
+  type MatchedTender,
 } from "@/lib/repo";
 import { t } from "@/lib/strings";
 
@@ -48,8 +50,13 @@ export default async function DashboardPage({
         <Paywall />
       ) : (
         <>
-          <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-slate-900">{t.dashboard.title}</h1>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">{t.dashboard.title}</h1>
+              <p className="mt-1 text-sm text-slate-500">
+                مطابقة آلية من مصادر العطاءات الحكومية — مرتّبة حسب قرب الموعد.
+              </p>
+            </div>
             <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1 text-sm">
               <Tab href="/dashboard" active={!savedOnly} label="الكل" />
               {canSaved && (
@@ -57,6 +64,8 @@ export default async function DashboardPage({
               )}
             </div>
           </div>
+
+          {!savedOnly && tenders.length > 0 && <Stats tenders={tenders} />}
 
           {savedOnly && !canSaved ? (
             <Paywall
@@ -77,6 +86,31 @@ export default async function DashboardPage({
         </>
       )}
     </section>
+  );
+}
+
+function Stats({ tenders }: { tenders: MatchedTender[] }) {
+  const now = Date.now();
+  const soon = tenders.filter((x) => {
+    if (!x.closing_at) return false;
+    const days = (new Date(x.closing_at).getTime() - now) / 86_400_000;
+    return days >= 0 && days <= 7;
+  }).length;
+  const top = tenders.reduce((m, x) => Math.max(m, x.score), 0);
+  const cards = [
+    { label: "عطاء مطابق", value: String(tenders.length) },
+    { label: "تُغلق خلال 7 أيام", value: String(soon) },
+    { label: "أعلى نسبة مطابقة", value: scorePct(top) },
+  ];
+  return (
+    <div className="mb-6 grid grid-cols-3 gap-3">
+      {cards.map((c) => (
+        <div key={c.label} className="rounded-xl border border-slate-200 bg-white p-4 text-center">
+          <div className="text-2xl font-bold text-brand">{c.value}</div>
+          <div className="mt-1 text-xs text-slate-500">{c.label}</div>
+        </div>
+      ))}
+    </div>
   );
 }
 
