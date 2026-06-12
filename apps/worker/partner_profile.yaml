@@ -20,5 +20,5 @@ include_keywords:
 exclude_keywords:
   - استشارات
 digest_emails:
-  - partner@example.com       # TODO: real verified address before first send
+  - abdalrhmankurdi12@gmail.com   # founder inbox for the first test run; swap to the partner's address when ready
 telegram_chat_id: null        # optional one-tap connect
