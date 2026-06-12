@@ -1,22 +1,25 @@
 """JONEPS scraper — Jordan National e-Procurement System (CLAUDE.md §6.4).
 
-JONEPS is a Korean-built e-GP system (ASP/JSP). The public tender-invitation
-search is a form POST with `__doPostBack`-style paging params. Replicate the
-search POST with httpx; use Playwright only if blocked.
+JONEPS is a Korean-built e-GP system (Nexweb/JSP, `*.do` endpoints). The public
+"Opened" tender-invitation list is a plain GET:
 
-FIXTURE-FIRST (rule §3): the deterministic parser must be written against a real
-results snapshot under apps/worker/fixtures/. As of bootstrap the source returns
-HTTP 403 to the bot UA from the build container (see DECISIONS.md), so the POST
-body + `_parse_results` are flagged TODOs and run() degrades to the LLM fallback.
+    https://joneps.gov.jo/ep/invt/selectListTendInvitAL.do?searchTendStatusCd=Opened
 
-To capture a fixture once a network path exists:
-    python -m pipeline.scrapers.joneps --snapshot
-then record the form fields/paging params in SOURCES.md, fill _parse_results, and
-add a parser unit test against the committed fixture.
+Each results row carries an `onclick="fn_goDetail(tendNo, tendSeq, '', tendCategCd,
+'', ..., ..., tendTypeCd1)"` and six cells:
+    [0] tender no (e.g. 2026001840-01)   [1] title (ar)   [2] buyer entity
+    [3] type (أشغال/لوازم/خدمات/استشارية) [4] publish date  [5] secondary date
+
+Parser written against the committed fixture `fixtures/joneps_opened_listing.html`
+(rule §3 — never invent selectors). The two date columns sit one day apart across
+all rows, so neither is the submission deadline; the real closing date lives on the
+detail page (`closing_at_raw` left None until detail enrichment — better no deadline
+than a wrong one). Tested offline in tests/test_joneps.py against the fixture.
 """
 from __future__ import annotations
 
 import logging
+import re
 
 from bs4 import BeautifulSoup
 
@@ -26,54 +29,88 @@ from .base import BaseScraper, FetchResult
 
 logger = logging.getLogger(__name__)
 
-# TODO(fixture): the public tender-invitation search results URL + POST body.
-SEARCH_URL = "https://www.joneps.gov.jo/Tender/PublicTenderList"
+LISTING_URL = (
+    "https://joneps.gov.jo/ep/invt/selectListTendInvitAL.do?searchTendStatusCd=Opened"
+)
+DETAIL_URL = "https://joneps.gov.jo/ep/supp/selectDetailTendInvitCommon.do"
+
+# fn_goDetail('2026001840','01','','EP1312','','EP0061','EP0021','EP0015')
+#               tendNo      seq        cat                          type
+_GO_DETAIL = re.compile(
+    r"fn_goDetail\(\s*'(\d+)'\s*,\s*'(\w+)'\s*,\s*'[^']*'\s*,\s*'([^']*)'"
+    r"\s*,\s*'[^']*'\s*,\s*'[^']*'\s*,\s*'[^']*'\s*,\s*'([^']*)'"
+)
+
+
+def _detail_url(tend_no: str, seq: str, cat: str, type_cd: str) -> str:
+    return (
+        f"{DETAIL_URL}?screenType=DETAIL_ALL_USERSS&tendNo={tend_no}&tendSeq={seq}"
+        f"&tendCategCd={cat}&tendTypeCd1={type_cd}"
+        f"&menuId=EP03000000&upperMenuId=EP03010000&subMenuId=EP03010100&noneMn=Y"
+    )
 
 
 class JonepsScraper(BaseScraper):
     source_id = "joneps"
-    base_url = SEARCH_URL
-
-    # TODO(fixture): the search POST form fields once confirmed against a snapshot.
-    SEARCH_FORM: dict[str, str] = {}
-
-    def run(self) -> list[RawTender]:  # override: JONEPS search is a POST
-        method = "POST" if self.SEARCH_FORM else "GET"
-        result = self.fetch(self.base_url, method=method, data=self.SEARCH_FORM or None)
-        snap_path = self.snapshot(result, label="results")
-        rows: list[RawTender] = []
-        try:
-            rows = self._parse_results(result.html, result.url)
-        except Exception as exc:  # noqa: BLE001
-            logger.error("[joneps] parser raised: %s", exc)
-        if result.status_code == 200 and not rows:
-            logger.warning("[joneps] HTTP 200 but 0 rows; trying LLM fallback.")
-            rows = self._llm_fallback(result)
-        for r in rows:
-            r.raw_html_path = snap_path
-        return rows
+    base_url = LISTING_URL
 
     def parse(self, result: FetchResult) -> list[RawTender]:
         return self._parse_results(result.html, result.url)
 
     def _parse_results(self, html: str, url: str) -> list[RawTender]:
-        """TODO(fixture): deterministic selectors against a saved results snapshot.
+        soup = BeautifulSoup(html, "lxml")
+        rows: list[RawTender] = []
+        seen: set[str] = set()
 
-        Until a fixture confirms the DOM/paging, return [] so run() falls back to
-        the LLM extractor. Do NOT invent selectors (hard rule §3)."""
-        soup = BeautifulSoup(html, "lxml")  # noqa: F841 — ready for the real parser
-        logger.info(
-            "[joneps] deterministic parser not yet written against a fixture; "
-            "deferring to LLM fallback."
-        )
-        return []
+        for tr in soup.find_all("tr"):
+            anchor = tr.find("a", onclick=lambda v: bool(v) and "fn_goDetail(" in v)
+            if not anchor:
+                continue
+            m = _GO_DETAIL.search(anchor["onclick"])
+            if not m:
+                continue
+            tend_no, seq, cat, type_cd = m.groups()
+            ref = f"{tend_no}-{seq}"
+            if ref in seen:  # number + title cells both carry fn_goDetail — one row
+                continue
+
+            tds = tr.find_all("td")
+            if len(tds) < 5:
+                continue
+
+            def cell(i: int) -> str:
+                return re.sub(r"\s+", " ", tds[i].get_text(" ", strip=True)) if i < len(tds) else ""
+
+            title_a = tds[1].find("a")
+            title_text = (
+                re.sub(r"\s+", " ", title_a.get_text(" ", strip=True)) if title_a else cell(1)
+            )
+            if not title_text:
+                continue
+
+            seen.add(ref)
+            rows.append(
+                RawTender(
+                    source_id=self.source_id,
+                    source_ref=ref,
+                    title=title_text,
+                    entity=cell(2) or None,
+                    category=cell(3) or None,
+                    published_at_raw=cell(4) or None,
+                    closing_at_raw=None,  # on the detail page (see module docstring)
+                    url=_detail_url(tend_no, seq, cat, type_cd),
+                )
+            )
+
+        logger.info("[joneps] parsed %d tenders from listing", len(rows))
+        return rows
 
 
 def _snapshot_cli() -> None:
+    """`python -m pipeline.scrapers.joneps --snapshot` — fetch + save a fixture."""
     s = JonepsScraper()
-    method = "POST" if s.SEARCH_FORM else "GET"
-    res = s.fetch(s.base_url, method=method, data=s.SEARCH_FORM or None)
-    path = s.snapshot(res, label="results")
+    res = s.fetch(s.base_url)
+    path = s.snapshot(res, label="opened_listing")
     print(f"HTTP {res.status_code}, {len(res.html)} bytes → {path}")
 
 

@@ -5,6 +5,27 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
 
 ---
 
+## 2026-06-12 · JONEPS scraper is LIVE (real parser against a committed snapshot)
+
+- **JONEPS is reachable and now scrapes for real.** The open-tenders list is a plain
+  GET — `https://joneps.gov.jo/ep/invt/selectListTendInvitAL.do?searchTendStatusCd=Opened`
+  (the homepage `<meta refresh>`es into `/pt/main.do`; robots.txt is 404 = nothing
+  disallowed). Captured a real snapshot to `apps/worker/fixtures/joneps_opened_listing.html`
+  and wrote a **deterministic parser** against it (rule §3): each row's
+  `fn_goDetail('tendNo','seq','','cat','',…,'type')` + six cells → `RawTender`
+  (number, Arabic title, buyer entity, type, publish date, reconstructed detail URL).
+  The two listing date columns are one day apart for every row, so neither is the
+  submission deadline — `closing_at_raw` is left None (deadline lives on the detail
+  page; better none than wrong). `tests/test_joneps.py` runs offline against the
+  committed fixture (10 real tenders). **Verified end-to-end on this live data:
+  scrape 10 → normalize → dedupe → match** (worker suite 62→65).
+- **GTD is still blocked here.** `gtd.gov.jo` returns a 54-byte empty shell to the
+  honest identifying UA on every path — a JS-rendered SPA or bot wall. §8 forbids
+  spoofing a browser UA to evade it, so GTD stays fixture-first/deferred until a
+  headless-browser (Playwright) path or a different network is available. The
+  `closing_at` deadline + doc price for JONEPS likewise need detail-page enrichment
+  (the detail endpoint needs extra params — 400 without `peTypeCd`).
+
 ## 2026-06-12 · DB moved to Cloudflare D1 (overrides the locked Supabase choice)
 
 - **Owner decision:** the database is on **Cloudflare D1**, not Supabase Postgres.

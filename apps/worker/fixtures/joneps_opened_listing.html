@@ -1,0 +1,1874 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="X-Content-Type-Options" content="nosniff" >
+<meta name="X-Frame-Options" content="SAMEORIGIN" >
+<!-- <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,target-densitydpi=medium-dpi"> -->
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="_csrf" content="GmAEx1CCWQwXVLRS888cl3cTUV7ttXLlVJiGsTCk89vtiUNoflVl8TbnO246YdVgy-IopxEhfGbb0RbIZqC_gFXCwrrY63pY">
+<title>JORDAN::JONEPS</title>
+<link href="/css/fonts.css" rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="/css/jordan_ar.css">
+<link rel="stylesheet" href="/css/jquery-ui.css" media="all">
+<link rel="stylesheet" href="/css/jquery-ui.theme.css" media="all">
+<link rel="stylesheet" href="/css/jquery-ui.structure.css" media="all">
+<script type="text/javascript" charset="utf-8" src="/js/common/jquery-3.7.1.min.js" ></script>
+<script type="text/javascript">
+	var confirmStr = "تأكيد";
+	var cancelStr = "إلغاء";
+	var requiredMessage = "جميع الحقول التالية مطلوب تعبئتها";
+	var caliberPoint = ",";
+	var caliberSeparater = ".";
+	var alertTransTitle = "معلومات";
+</script>
+</head>
+<body>
+	<div id="wrap">
+		<div id="header">
+			<script type="text/javascript" language="javascript" src="/js/common/selectedRoleMenu.js"></script>
+<script type="text/javascript" language="javascript" src="/js/common/joneps-time.js"></script>
+
+<script type="text/javascript">
+function logout(){
+	var $form = $('<form></form>');	
+	$form.attr('action', '/um/logout.do');
+	$form.attr('method', 'POST');
+	$form.appendTo('body');
+	$form.append('<input type="hidden" name="_csrf" value="GmAEx1CCWQwXVLRS888cl3cTUV7ttXLlVJiGsTCk89vtiUNoflVl8TbnO246YdVgy-IopxEhfGbb0RbIZqC_gFXCwrrY63pY" />');
+	$form.submit();
+}
+
+</script>
+	<div class="gnb">
+		<div class="gnb_area">
+			<h1 class="logo"><span class="blind">Jordan ONline E-Procurement System logo</span><a href="https://www.joneps.gov.jo" class="logo_link"></a></h1>
+			<div class="gnb_menu" style="color: white;">
+				<span class="clock-with-refresh">
+					<img onclick="refreshTime()" src="/images/common/refresh.png" 
+						class="clock-refresh"/>
+					<span id="clock"></span>
+				</span>
+				<a href="https://www.joneps.gov.jo/um/loginForm.do" class="g_menu"><span>دخول</span></a>
+					<a href="https://www.joneps.gov.jo/um/suplr/UMSRMSuplrRgtW.do?menuId=UM03000000&upperMenuId=UM03010000&subMenuId=UM03010100" class="g_menu"><span>تسجيل</span></a>					
+				<a href="https://www.joneps.gov.jo/pt/plm/moveSinglePageWelcomeRemark.do?menuId=PT01000000&upperMenuId=PT01010000&subMenuId=PT01010800" class="g_menu"><span>مركز الخدمات</span></a>
+		        <a href="/um/setLocale.do?lang=en"  class="g_menu"><span >English</span></a>
+				</div>
+		</div>
+	</div>
+	<div class="snb">
+		<div class="snb_area_l">
+			<a href="https://www.joneps.gov.jo/ds/genral/mainDashBoard.do?menuId=DS10000000&upperMenuId=DS10100000&subMenuId=DS10100100" >
+							لوحة البيانات</a>
+					<a href="https://www.joneps.gov.jo/ep/invt/selectListTendInvitAL.do?menuId=EP03000000&upperMenuId=EP03020000&subMenuId=EP03020100" >
+							دعوات العطاءات</a>
+					<a href="https://www.joneps.gov.jo/ca/cs/selectListPageCl.do?menuId=CA01000000&upperMenuId=CA01010000&subMenuId=CA01000000" >
+							الكتالوج</a>
+					<a href="https://www.joneps.gov.jo/cm/manual/userManual.do?subMenuId=CM10100000" >
+							دليل المستخدم</a>
+					<a href="https://www.joneps.gov.jo/pt/plm/moveSinglePageAboutOcds.do?menuId=PT05000000&upperMenuId=PT05010000&subMenuId=PT05010100" >
+							معيار بيانات التعاقد المفتوح</a>
+					</div>
+		<div class="snb_area_r">
+			</div>
+	</div></div>
+		<div id="container">
+			<div class="page_my">
+				<style>
+.gb_rc {
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 4px;
+    padding: 6px;
+    overflow: hidden;
+    vertical-align: middle;
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
+    -webkit-user-select: none;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+</style>
+<script>
+function homeButton() {
+	if ( $("#sideDiv").prop('hidden')==''){
+		$("#sideDiv").prop('hidden','hidden');	
+		$(".con").css({width: "100%"});		
+		$(".nav").css({width: "0%"});		
+	}
+	else {
+		$("#sideDiv").prop('hidden','');
+		$(".con").css({width: "77%"});		
+		$(".nav").css({width: "21%"});		
+	}
+}
+</script>
+	<div class="page_my_area">
+		<div class="gb_rc" aria-expanded="true" aria-label="Main menu" role="button" onclick="homeButton();" tabindex="0">
+				<svg focusable="false" viewBox="0 0 24 24">
+				<path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path>
+				</svg>
+		</div>
+			<span class="my_area"><em class="my_ico"></em>   أهلا وسهلا <strong></strong></span>
+		<div class="page_loca">
+			<a href="#" class="page_home">home</a>
+					</div>
+	</div>
+</div>
+			<div class="content1" id="contents">
+				<div class="nav">
+					<script>
+	$(document).ready(function() {
+		$("a").click(function() {
+			var menuId = $(this).attr("menuId");
+          	$('#parentId'+menuId).toggle();          	
+    	});
+	});
+</script>
+<div id="sideDiv">
+	<h2 class="nav_tit">
+		<span>
+		</span>
+	</h2>
+	<!-- menu -->
+	<div class="nav_area">
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+	 		</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		<div id="parentId" style="display:none;">
+			 	</div>
+		</div>
+</div></div>
+				<div id="page-content" class="con" style="display:none">
+					<script type="text/javascript" language="javascript" src="/js/ep/invt/EpTendInvit.js"></script>
+<script type="text/javascript" language="javascript" src="/js/common/previousUrl.js"></script>
+<script type="text/javascript" language="javascript" src="/js/common/joneps-blockUI.js"></script>
+<script type="text/javascript" language="javascript" src="/js/common/saveSessionInSearchPage.js"></script>
+<script type="text/javascript" language="javascript" src="/js/ep/js.cookie-1.5.1.min.js"></script>
+<script type="text/javascript" src="/js/ep/comn/ajaxUtil.js"></script>
+
+<style>
+.t7{
+font: 13px/29px Roboto,bold ,RobotoDraft,Arial,sans-serif;
+white-space: nowrap;
+line-height: 0;
+text-align: initial;
+cursor: pointer;
+width: 24px;
+height: 24px;
+fill: currentColor;
+color: red;
+opacity: 1; 
+}
+</style> 
+<script type="text/javaScript" language="javascript">
+$(document).ready(function() {
+	$("#cache").val(true);
+    util_createSearchConditions("frm_list");     
+	fn_deleteSearchInSession('frm_list'); 
+	selectTenderSubType();
+	fetchTendTypeCodeForPaginate();
+	var peNo  =$("#searchPeNo").val();
+	if(peNo != null && peNo != ''){
+		var dep = getCookie("departementNumber");
+		fn_getDepartement(peNo ,dep);
+	}
+});
+
+function fetchTendTypeCodeForPaginate(){
+	var tendTypeCd2Goods = $("#tendTypeCd2Goods").val();
+	var tendTypeCd2Medicine = $("#tendTypeCd2Medicine").val();
+	var tendTypeCd2GSDService = $("#tendTypeCd2GSDService").val();
+	var tendTypeCd2GTDService = $("#tendTypeCd2GTDService").val();
+	var searchTendTypeCd2 = $("#searchTendTypeCd2").val(); 
+	
+	if(tendTypeCd2Goods != null  && tendTypeCd2Goods != ""){
+		var searchTendTypeCd2 = $("#tendTypeCd2Goods").val();
+	}else if(tendTypeCd2Medicine != null && tendTypeCd2Medicine !="") {
+		var searchTendTypeCd2 = $("#tendTypeCd2Medicine").val();
+	}else if(tendTypeCd2GSDService != null && tendTypeCd2GSDService !="") {
+		var searchTendTypeCd2 = $("#tendTypeCd2GSDService").val();
+	}else if(tendTypeCd2GTDService != null && tendTypeCd2GTDService !="") {
+		var searchTendTypeCd2 = $("#tendTypeCd2GTDService").val();
+	}
+	$("#searchTendTypeCd2").val(searchTendTypeCd2)
+}
+
+function setTendTypeCode2(currentValue){
+	$("#searchTendTypeCd2").val(currentValue);
+}
+
+function selectTenderSubType(){
+	var value = $("#searchTendTypeCd1").val();
+	
+	if(value == 'EP0016'){
+		$("#tendTypeCd2Medicine").css("display","");
+		$("#tendTypeCd2Goods").css("display","none");
+		$("#tendTypeCd2GSDService").css("display","none");
+		$("#tendTypeCd2GTDService").css("display","none");
+	} else if(value == 'EP0011') {
+		$("#tendTypeCd2Goods").css("display","");
+		$("#tendTypeCd2GSDService").css("display","none");
+		$("#tendTypeCd2GTDService").css("display","none");
+		$("#tendTypeCd2Medicine").css("display","none");
+	}  else if(value == 'EP0012') {
+		$("#tendTypeCd2GSDService").css("display","");
+		$("#tendTypeCd2Medicine").css("display","none");
+		$("#tendTypeCd2GTDService").css("display","none");
+		$("#tendTypeCd2Goods").css("display","none");
+	} else if(value == 'EP0014') {
+		$("#tendTypeCd2GTDService").css("display","");
+		$("#tendTypeCd2GSDService").css("display","none");
+		$("#tendTypeCd2Medicine").css("display","none");
+		$("#tendTypeCd2Goods").css("display","none");
+	}else{
+		$("#tendTypeCd2GTDService").css("display","none");
+		$("#tendTypeCd2GSDService").css("display","none");
+		$("#tendTypeCd2Medicine").css("display","none");
+		$("#tendTypeCd2Goods").css("display","none");
+	}
+}
+
+function clearCookie() {
+	deleteCookie("departementNumber");
+}
+
+function fn_checkOrgNo() {
+	var peNumber=$("#searchPeNo").val();
+	if(peNumber == '150500000' || peNumber == '210200000') {
+		fn_getDepartement(peNumber , null);
+	}
+}
+
+function setCookie(dept) {
+	var department = dept.value;
+    let date = new Date();
+    date.setTime(date.getTime() + (1 *60 * 1000));
+    document.cookie = "departementNumber=" + department + ";" + "expires=" + date.toUTCString();
+}
+
+function generateReportListOfTendersInvitations(){
+	javascript:blockUIReload('/joneps-reports/ep/invt/downloadDetailTendInvit.do','#frm_list','btn_download','downloadDiv');
+    $("#cache").val(false);
+ }
+
+function fn_getDepartement(peNo , dep) {
+	var peNumber= peNo.value;
+	if (peNumber == undefined){
+		peNumber = peNo;
+	}
+	var deptType = null ;
+	if(peNumber == '150500000' || peNumber == '210200000') {
+		var tenderType = $("#searchTendTypeCd1").val();
+		if(tenderType == 'EP0011'){
+			deptType='EP1331';
+		}else if (tenderType == 'EP0016'){
+			deptType='EP1334';
+		}else if(tenderType == 'EP0015'){
+			deptType='EP1333'
+		}
+	}
+	if(peNumber == null && peNumber == '' && peNumber == undefined){
+		clearCookie();
+	}
+	
+	var csrf  ;
+	jQuery("input[name='_csrf']").each(function() {
+		csrf = this.value;
+	});
+	var options = {
+	    data : $.param({			
+			"organizationNo" : peNumber,
+			"departmentType" : deptType,
+			"departmentNo" : dep , 
+			"_csrf" : csrf
+		})
+	};
+	ajaxUtil.ajaxBasicRequest("/ep/invt/select-organization-departements.do" , "#searchDeptNo" ,null ,options);	
+} 
+
+function onSubmit(token) { 
+ 
+	$('#frm_list').attr( 'action', $('#frm_list').attr('action')   );
+ 
+   	$('#frm_list').submit();  
+  }
+
+function fn_goDetail( tendNo, tendSeq, frameworkAgreementSeq,tendCategCd , workType, intrlLocalTypeCd , tendMthodCd, tendTypeCd1){
+	fn_setHomePreviousUrl('ep');
+
+	if(workType != '' && workType != null && workType == 'GIANT'){
+		$("#workType").val("GIANT");
+	}
+	if(workType != '' && workType != null && workType == 'GOODS'){
+		$("#workType").val("GOODS");
+	}
+	
+	var userType ="";
+    var searchConditions =  searchConditions;
+    var url = "?tendNo=" + tendNo +"&tendSeq=" + tendSeq +"&frameworkAgreementSeq="+frameworkAgreementSeq + "&tendCategCd=" + tendCategCd+ "&workType=" + workType + "&intrlLocalTypeCd=" + intrlLocalTypeCd + "&tendMthodCd=" + tendMthodCd+ "&invtYn=Y&searchConditions=" + searchConditions;
+    if ( userType == "C") {
+    	$("#screenType").val("DETAIL");
+   		$('#frm_list').attr('action', "/ep/tendInvit/selectTendInvitForm.do" +url  );
+    }else{
+        if(tendCategCd == 'EP1311' && tendMthodCd != 'EP0022' && tendMthodCd != 'EP5021'){
+			if(tendTypeCd1 == 'EP0011'){
+				$('#frm_list').attr('action', "/ep/invt/GoodsDetails.do" +url  );
+			}else{
+				$('#frm_list').attr('action', "/ep/invt/ServiceDetails.do" +url  );
+            }
+       }else if (tendCategCd == 'EP1312' || tendMthodCd == 'EP0022' || tendMthodCd == 'EP5021'){
+       	 $('#frm_list').attr('action', "/ep/invt/WorkDetails.do" +url  );
+       }else if (tendCategCd == 'EP1313' && tendMthodCd != 'EP0022' && tendMthodCd != 'EP5021'){
+       	 $('#frm_list').attr('action', "/ep/invt/MedicineDetails.do" +url  );
+       }else {
+       	 $('#frm_list').attr('action', "/ep/invt/WorkUnspscDetails.do" +url  );
+       }
+    }
+	$('#frm_list').submit();  
+}
+
+
+//Search Procuring Entity Popup
+function fn_goOrganizationPopup(btnFind) {
+	
+    var mytable = document.getElementById('tb_searchTenderInvitation').getElementsByTagName("tbody")[0];
+    var orgNotr = $(btnFind).closest("tr");
+    var orgNoId = orgNotr.find("input[name=searchPeNo]").prop("id");
+    var orgNmId = orgNotr.find("input[name=peNm]").prop("id");
+    
+    gp_paramList = ["orgNo", "orgNm"];
+	gp_targetList = [orgNoId, orgNmId];
+	 
+	// document.domain = "www.joneps.gov.jo";
+    var url = "https://www.joneps.gov.jo/um/popup/org/UMDEMDeInfoPW.do";
+    var title  = "testpop";
+    var status = "toolbar=no,directories=no,location=no,scrollbars=no,resizable=no,alwaysRaised=yes,status=no,menubar=no,width=930,height=930,top=0,left=20"; 
+    window.open(url, title,status); 
+}
+
+function fn_reset(btnReset){
+	
+	$("#searchPeNo").val("");
+	$("#peNm").val("");
+}
+
+//Search Demanding Entity Popup
+function fn_goOrganizationDePopup(btnFind) {
+	
+    var mytable = document.getElementById('tb_searchTenderInvitation').getElementsByTagName("tbody")[0];
+    var orgNotr = $(btnFind).closest("tr");
+    var orgNoId = orgNotr.find("input[name=searchDeNo]").prop("id");
+    var orgNmId = orgNotr.find("input[name=deNm]").prop("id");
+    
+    gp_paramList = ["orgNo", "orgNm"];
+	gp_targetList = [orgNoId, orgNmId];
+	 
+	// document.domain = "www.joneps.gov.jo";
+    var url = "https://www.joneps.gov.jo/um/popup/org/UMDEMDeInfoPW.do";
+    var title  = "testpop";
+    var status = "toolbar=no,directories=no,location=no,scrollbars=no,resizable=no,alwaysRaised=yes,status=no,menubar=no,width=930,height=930,top=0,left=20"; 
+    window.open(url, title,status);
+}
+
+function fn_resetDe(btnReset){
+	
+	$("#searchDeNo").val("");
+	$("#deNm").val("");
+}
+
+
+
+function gfnEp_commodityPop(screenName){
+   	tendTypeCd1 =  $("#tendTypeCd1").val();
+    var retVal;
+    var url = "https://www.joneps.gov.jo/ca/cs/selectListPageClComdtFind.do";
+    var popOption = "width=830px,height=710px,toolbar=no,menubar=no,resizable=no,scrollbars=yes,copyhistory=no,location=no";
+    retVal = window.open(url, "Commodity Find", popOption);
+    retVal.focus();
+}
+
+function callBackCommodity(ret){
+  $("#clId").val(ret.clId);
+  $("#clNmEn").val(ret.clNmEn);
+  $("#clNmAr").val(ret.clNmAr);
+}	
+
+function fn_goOpen(tendNo, tendSeq , frameworkAgreementSeq ){
+	fn_setHomePreviousUrl('ep');
+    var searchConditions =  searchConditions;
+    var url = "?tendNo=" + tendNo +"&tendSeq=" + tendSeq  +"&frameworkAgreementSeq=" + frameworkAgreementSeq +"&searchConditions=" + searchConditions;
+    
+    $( '#frm_list' ).attr( 'action',  "/ep/open/selectDetailOpnngResultAL.do" + url );
+    $( '#frm_list' ).submit();
+}
+
+function fn_goAward(tendNo, tendSeq , intrlLocalTypeCd , frameworkAgreementSeq ){
+	fn_setHomePreviousUrl('ep');
+    var searchConditions = searchConditions;
+    var url = "/ep/awrd/selectDetailAwrdAL.do?"
+    		+ "tendNo=" + tendNo 
+    		+ "&tendSeq=" + tendSeq
+    		+ "&intrlLocalTypeCd=" + intrlLocalTypeCd
+    		+ "&frameworkAgreementSeq=" + frameworkAgreementSeq
+    		+ "&searchConditions=" + searchConditions;
+    $( '#frm_list' ).attr( 'action',  url );
+    $( '#frm_list' ).submit();
+}
+
+function fn_goEval(tendNo, tendSeq ,tendCategCd ,tendMthodCd , frameworkAgreementSeq){
+	fn_setHomePreviousUrl('ep');
+    var searchConditions = searchConditions;;
+    if(tendCategCd == 'EP1312'){
+    	  var url = "/ep/awrd/selectInitDetailGtd.do?"
+      		+ "tendNo=" + tendNo 
+      		+ "&tendSeq=" + tendSeq
+      		+ "&searchConditions=" + searchConditions;
+    }else{
+    	  var url = "/ep/awrd/selectDetailAwrdForSupplier.do?"
+      		+ "dtlTendNo=" + tendNo 
+      		+ "&dtlTendSeq=" + tendSeq
+      		+ "&dtlTendCategCd=" + tendCategCd
+      		+ "&dtlTendMthodCd=" + tendMthodCd
+      		+ "&frameworkAgreementSeq=" + frameworkAgreementSeq
+      		+ "&searchConditions=" + searchConditions;
+    	
+    }
+    $( '#frm_list' ).attr( 'action',  url );
+    $( '#frm_list' ).submit();
+}
+
+
+
+ function reportForGetAllDesiAward() {
+	$("#selReport").css("display", "block");
+     }
+ 
+ function hideReportPopup() {
+		$("#selReport").hide();
+	}
+ function genReport(){
+     blockUIReload('/ep/invt/downloadOCDSJSON.do','#frm_list','btn_download_ocds','downloadDiv');
+    }
+function getAllDecisionAwrdResultForDenadingEntity(){
+	 if($('input[type=radio][id=word]:checked').length == 0){
+		 blockUIReload('/joneps-reports/ep/report/AwrdDescionReportExcelByDe.do','#frm_list','REPORT_download','downloadDiv');
+          $("#selReport").hide();
+          return false;
+          }else{
+          blockUIReload('/joneps-reports/ep/report/AwrdDescionReportByDe.do','#frm_list','REPORT_download','downloadDiv');
+	 	 $("#selReport").hide();
+       }      
+    }
+    
+  
+ </script>
+
+<!-- Screen title -->
+<div class="title_area">
+	<h2 class="con_tit">البحث في قائمة دعوات العطاءات</h2>
+</div>
+
+<!-- Search factor -->
+<div class="srch_factor_area">
+	<form id="frm_list" name="frm_list" modelAttribute="epTendMastVO" method="post" enctype="multipart/form-data" action="">
+		<input type="hidden" name="_csrf" value="GmAEx1CCWQwXVLRS888cl3cTUV7ttXLlVJiGsTCk89vtiUNoflVl8TbnO246YdVgy-IopxEhfGbb0RbIZqC_gFXCwrrY63pY" /><input type="hidden" id="searchConditions" name="searchConditions">
+        <input type="hidden" id="download_token_value_id" name="download_token_value_id" value="">
+        <input type="hidden" id="searchFiscalYearVal" value="">
+		<input type="hidden" name="currentPageNo" value="1"> 
+		<input type="hidden" name="offSet" value="0"> 
+		<input type='hidden' id="screenType" name="screenType" />
+		<input type='hidden' id="cache" name="cache"/>
+		
+		<input type="hidden" name="_csrf" value="GmAEx1CCWQwXVLRS888cl3cTUV7ttXLlVJiGsTCk89vtiUNoflVl8TbnO246YdVgy-IopxEhfGbb0RbIZqC_gFXCwrrY63pY" /><!-- Search factor table -->
+		<table class="ta_style1" id="tb_searchTenderInvitation">
+			<colgroup>
+				<col width="20%">
+				<col width="36%">
+				<col width="20%">
+				<col width="*">
+			</colgroup>
+			<thead></thead>
+			<tbody>
+				<tr>
+					<th>رقم العطاء </th>
+					<td colspan="3">
+					<input type="text" id="searchTendNo" name="searchTendNo" value="" maxlength="10" /></td>
+				</tr>
+				<tr>
+					<th>اسم العطاء </th>
+					<td colspan="3">
+					<input type="text" id="searchTendNm" name="searchTendNm" style="width: 100%;" value="" maxlength="200" />
+
+					</td>
+				</tr>
+				<tr>
+					<th>نوع العطاء</th>
+					<td>
+	                    <select id="searchTendTypeCd1" name="searchTendTypeCd1" style="width: 100%;" onchange="fn_checkOrgNo();selectTenderSubType();">
+                            <option value="">::: الجميع</option>
+                            <option value="EP0016"  >أدوية</option>
+                            <option value="EP0015"  >أشغال</option>
+                            <option value="EP0011"  >اللوازم</option>
+                            <option value="EP0012"  >خدمات</option>
+                            <option value="EP0014"  >خدمات فنية</option>
+                            </select>
+					</td>
+					<th>محلي/دولي</th>
+					<td>
+	                    <select id="searchIntrlLocalTypeCd" name="searchIntrlLocalTypeCd" style="width: 100%;">
+							<option value="">::: الجميع</option>
+							<option value="EP0062" >دولي</option>			
+							<option value="EP0061" >محلي</option>			
+							</select>
+					</td>
+				</tr>
+				  <tr>
+                     <th>نوع العطاء الفرعي</th>
+                    <td>
+                      <select id="tendTypeCd2Goods" name="tendTypeCd2Goods" style="width: 100%; display:none" onchange="setTendTypeCode2(this.value);">
+			         	<option value="">::: اختيار</option>
+			         	<option value="EP0108" >آلات ومعدات</option>
+			         	<option value="EP0129" >أثاث طبي</option>
+			         	<option value="EP0132" >أجهزة الاتصال</option>
+			         	<option value="EP0118" >أجهزة الكترونية</option>
+			         	<option value="EP0110" >أجهزة الكمبيوتر ومعدات الموسيقى</option>
+			         	<option value="EP0124" >أجهزة الكمبيوتر وملحقاتها</option>
+			         	<option value="EP0117" >أجهزة ميكانيكية</option>
+			         	<option value="EP0120" >أحبار</option>
+			         	<option value="EP0152" >اجهزة كهربائية</option>
+			         	<option value="EP0101" >الأثاث والأواني المنزلية</option>
+			         	<option value="EP0116" >الأجهزة البيطرية الزراعية</option>
+			         	<option value="EP0107" >الأجهزة والمعدات الرياضية</option>
+			         	<option value="EP0125" >الإمدادات الغذائية والمواد الخام</option>
+			         	<option value="EP0109" >البواب</option>
+			         	<option value="EP0103" >التوصيلات والتجهيزات والأجهزة</option>
+			         	<option value="EP0122" >العلاجات والأدوية</option>
+			         	<option value="EP0102" >القرطاسية والمنشورات والأختام</option>
+			         	<option value="EP0130" >اللوازم الأخرى</option>
+			         	<option value="EP0131" >اللوازم ومواد طب الأسنان</option>
+			         	<option value="EP0112" >المركبات والآليات والإطارات</option>
+			         	<option value="EP0105" >المستلزمات البيطرية والزراعية</option>
+			         	<option value="EP0134" >المعدات الطبية والمختبرات</option>
+			         	<option value="EP0123" >الملابس والمنسوجات</option>
+			         	<option value="EP0121" >المواد الاستهلاكية والملحقات الطبية</option>
+			         	<option value="EP0126" >برمجيات ومعدات حاسوب</option>
+			         	<option value="EP0150" >تجهيزات طبية متنوعة</option>
+			         	<option value="EP0106" >جمارك الرصاص</option>
+			         	<option value="EP0114" >حقائب بلاستيكية</option>
+			         	<option value="EP0153" >خدمات قانونية</option>
+			         	<option value="EP0128" >سائل البطاريات</option>
+			         	<option value="EP0115" >صوتيات</option>
+			         	<option value="EP0127" >عقود الصيانة</option>
+			         	<option value="EP0111" >قطع غيار / زيوت وشحوم</option>
+			         	<option value="EP0119" >كيماويات مواد البناء والدهانات</option>
+			         	<option value="EP0113" >لوازم التطعيم</option>
+			         	<option value="EP0151" >مشتقات نفطية</option>
+			         	<option value="EP0133" >معدات المكتب</option>
+			         	<option value="EP0104" >معدات وكاميرات وطباعة وحاسبة</option>
+			         	</select>
+                    <select id="tendTypeCd2GSDService" name="tendTypeCd2GSDService" style="width: 100% ; display:none" onchange="setTendTypeCode2(this.value);">
+	            			<option value="">::: اختيار</option>
+	            			<option value="EP0202" >النظافة والنقل الداخلي وخدمات الطعام</option>
+	            			<option value="EP0208" >النظافة والنقل الداخلي وخدمات الطعام</option>
+	            			<option value="EP0997" >خدمات إلكترونية</option>
+	            			<option value="EP0218" >خدمات استشارية ودراسات</option>
+	            			<option value="EP0205" >خدمات الأعلاف</option>
+	            			<option value="EP0212" >خدمات الأمن والحراسة</option>
+	            			<option value="EP0217" >خدمات الاسكان</option>
+	            			<option value="EP0201" >خدمات التأمين</option>
+	            			<option value="EP0206" >خدمات التنظيف الداخلي والإزالة والغسيل والمطاعم</option>
+	            			<option value="EP0207" >خدمات التنظيف والكونسيرج</option>
+	            			<option value="EP0214" >خدمات التنظيف والنقل الداخلي</option>
+	            			<option value="EP0211" >خدمات الصيانة والتحويل الداخلي</option>
+	            			<option value="EP0204" >خدمات الطباعة</option>
+	            			<option value="EP0203" >خدمات الغسيل والبستنة والرسائل</option>
+	            			<option value="EP0209" >خدمات النظافة والنقل الداخلي والغسيل</option>
+	            			<option value="EP0210" >خدمات النقل الداخلي</option>
+	            			<option value="EP0216" >خدمات تدقيق</option>
+	            			<option value="EP0213" >خدمات تنظيف</option>
+	            			<option value="EP0215" >خدمات صيانة</option>
+	            			</select>
+                
+	            	<select id="tendTypeCd2GTDService" name="tendTypeCd2GTDService" style="width: 100% ; display:none" onchange="setTendTypeCode2(this.value);">
+	            		<option value="">::: اختيار</option>
+	            		<option value="EP1124" >إشراف</option>
+	            		<option value="EP1123" >تصميم </option>
+	            		</select>
+	            	
+	            	<select id="tendTypeCd2Medicine" name="tendTypeCd2Goods" style="width:100% ;  display:none" onchange="setTendTypeCode2(this.value);" >
+	                    <option value="">::: اختيار</option>           
+	                    <option value="EP0401"  > أدوية الأوعية الدموية والقلب</option>          
+	                    <option value="EP0415"  > أدوية الإقلاع عن التدخين</option>          
+	                    <option value="EP0413"  > أدوية الإيدز</option>          
+	                    <option value="EP0412"  > أدوية التخدير</option>          
+	                    <option value="EP0411"  > أدوية الجلدية</option>          
+	                    <option value="EP0403"  > أدوية الجهاز التنفسي والأنف والأذن والحنجرة</option>          
+	                    <option value="EP0406"  > أدوية الجهاز العصبي والجهاز العضلي العظمي</option>          
+	                    <option value="EP0404"  > أدوية الجهاز الهضمي</option>          
+	                    <option value="EP0409"  > أدوية الدم والمغذيات</option>          
+	                    <option value="EP0407"  > أدوية العيون</option>          
+	                    <option value="EP0405"  > أدوية الغدد الصماء والنسائية والتوليد والجهاز التناسلي البول</option>          
+	                    <option value="EP0402"  > أدوية المضادات الحيوية</option>          
+	                    <option value="EP0408"  > أدوية المناعة والسرطان</option>          
+	                    <option value="EP0416"  > أدوية تنظيم الأسرة</option>          
+	                    <option value="EP0410"  > الأمصال والمطاعيم ومشتقات الدم ومضادات التسمم</option>          
+	                    <option value="EP0414"  > المواد التشخيصية</option>          
+	                    <option value="EP0417"  > مادة حليب الرضع والأطفال</option>          
+	                    </select>   
+	                   <input type="hidden" id="searchTendTypeCd2" name="searchTendTypeCd2" />
+                   </td>
+                   <th>مصدر التمويل</th>
+                    <td>
+                    
+                     <select id="searchFundType" name="searchFundType" style="width:100%"  >
+                        <option value="">::: اختيار</option>
+                        <option value="EP1076"  > خزينة</option>
+                        <option value="EP1061"  > وطني</option>
+                        <option value="EP1062"  > MCC</option>
+                        <option value="EP1063"  > KFW</option>
+                        <option value="EP1064"  > AFD</option>
+                        <option value="EP1065"  > USAID</option>
+                        <option value="EP1066"  > EBRD</option>
+                        <option value="EP1067"  > EU</option>
+                        <option value="EP1068"  > AECID</option>
+                        <option value="EP1069"  > EDCF</option>
+                        <option value="EP1070"  > UNEP</option>
+                        <option value="EP1071"  > UAE/ABUDHABI</option>
+                        <option value="EP1072"  > EIA</option>
+                        <option value="EP1073"  > KOICA</option>
+                        <option value="EP1074"  > JICA</option>
+                        <option value="EP1075"  > World Bank</option>
+                        <option value="EP1078"  > شراء على حساب</option>
+                        <option value="EP1077"  > اخرى</option>
+                        <option value="EP1079"  > منظمة العمل الدولية</option>
+                        </select>
+                    </td>
+                </tr>
+				<tr>
+                    <th>الأقسام</th>
+                    
+                     <td id="searchDeptNo">
+ 					</td>
+                    <th>حالة العطاء</th>
+                    <td>
+ 						<select name="searchTendStatCd" id="searchTendStatCd" style="width: 100%;">
+ 						<option value="">::: الجميع</option>	
+ 						<option value="EP0859"  > ارجاع حالة العطاء</option>
+ 						<option value="EP0035"  > اعادة طرح العطاء</option>
+ 						<option value="EP0854"  > تجميد</option>
+ 						<option value="EP0560"  > تم نشر نتائج الفتح الفني</option>
+ 						<option value="EP0561"  > تم نشر نتائج الفتح المالي</option>
+ 						<option value="EP0190"  > دعوة معدلة</option>
+ 						<option value="EP0856"  > دعوة معدلة</option>
+ 						<option value="EP0032"  > معدل</option>
+ 						<option value="EP0034"  > ملغي</option>
+ 						</select>
+					</td>                    
+				</tr>
+				<tr>
+                	<th scope="row">السنة المالية</th>
+             		<td>
+                		<select id="searchFiscalYear" name="searchFiscalYear" style="width:100%">
+							<option value=""> ::: اختيار</option>
+							<option value="2018" >2018</option>
+							<option value="2019" >2019</option>
+							<option value="2020" >2020</option>
+							<option value="2021" >2021</option>
+							<option value="2022" >2022</option>
+							<option value="2023" >2023</option>
+							<option value="2024" >2024</option>
+							</select> 
+                	</td>
+					<th>أسلوب طرح العطاء</th>
+                	<td>
+                   		<select id="searchTendMthodCd" name="searchTendMthodCd" style="width:100%">
+		                    <option value="">::: اختيار</option>
+		                    <option value="EP0023"  >  تأهيل مسبق (مغلفين)</option>
+		                    <option value="EP0022"  > التأهيل المسبق</option>
+		                    <option value="EP5021"  > التعبير عن الأهتمام</option>
+		                    <option value="EP0027"  > الشراء من مصدرواحد (التلزيم)</option>
+		                    <option value="EP0021"  > المناقصة العامة</option>
+		                    <option value="EP0025"  > المناقصة المحدودة (الأستدراج)</option>
+		                    <option value="EP0026"  > المناقصة المحدودة مغلفين (الأستدراج)</option>
+		                    <option value="EP1122"  > شراء خدمات الأستشاريين الأفراد</option>
+		                    <option value="EP0024"  > مناقصة عامة مغلفين</option>
+		                    </select>
+	                </td>
+	            </tr>
+				<tr>
+                    <th scope="row">الجهة المشترية</th>
+					<td colspan="3">
+						<input type="text" id="searchPeNo" name="searchPeNo" readonly class="disable_st" style="width:20%" value="" onchange="fn_getDepartement(this ,null);"/>
+						<input type="text" id="peNm" name="peNm" readonly class="disable_st" style="width:62%" value="" />
+						<input type="button" id="btnFind" value="بحث" 
+							class="btn_blue_line" onclick="fn_goOrganizationPopup(this);" />
+						<input type="button" id="btnReset" value="الضبط الأصلي" class="btn_blue_line" onclick="fn_reset(this);" />
+
+					</td>
+                </tr>
+                <tr>
+                    <th scope="row">الجهة الطالبة</th>
+					<td colspan="3">
+						<input type="text" id="searchDeNo" name="searchDeNo" readonly class="disable_st" style="width:20%" value="" />
+						<input type="text" id="deNm" name="deNm" readonly class="disable_st" style="width:62%" value="" />
+						<input type="button" id="btnFind" value="بحث" 
+							class="btn_blue_line" onclick="fn_goOrganizationDePopup(this);" />
+						<input type="button" id="btnResetDe" value="الضبط الأصلي" class="btn_blue_line" onclick="fn_resetDe(this);" />
+					</td>
+                </tr>               
+				<tr>
+					<th><span class="ess">*</span> آخر موعد لتقديم العروض</th>
+					<td colspan="3">
+						<input type="text" id="searchStartSubmDlineDt" name="searchStartSubmDlineDt" class="date" value="12/05/2026" style="width: 85px" />
+							<a class="btn_cala" onclick="gfn_calendar(this);return false;"></a>
+							&nbsp; ~ &nbsp; 
+						<input type="text" id="searchEndSubmDlineDt" name="searchEndSubmDlineDt" class="date" value="12/08/2026" style="width: 85px" />
+							<a class="btn_cala" onclick="gfn_calendar(this);return false;"></a>
+					</td>
+				</tr>
+				<tr>
+					<th>تاريخ النشر</th>
+					<td colspan="3">
+						<input type="text" id="searchStartPublicationYmd" name="searchStartPublicationYmd" class="date" value="" style="width: 85px" />
+							<a class="btn_cala" onclick="gfn_calendar(this);return false;"></a>
+							&nbsp; ~ &nbsp; 
+						<input type="text" id="searchEndPublicationYmd" name="searchEndPublicationYmd" class="date" value="" style="width: 85px" />
+							<a class="btn_cala" onclick="gfn_calendar(this);return false;"></a>
+					</td>
+				</tr>				
+				  <tr>
+		             <th><span class="ess">*</span>اسم التصنيف</th>
+					 <td colspan="3">
+		             <input type="text" id="clId" name="clId" value="" style="width:76px"  class="disable_st" maxlength="8" value="" readonly/>&nbsp;&nbsp;
+		             <input type="button"  id="btn_find"  value="بحث" class="btn_blue_line" onclick="javascript:gfnEp_commodityPop( 'TEND_INVIT');"/>
+			         <input type="hidden" id="clNmAr" name="clNmAr" value=""  style="width:100%"  maxlength="200" />
+		             <input type="text" id="clNmEn" name="clNmEn" value="" style="width:100%" class="disable_st"  maxlength="200" readonly/>          
+		          </td>
+		          </tr>
+                <tr>
+	                    <th scope="row">مرحلة العطاء</th>
+	                    <td colspan="3">
+	                        <select name="searchTendStatusCd" id="searchTendStatusCd" class="fR">
+	                            <option value="">::: اختيار</option>
+	                            <option value="Opened" selected>مفتوح</option>
+	                            <option value="Initial_Awarded" >محال مبدئيا</option>
+	                            <option value="Final_Awarded" >محال نهائيا</option>
+	                        </select>
+	                    </td>
+                </tr>
+			</tbody>
+		</table>
+		<br>
+		<!-- Row count per page -->
+
+		<div style=" text-align: right ">
+			<div class="btn_area" id="downloadDiv">
+				<select id="recordCountPerPage" name="recordCountPerPage" class="fR" style="width: 95px ; height:20pt">
+					<option value="5" 	> 5 نتائج</option>
+					<option value="10" 	selected> 10 نتائج</option>
+					<option value="15" 	> 15 نتائج</option>
+					<option value="20" 	> 20 نتائج</option>
+				</select>                                                                                                       
+				<input id="btn_search" type="submit" value="بحث" class="btn_search" style="height:20pt" onclick="fn_goSearchAndSaveInSession('frm_list','/ep/invt/selectListTendInvitAL.do')">
+				<input type="button" id="btn_clearSession" style="height:20pt" class="btn_blue_line" value="مسح بيانات البحث">
+				<input id="btn_download" runat="server" type="submit" value="تحميل ملف إكسل" 
+				class="btn_dark" onclick="javascript:blockUIReload('/joneps-reports/ep/invt/downloadDetailTendInvit.do','#frm_list','btn_download','downloadDiv')";>
+				<input id="btn_download_ocds" runat="server" type="submit" value="معيار بيانات المقاولات المفتوحة" 
+				class="btn_dark" onclick="genReport();">				
+				</div>			
+		</div>
+	</form>
+</div>
+
+<!-- Search results -->
+<div class="table_area">
+	<!-- Search Result Page -->
+	<table class="ta_style3">
+		<colgroup>
+               <col width="13%" />
+               <col width="31%" />
+               <col width="23%" />
+               <col width="11%" />
+               <col width="11%" />
+               <col width="*" />
+           </colgroup>
+		<thead>
+		<tr>
+               <th>رقم العطاء </th>
+               <th>اسم العطاء </th>
+               <th>الجهة المشترية</th>
+               <th>نوع العطاء</th>
+               <th>تاريخ النشر</th>
+               <th>آخر موعد لتقديم العروض</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001840','01','','EP1312','' ,'EP0061', 'EP0021', 'EP0015');">
+		                            2026001840-01</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001840', '01','','EP1312' ,''  ,'EP0061' , 'EP0021', 'EP0015');"> (ش-24-2026) الخاص بصيانة الطريق من مثلث المغطس ولغاية نهاية حدود الموقع السياحي للمغطس / طريق البحر الميت </a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001840', '01' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					وزارة الأشغال العامة والاسكان/<font style="font-weight: bold;">قسم لجنة الشراء الرئيسية </font> 
+						</td>
+				<td class="al_c" style="border-bottom: none;">أشغال</td>
+				<td class="al_c" style="border-bottom: none;">08/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">09/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001780','02','','EP1312','' ,'EP0061', 'EP0021', 'EP0015');">
+		                            2026001780-02</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001780', '02','','EP1312' ,''  ,'EP0061' , 'EP0021', 'EP0015');">العطاء المركزي رقم (2026/51) الخاص  بصيانة واعادة تأهيل  عدة أجزاء من  شارع الأربعين على طريق الرمثا</a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001780', '02' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					دائرة العطاءات الحكومية</td>
+				<td class="al_c" style="border-bottom: none;">أشغال</td>
+				<td class="al_c" style="border-bottom: none;">07/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">08/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001887','00','','EP1311','' ,'EP0061', 'EP0027', 'EP0011');">
+		                            2026001887-00</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001887', '00','','EP1311' ,''  ,'EP0061' , 'EP0027', 'EP0011');">شراء محروقات لمركبات دائرة الجمارك 2026</a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001887', '00' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					دائرة المشتريات الحكومية</td>
+				<td class="al_c" style="border-bottom: none;">اللوازم</td>
+				<td class="al_c" style="border-bottom: none;">04/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">09/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001351','02','','EP1311','' ,'EP0061', 'EP0021', 'EP0011');">
+		                            2026001351-02</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001351', '02','','EP1311' ,''  ,'EP0061' , 'EP0021', 'EP0011');">شراء وتوريد اجهزة قياس لصيانة شبكة القياسات المائية نظام سكادا </a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001351', '02' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					سلطة وادي الأردن</td>
+				<td class="al_c" style="border-bottom: none;">اللوازم</td>
+				<td class="al_c" style="border-bottom: none;">04/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">11/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001703','02','','EP1311','' ,'EP0061', 'EP0021', 'EP0012');">
+		                            2026001703-02</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001703', '02','','EP1311' ,''  ,'EP0061' , 'EP0021', 'EP0012');">عطاء شراء خدمات النظافة لوزارة العدل والمحاكم التابعة لها (2026/2027)</a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001703', '02' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					دائرة المشتريات الحكومية</td>
+				<td class="al_c" style="border-bottom: none;">خدمات</td>
+				<td class="al_c" style="border-bottom: none;">04/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">09/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001465','01','','EP1311','' ,'EP0061', 'EP0021', 'EP0011');">
+		                            2026001465-01</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001465', '01','','EP1311' ,''  ,'EP0061' , 'EP0021', 'EP0011');">شراء وتوريد اجهزة بيزوميتر وتركيب صندوق ومعالجة خلايا الهبوط</a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001465', '01' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					سلطة وادي الأردن</td>
+				<td class="al_c" style="border-bottom: none;">اللوازم</td>
+				<td class="al_c" style="border-bottom: none;">04/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">11/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001794','01','','EP1311','' ,'EP0061', 'EP0021', 'EP0011');">
+		                            2026001794-01</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001794', '01','','EP1311' ,''  ,'EP0061' , 'EP0021', 'EP0011');">عطاء شراء بدلات رسمية رجالي لموظفي وزارة الخارجية وشؤون المغتربين</a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001794', '01' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					وزارة الخارجية وشؤون المغتربين</td>
+				<td class="al_c" style="border-bottom: none;">اللوازم</td>
+				<td class="al_c" style="border-bottom: none;">04/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">11/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001908','00','','EP1313','' ,'EP0061', 'EP0027', 'EP0016');">
+		                            2026001908-00</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001908', '00','','EP1313' ,''  ,'EP0061' , 'EP0027', 'EP0016');">LENVATINIB CAP 4MG</a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001908', '00' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					وزارة الصحة</td>
+				<td class="al_c" style="border-bottom: none;">أدوية</td>
+				<td class="al_c" style="border-bottom: none;">04/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">08/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001736','01','','EP1311','' ,'EP0061', 'EP0021', 'EP0011');">
+		                            2026001736-01</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001736', '01','','EP1311' ,''  ,'EP0061' , 'EP0021', 'EP0011');">شراء أجهزة معايرة جرعات إشعاعية</a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001736', '01' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					هيئة الطاقة الذرية الاردنية</td>
+				<td class="al_c" style="border-bottom: none;">اللوازم</td>
+				<td class="al_c" style="border-bottom: none;">04/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">09/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		<tr style="BACKGROUND: aliceblue;border-color: aliceblue;">
+
+		                    <td class="al_c" style="border-bottom: none;">
+		                            <a href="#" onclick="fn_goDetail('2026001877','00','','EP1311','' ,'EP0061', 'EP0025', 'EP0011');">
+		                            2026001877-00</a>
+		                            </td>
+		                    <td class="al_l" style="border-bottom: none;">
+		                        <a href="#" onclick="fn_goDetail('2026001877', '00','','EP1311' ,''  ,'EP0061' , 'EP0025', 'EP0011');">حبر طابعة ملونة canon </a>
+		                            <br>
+                               <input id="btnSearch" type="button"
+											value='معلومات فتح العروض'
+											class="btn_blue_line" style="word-spacing:"
+											onclick="fn_goOpen('2026001877', '00' , '')" />
+									</td>
+								
+				<td class="al_l" style="border-bottom: none;">
+					مستشفى الأمير حمزة</td>
+				<td class="al_c" style="border-bottom: none;">اللوازم</td>
+				<td class="al_c" style="border-bottom: none;">03/06/2026</td>
+				<td class="al_c" style="border-bottom: none;">08/06/2026</td>
+			</tr>
+			<tr>
+	                    <td colspan="6" style="text-align: center;">
+
+	                   
+	                      	<div id="approveProcess" class="step" style="margin-top: 0px;">
+	                      		<a class="current"><span class="badge badge-inverse"></span> الاستفسار</a>
+							             <a class="current"><span class="badge badge-inverse"></span> الايداع</a>
+							             <a class="current"><span class="badge badge-inverse"></span> مفتوح</a>
+							              <a ><span class="badge badge-inverse"></span> محال مبدئيا</a>
+			                                 <a ><span class="badge badge-inverse"></span> محال نهائيا</a>
+			                                 </div>
+						
+	                    </td>
+                    </tr>
+		</tbody>
+	</table>
+</div>
+<div class="layer" id="selReport" style="display: none">
+			<div class="layer_con" id="download_New_Div">
+				<div class="layer_text_w">
+					اختيار نوع التقرير</div>
+				<span class="btn_gray1">
+					<input type="checkbox" id="cache" name="cache">
+					<label>
+						اعادة انشاء التقرير</label>
+				</span>
+				<br />
+				<input type="radio" id="word" name="report" checked="checked">
+				<label>
+					Word</label>
+				<br />
+				<input type="radio" id="excel" name="report"" >
+				<label>
+					Excel</label>
+				<br />
+				<input id="download_New" type="button"
+					onclick="getAllDecisionAwrdResultForDenadingEntity();"
+					value='طباعة'
+					class="btn_gray" />
+				<input class="btn_gray" id="hide" type="button"
+					onclick="hideReportPopup();"
+					value="الغاء"
+					class="btn_gray" />
+			</div>
+		</div>
+<!-- Page navigation -->
+<div class="btn_box_w2 btn_w_center">
+	<!-- Paging button -->
+	<div class="pagenate">
+		
+
+
+
+
+
+
+
+
+<script type="text/javaScript" language="javascript">
+function fn_pageview(pageNo){
+	document.frm_list.currentPageNo.value = pageNo;
+	document.frm_list.action = "/ep/invt/selectListTendInvitAL.do";
+	document.frm_list.target = "_self";
+	document.frm_list.submit();
+}
+</script>
+ <a href="#" class="btn_p_first" onclick="fn_pageview(1);return false; "></a>  <a href="#" class="btn_p_prev" onclick="fn_pageview(1);return false; "></a>  <a href="#" class="btn_pg on">1</a>  <a href="#" class="btn_pg" onclick="fn_pageview(2);return false; ">2</a>  <a href="#" class="btn_pg" onclick="fn_pageview(3);return false; ">3</a>  <a href="#" class="btn_pg" onclick="fn_pageview(4);return false; ">4</a>  <a href="#" class="btn_pg" onclick="fn_pageview(5);return false; ">5</a>  <a href="#" class="btn_pg" onclick="fn_pageview(6);return false; ">6</a>  <a href="#" class="btn_pg" onclick="fn_pageview(7);return false; ">7</a>  <a href="#" class="btn_pg" onclick="fn_pageview(8);return false; ">8</a>  <a href="#" class="btn_pg" onclick="fn_pageview(9);return false; ">9</a>  <a href="#" class="btn_pg" onclick="fn_pageview(10);return false; ">10</a>  <a href="#" class="btn_p_next" onclick="fn_pageview(11);return false; "></a>  <a href="#" class="btn_p_end" onclick="fn_pageview(16);return false; "></a> 
+
+
+</div>
+
+	<!-- Row count result -->
+	<div class="tbl_txt_w pageListNum">
+		<span class="pointTxt2">153</span> النتائج(الصفحة <span class="pointTxt2">1</span>/16)</div>
+</div></div>
+			</div>
+		</div>
+		<iframe name="ResultFrame" height="0" width="0" style="border: 0px;"></iframe> 
+	    <div class="layer" id="alertLayer" style="display: none;">
+	        <div class="layer_con" id="layer_con_body" style="top: 20%;">
+	        	<h2 class="layer_top"><span></span></h2>
+	        	<input type="button" class="btn_close" id="messageAlertCloseBtn" name="close">
+	            <div class="layer_text_w" id="popContent"></div>
+	            <input type="button" class="btn_gray" id="messageAlertBtn" value="confirmStr" />
+	        </div>
+	    </div>
+		<div id="footer">
+			<div class="foot_area">
+            <div class="footer_logo1"><span class="blind">koica</span></div>
+            <div class="footer_logo2">
+            	<span class="f_logo_01"><span class="blind">Jordan ONline E-Procurement System logo</span></span>
+            	<span class="f_logo_02"><span class="blind">Jordan Government logo</span></span>
+            </div>
+            <div class="copyright">© 2016 GPD and GTD of Jordan </div>
+        </div>
+<script type="text/javascript" charset="utf-8" src="/js/common/jquery-ui.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/jquery.inputmask.bundle.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/inputformatter.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/cookie.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/alert.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/validation.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/file.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/pagination.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/string.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/jquery-dateFormat.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/datepicker4jordan.js" ></script>
+<script type="text/javascript" charset="utf-8" src="/js/common/jquery.blockUI.js"></script>
+<script>
+	$("#messageAlertBtn, #messageAlertCloseBtn").click(function () {
+		util_layerClose();
+	})
+	
+	function selectTr(obj) {
+		var tr = $(obj).closest("table tr");
+		if ($(tr).hasClass("select")) {
+			$(tr).removeClass("select");
+		} else {
+			$(tr).siblings("tr").removeClass("select");
+			$(tr).addClass("select");
+		}
+	}
+</script></div>
+	</div>
+</body>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var contentContainer = document.getElementById('page-content');
+		setTimeout(function() {
+			contentContainer.style.display = 'block'; // or 'flex', 'grid', etc. based on your layout
+		}, 200);
+	});
+</script>
+</html>
