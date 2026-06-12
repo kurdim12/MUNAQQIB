@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 LISTING_URL = (
     "https://joneps.gov.jo/ep/invt/selectListTendInvitAL.do?searchTendStatusCd=Opened"
 )
-DETAIL_URL = "https://joneps.gov.jo/ep/supp/selectDetailTendInvitCommon.do"
 
 # fn_goDetail('2026001840','01','','EP1312','','EP0061','EP0021','EP0015')
 #               tendNo      seq        cat                          type
@@ -40,14 +39,6 @@ _GO_DETAIL = re.compile(
     r"fn_goDetail\(\s*'(\d+)'\s*,\s*'(\w+)'\s*,\s*'[^']*'\s*,\s*'([^']*)'"
     r"\s*,\s*'[^']*'\s*,\s*'[^']*'\s*,\s*'[^']*'\s*,\s*'([^']*)'"
 )
-
-
-def _detail_url(tend_no: str, seq: str, cat: str, type_cd: str) -> str:
-    return (
-        f"{DETAIL_URL}?screenType=DETAIL_ALL_USERSS&tendNo={tend_no}&tendSeq={seq}"
-        f"&tendCategCd={cat}&tendTypeCd1={type_cd}"
-        f"&menuId=EP03000000&upperMenuId=EP03010000&subMenuId=EP03010100&noneMn=Y"
-    )
 
 
 class JonepsScraper(BaseScraper):
@@ -69,7 +60,7 @@ class JonepsScraper(BaseScraper):
             m = _GO_DETAIL.search(anchor["onclick"])
             if not m:
                 continue
-            tend_no, seq, cat, type_cd = m.groups()
+            tend_no, seq = m.group(1), m.group(2)
             ref = f"{tend_no}-{seq}"
             if ref in seen:  # number + title cells both carry fn_goDetail — one row
                 continue
@@ -92,13 +83,15 @@ class JonepsScraper(BaseScraper):
             rows.append(
                 RawTender(
                     source_id=self.source_id,
-                    source_ref=ref,
+                    source_ref=ref,  # tender number, e.g. 2026001840-01
                     title=title_text,
                     entity=cell(2) or None,
                     category=cell(3) or None,
                     published_at_raw=cell(4) or None,
                     closing_at_raw=None,  # on the detail page (see module docstring)
-                    url=_detail_url(tend_no, seq, cat, type_cd),
+                    # The deep detail link 500s without a portal session, so we link
+                    # to the public "Opened" list (the tender number locates it).
+                    url=LISTING_URL,
                 )
             )
 

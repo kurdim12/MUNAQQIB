@@ -29,7 +29,7 @@ def test_row_fields_are_populated():
     assert r.category == "أشغال"
     assert r.published_at_raw == "08/06/2026"
     assert r.source_id == "joneps"
-    assert "tendNo=2026001840" in r.url and "tendSeq=01" in r.url
+    assert "selectListTendInvitAL" in r.url  # links to the working Opened list
     # closing date is on the detail page, deliberately not guessed from the listing
     assert r.closing_at_raw is None
 
