@@ -20,5 +20,5 @@ include_keywords:
 exclude_keywords:
   - استشارات
 digest_emails:
-  - abdalrhmankurdi12@gmail.com   # founder inbox for the first test run; swap to the partner's address when ready
+  - coodycode10@gmail.com   # Resend signup address (test mode only delivers here until a domain is verified)
 telegram_chat_id: null        # optional one-tap connect
