@@ -51,6 +51,9 @@ export default async function RootLayout({
               <a href="/dashboard" className="rounded-md px-3 py-2 transition hover:bg-sand">
                 {t.nav.dashboard}
               </a>
+              <a href="/watchlist" className="rounded-md px-3 py-2 transition hover:bg-sand">
+                {t.nav.watchlist}
+              </a>
               <a href="/intelligence" className="rounded-md px-3 py-2 transition hover:bg-sand">
                 {t.nav.intelligence}
               </a>

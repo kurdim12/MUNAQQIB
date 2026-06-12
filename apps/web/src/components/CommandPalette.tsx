@@ -9,7 +9,7 @@ type Tender = { id: string; title: string; entity: string | null; category: stri
 const NAV: Item[] = [
   { kind: "nav", label: "مركز القيادة", sub: "الفرص ذات الأولوية", href: "/dashboard" },
   { kind: "nav", label: "ذكاء السوق", sub: "أبرز الجهات والقطاعات", href: "/intelligence" },
-  { kind: "nav", label: "المتابعة", sub: "الفرص المحفوظة", href: "/dashboard?view=saved" },
+  { kind: "nav", label: "المتابعة", sub: "الفرص قيد المراقبة", href: "/watchlist" },
   { kind: "nav", label: "الأسعار والخطط", href: "/pricing" },
 ];
 

@@ -368,6 +368,48 @@ export async function getAnalysis(
 }
 
 // ---------------------------------------------------------------------------
+// Layer 10 — watchlist (saved opportunities the system monitors)
+// ---------------------------------------------------------------------------
+export interface WatchItem {
+  tender_id: string;
+  title: string;
+  entity: string | null;
+  category: string | null;
+  closing_at: string | null;
+  status: string; // open | closed | awarded
+  doc_price_jod: number | null;
+  score: number;
+  has_analysis: boolean;
+}
+
+/** Saved (watched) opportunities for an org, soonest deadline first. The worker's
+ *  daily sweep keeps `status`/`closing_at` current, so this reflects live state. */
+export async function getWatchlist(orgId: string): Promise<WatchItem[]> {
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT t.id AS tender_id, t.title, t.entity, t.category, t.closing_at,
+            t.status, t.doc_price_jod, m.score,
+            (SELECT 1 FROM analyses a
+             WHERE a.org_id = m.org_id AND a.tender_id = t.id AND a.status = 'done'
+             LIMIT 1) AS has_analysis
+     FROM matches m JOIN tenders t ON t.id = m.tender_id
+     WHERE m.org_id = ? AND m.saved = 1 AND m.dismissed = 0
+     ORDER BY (t.closing_at IS NULL), t.closing_at ASC`,
+    [orgId],
+  );
+  return rows.map((r) => ({
+    tender_id: String(r.tender_id),
+    title: String(r.title),
+    entity: r.entity ? String(r.entity) : null,
+    category: r.category ? String(r.category) : null,
+    closing_at: r.closing_at ? String(r.closing_at) : null,
+    status: String(r.status ?? "open"),
+    doc_price_jod: r.doc_price_jod != null ? Number(r.doc_price_jod) : null,
+    score: r.score != null ? Number(r.score) : 0,
+    has_analysis: Number(r.has_analysis ?? 0) === 1,
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Layer 13 — learning signals (per-category save/dismiss behavior)
 // ---------------------------------------------------------------------------
 export interface CategoryAffinityRow {

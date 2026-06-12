@@ -4,6 +4,7 @@ export const t = {
   tagline: "محلّلك الخاص للسوق — يرصد فرص العطاءات قبل منافسيك.",
   nav: {
     dashboard: "مركز القيادة",
+    watchlist: "المتابعة",
     intelligence: "ذكاء السوق",
     pricing: "الأسعار",
     onboarding: "ملف المنشأة",

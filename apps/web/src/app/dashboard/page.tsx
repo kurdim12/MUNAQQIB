@@ -110,7 +110,7 @@ export default async function CommandCenter({
                 <h2 className="eyebrow">الفرص ذات الأولوية</h2>
                 <div className="flex gap-1 rounded-lg border border-line bg-white p-0.5 text-sm">
                   <Tab href="/dashboard" active={!savedOnly} label="الكل" />
-                  {canSaved && <Tab href="/dashboard?view=saved" active={savedOnly} label="★ المتابعة" />}
+                  {canSaved && <Tab href="/watchlist" active={false} label="★ المتابعة" />}
                 </div>
               </div>
 
