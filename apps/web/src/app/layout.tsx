@@ -3,6 +3,7 @@ import { Amiri, Tajawal } from "next/font/google";
 
 import { getSessionSafe } from "@/auth";
 import { signOutAction } from "@/app/signin/actions";
+import { CommandPalette } from "@/components/CommandPalette";
 import { isAdminEmail } from "@/lib/admin";
 import { t } from "@/lib/strings";
 import "./globals.css";
@@ -46,6 +47,7 @@ export default async function RootLayout({
               <span className="font-serif text-xl font-bold text-ink">{t.brand}</span>
             </a>
             <nav className="flex items-center gap-0.5 text-sm font-medium text-ink-soft">
+              <CommandPalette />
               <a href="/dashboard" className="rounded-md px-3 py-2 transition hover:bg-sand">
                 {t.nav.dashboard}
               </a>
