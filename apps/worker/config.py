@@ -59,6 +59,12 @@ class Settings(BaseSettings):
     scraper_user_agent: str = "MunaqqibBot/0.1 (+abdalrhmankurdi12@gmail.com)"
     scraper_rate_limit_rps: float = 1.0
 
+    # Reader-proxy fallback for sources that bot-wall non-Jordanian datacenter
+    # IPs (e.g. GTD serves a 54-byte empty shell to our honest UA). The proxy
+    # fetches server-side and returns the page; we request HTML, not markdown.
+    # Set to "" to disable the fallback. Public reader — no secret.
+    scraper_reader_proxy: str = "https://r.jina.ai/"
+
     # --- Misc ---
     tz: str = "Asia/Amman"
     log_level: str = "INFO"

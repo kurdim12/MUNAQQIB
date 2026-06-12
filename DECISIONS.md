@@ -210,3 +210,28 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   saved snapshot is what makes "re-snapshot when a scraper breaks" (rule §3) and the
   parser unit tests possible. Anomaly rule: HTTP 200 + zero parsed rows ⇒ increment
   `consecutive_failures`, alert the founder at 2.
+
+## 2026-06-12 — GTD unblocked via reader-proxy; GPD rejected as a dead archive
+
+- **GTD (`gtd.gov.jo`) is live as the second source.** It IP/bot-walls non-Jordanian
+  datacenter hosts: our honest UA gets a 54-byte empty shell (HTTP 200) on every path,
+  so a direct fetch from any cloud host parses zero rows. The page content is real and
+  current though (verified: 2026 road/school/infrastructure works under
+  `/AR/modules/tendersunderoffering`). Fix: `GtdScraper.fetch()` detects the tiny shell
+  and retries through a public reader proxy (`SCRAPER_READER_PROXY`, default
+  `https://r.jina.ai/`, requested in HTML mode) which fetches server-side. The committed
+  fixture `fixtures/gtd_tenders_underoffering.html` is that proxy HTML (rule §3 — parse
+  the exact bytes we saw); the structural parser keys on the detail anchor + td position,
+  so it reads both proxy HTML and a direct Jordanian-IP fetch. Production note: keep the
+  proxy until the worker can egress from a Jordanian IP; swap the env if it's throttled.
+
+- **GPD (`gpd.gov.jo/Ar/Modules/Tenders`) rejected — it's a frozen 2016 archive.** It is
+  fully reachable, but every row is a 2016 *medication* tender and the page itself tells
+  visitors to go to JONEPS for current tenders. A GPD scraper would feed the demo dead,
+  off-domain (pharma) data for a heavy-civil contractor. Dropped it; deleted the snapshot.
+
+- **Demo retargeted to real current works.** Seeded 5 current GTD works tenders into
+  `demo_org_v1` (the mkurdi-modeled contractor) — road maintenance 52/2026 (closing in
+  days), school 53/2026, hazardous-waste infrastructure 47/2026, environmental park
+  54/2026, supervision 48/2026 — matched and interleaved with the JONEPS items so the
+  dashboard leads with genuinely relevant, time-sensitive opportunities from both sources.

@@ -36,7 +36,7 @@ Anthropic + OpenRouter   → analyzer (sonnet) + cheap slots
 
 | # | Layer | State |
 |---|---|---|
-| 1 | Source Discovery | **JONEPS live** (real parser, committed fixture); GTD blocked (bot-walled). Operator monitor built (`/operations`). |
+| 1 | Source Discovery | **JONEPS + GTD live** (real parsers, committed fixtures). GTD bot-walls cloud IPs → reader-proxy fetch fallback (`SCRAPER_READER_PROXY`). Operator monitor built (`/operations`). |
 | 2 | Normalization | ✅ `worker/pipeline/normalize.py` → unified Tender |
 | 3 | Deduplication | ✅ `worker/pipeline/dedupe.py` (hash upsert); semantic dedupe = enhancement |
 | 4 | Enrichment | ◐ embeddings + taxonomy; entity profiles = Phase 2 |
@@ -75,10 +75,14 @@ headlines, semantic color (green=qualified, amber=review, red=risk).
 
 ## The demo
 
-`demo_org_v1` ("شركة الإعمار والتوريدات الأردنية", Pro plan) is seeded in D1 with
-**10 real JONEPS tenders** across 4 categories, matches, 2 saved, and 1 full
-analyzer report. With no login, the app defaults to this org — so `/dashboard`,
-`/watchlist`, `/intelligence`, and `/tenders/jn_2026001840-01` all show real data.
+`demo_org_v1` ("شركة مروان أحمد الكردي وشركاه — مقاولات عامة", a heavy-civil
+contractor modeled on mkurdi.com) is seeded in D1 with **real current tenders
+from both live sources** — 9 matches spanning JONEPS supply/works + **5 current
+2026 GTD works tenders** (road maintenance 52/2026 closing in days, school
+53/2026, infrastructure 47/2026, park 54/2026, supervision 48/2026) — plus saved
+items and a full analyzer report. With no login, the app defaults to this org —
+so `/dashboard`, `/watchlist`, `/intelligence`, and the report pages all show
+real, relevant data.
 
 ---
 
@@ -98,8 +102,10 @@ analyzer report. With no login, the app defaults to this org — so `/dashboard`
 - L7 award/pricing DB + L12 competitor profiles need **historical award results**
   scraped over time. Framing exists; the data pipeline does not.
 - More sources (GAM, ministries, universities) — need network access or fixtures.
-- GTD source — serves an empty shell to the honest bot UA; needs a headless
-  browser (Playwright) path or a saved fixture.
+- GTD source — **live** via reader-proxy fallback (it bot-walls cloud IPs with a
+  54-byte shell). Production note: the proxy is the fetch path until the worker
+  runs from a Jordanian IP; if `r.jina.ai` is ever rate-limited, point
+  `SCRAPER_READER_PROXY` at another reader or a Jordan-egress proxy.
 - Analyzer live doc-fetch — gov doc links blocked from the build env; fixture-first
   like the scrapers. Enqueue + war-room exist; the fetch→extract→LLM run needs a
   reachable كرّاسة + API keys.
@@ -117,7 +123,8 @@ analyzer report. With no login, the app defaults to this org — so `/dashboard`
 ## Next moves (recommended order)
 
 1. **Operate it**: worker secrets on Railway → first real digest → Resend domain.
-2. **Unblock GTD** (Playwright scraper or committed fixture) → second live source.
+2. ~~Unblock GTD~~ ✅ **done** — GTD is live via reader-proxy; parser + fixture +
+   tests committed, 5 current works tenders seeded into the demo.
 3. **Analyzer producer**: a `run_analyze` worker stage that drains
    `analyses.status='queued'`, fetches the doc, runs `analyze_document`, persists.
 4. **Phase 2 data**: scrape award results → populate L7/L12 (the real moat).
