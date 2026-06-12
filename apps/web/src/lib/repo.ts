@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 
+import { getSessionSafe } from "@/auth";
 import type { Subscription, Tier } from "./billing";
 import { execute, executeOne, isConfigured } from "./d1";
 
@@ -60,11 +61,23 @@ function jsonObject(value: unknown): Record<string, number> {
 }
 
 // ---------------------------------------------------------------------------
-// Current-org resolution (TEMPORARY auth seam — DECISIONS.md)
-// Until an auth provider is chosen, the active org is the `org_id` cookie set by
-// onboarding, else DEMO_ORG_ID, else the first org in the DB.
+// Current-org resolution.
+// Authenticated path: the signed-in user's org via org_members (strict — a
+// logged-in user with no org gets null, never another tenant's data). When auth
+// is unconfigured (getSessionSafe -> null), fall back to the dev seam:
+// org_id cookie → DEMO_ORG_ID → first org. DECISIONS.md.
 // ---------------------------------------------------------------------------
 export async function getCurrentOrgId(): Promise<string | null> {
+  const session = await getSessionSafe();
+  if (session?.user?.id) {
+    const row = await executeOne<{ org_id: string }>(
+      "SELECT org_id FROM org_members WHERE user_id = ? LIMIT 1",
+      [session.user.id],
+    );
+    return row?.org_id ?? null;
+  }
+
+  // --- dev seam (no auth configured) ---
   const cookieOrg = (await cookies()).get("org_id")?.value;
   if (cookieOrg) return cookieOrg;
   if (process.env.DEMO_ORG_ID) return process.env.DEMO_ORG_ID;
@@ -152,8 +165,14 @@ export interface CreateOrgInput {
 
 const TRIAL_DAYS = 14;
 
-/** Insert an org + a 14-day trial subscription. Returns the new org id. */
-export async function createOrgWithTrial(input: CreateOrgInput): Promise<string> {
+/**
+ * Insert an org + a 14-day trial subscription, and (when a user is signed in)
+ * link them as the org owner in org_members. Returns the new org id.
+ */
+export async function createOrgWithTrial(
+  input: CreateOrgInput,
+  ownerUserId?: string | null,
+): Promise<string> {
   const org = await executeOne<{ id: string }>(
     `INSERT INTO orgs (name, sector, classification_fields, classification_grade,
                        governorates, include_keywords, exclude_keywords, digest_emails)
@@ -181,6 +200,13 @@ export async function createOrgWithTrial(input: CreateOrgInput): Promise<string>
      VALUES (?, 'trial', 'trial', ?)`,
     [org.id, trialEnds],
   );
+  if (ownerUserId) {
+    await execute(
+      `INSERT INTO org_members (org_id, user_id, role) VALUES (?, ?, 'owner')
+       ON CONFLICT(org_id, user_id) DO NOTHING`,
+      [org.id, ownerUserId],
+    );
+  }
   return org.id;
 }
 

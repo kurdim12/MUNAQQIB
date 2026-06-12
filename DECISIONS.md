@@ -26,6 +26,22 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   - enums → `TEXT` + `CHECK`; `text[]` → JSON TEXT; `timestamptz` → ISO-8601 UTC TEXT;
     `gen_random_uuid()` → `DEFAULT (lower(hex(randomblob(16))))`.
 
+- **Auth provider DECIDED + implemented: Auth.js (NextAuth v5) + Resend.** Owner
+  chose passwordless **email magic-links via Resend** (reuses the existing Resend
+  account; no SMS/extra vendor), **JWT sessions**, no vendor lock-in. Auth.js tables
+  (`users`/`accounts`/`verification_token`) added in `infra/cloudflare/d1/0002_auth.sql`
+  and applied to live D1; tenancy links through the existing `org_members.user_id`.
+  Because we run on Node/Vercel (not Workers), a **custom D1 REST adapter**
+  (`src/lib/auth-adapter.ts`) implements the user + verification-token methods over
+  the same `lib/d1.ts` client (adapter SQL validated against live D1, rows cleaned
+  up). `getCurrentOrgId` now resolves the **signed-in user's** org via `org_members`
+  (strict — a logged-in user with no org gets `null`, never another tenant's data);
+  the cookie/`DEMO_ORG_ID`/first-org seam remains **only** as the fallback when auth
+  is unconfigured (`getSessionSafe` returns null with no `AUTH_SECRET`), so
+  `next build`/CI/local dev still run secret-free. Onboarding links the new org's
+  owner into `org_members`. Sign-in page + sign-out in the nav. New env:
+  `AUTH_SECRET`, `AUTH_RESEND_KEY` (falls back to `RESEND_API_KEY`), `AUTH_URL`;
+  `trustHost: true`. This **resolves the "auth provider still open" note** above.
 - **Phase 1 web app started** (`apps/web`). Stack: **Next.js 15 (App Router) +
   React 19 + TypeScript + Tailwind v3**, Arabic-first RTL (`<html dir="rtl" lang="ar">`,
   Tajawal font). The web app reads/writes **D1 via the same Cloudflare REST API the

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+import { getSessionSafe } from "@/auth";
 import { createOrgWithTrial } from "@/lib/repo";
 
 const schema = z.object({
@@ -28,9 +29,13 @@ export async function createOrgAction(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "بيانات غير صالحة" };
   }
 
+  // Link the signed-in user as owner (when auth is configured). When it isn't,
+  // ownerUserId is null and onboarding still works on the dev seam.
+  const session = await getSessionSafe();
+
   let orgId: string;
   try {
-    orgId = await createOrgWithTrial(parsed.data);
+    orgId = await createOrgWithTrial(parsed.data, session?.user?.id ?? null);
   } catch (err) {
     return {
       ok: false,

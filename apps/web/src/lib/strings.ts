@@ -6,6 +6,8 @@ export const t = {
     dashboard: "العطاءات المطابقة",
     pricing: "الأسعار",
     onboarding: "إعداد الحساب",
+    signIn: "تسجيل الدخول",
+    signOut: "خروج",
   },
   dashboard: {
     title: "العطاءات المطابقة لتصنيفك",

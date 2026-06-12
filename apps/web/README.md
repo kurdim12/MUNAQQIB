@@ -38,12 +38,20 @@ src/
   lib/        d1.ts (REST client) · repo.ts (typed reads/writes) · format.ts · strings.ts
 ```
 
+## Auth
+
+**Auth.js (NextAuth v5) + Resend** passwordless email magic-links, JWT sessions,
+D1-backed via a custom REST adapter (`src/lib/auth-adapter.ts` + tables in
+`infra/cloudflare/d1/0002_auth.sql`). `getCurrentOrgId()` resolves the signed-in
+user's org via `org_members`; with no `AUTH_SECRET` set it degrades to the dev
+seam (cookie → `DEMO_ORG_ID` → first org) so build/CI/dev run secret-free. Set
+`AUTH_SECRET` + `AUTH_RESEND_KEY` (or `RESEND_API_KEY`) to enable real login.
+
 ## Open items
 
-- **Auth provider undecided.** The "current org" is resolved from the `org_id`
-  cookie → `DEMO_ORG_ID` → first org in the DB (temporary dev seam, flagged in
-  `repo.ts`). Replace `getCurrentOrgId()` once auth is chosen.
-- Billing (CliQ), saved/dismissed actions on matches, and tier gating are next.
+- **Admin activation.** Flipping `pending_payment → active` after a CliQ transfer
+  needs an admin role/console (org_members.role). Next billing step.
+- Tier gating (limit features by `subscriptions.tier`) and the analyzer UI.
 
 All timestamps render in `Asia/Amman`; all money in JOD; numbers use Latin
 digits with Arabic words for consistency (see `DECISIONS.md`).

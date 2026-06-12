@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Tajawal } from "next/font/google";
 
+import { getSessionSafe } from "@/auth";
+import { signOutAction } from "@/app/signin/actions";
 import { t } from "@/lib/strings";
 import "./globals.css";
 
@@ -17,9 +19,11 @@ export const metadata: Metadata = {
   description: t.tagline,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const session = await getSessionSafe();
+
   return (
     <html lang="ar" dir="rtl" className={arabic.variable}>
       <body className="min-h-screen font-sans antialiased">
@@ -28,7 +32,7 @@ export default function RootLayout({
             <a href="/" className="text-xl font-bold text-brand">
               {t.brand}
             </a>
-            <nav className="flex gap-4 text-sm text-slate-600">
+            <nav className="flex items-center gap-4 text-sm text-slate-600">
               <a href="/dashboard" className="hover:text-brand">
                 {t.nav.dashboard}
               </a>
@@ -38,6 +42,20 @@ export default function RootLayout({
               <a href="/onboarding" className="hover:text-brand">
                 {t.nav.onboarding}
               </a>
+              {session?.user ? (
+                <form action={signOutAction} className="flex items-center gap-2">
+                  <span className="hidden text-xs text-slate-400 sm:inline" dir="ltr">
+                    {session.user.email}
+                  </span>
+                  <button type="submit" className="hover:text-brand">
+                    {t.nav.signOut}
+                  </button>
+                </form>
+              ) : (
+                <a href="/signin" className="font-medium text-brand hover:text-brand-dark">
+                  {t.nav.signIn}
+                </a>
+              )}
             </nav>
           </div>
         </header>
