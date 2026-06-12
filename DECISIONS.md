@@ -5,6 +5,33 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
 
 ---
 
+## 2026-06-12 · DB moved to Cloudflare D1 (overrides the locked Supabase choice)
+
+- **Owner decision:** the database is on **Cloudflare D1**, not Supabase Postgres.
+  This overrides the LOCKED stack item in CLAUDE.md §3. Created D1 database
+  **`munaqqib`** (uuid `c296c699-1053-4e95-8d4b-602dca9e18c1`, region EEUR) and
+  applied `infra/cloudflare/d1/0001_init.sql` (all 9 app tables + 4 seeded sources,
+  round-trip verified). The original Postgres migration is kept at
+  `supabase/migrations/0001_init.sql` for reference / possible Hyperdrive use.
+
+- **D1 is SQLite — these Supabase-specific features have no D1 equivalent and were
+  re-mapped** (full notes at the top of the D1 migration):
+  - `pgvector vector(384)` → embeddings stored as **JSON TEXT**; Phase-0 matching is
+    already done in Python (no vector queries), so this is sufficient now. **Phase 1+
+    moves vectors to Cloudflare Vectorize** for similarity search at scale.
+  - **RLS + Supabase Auth** → none in D1. Multi-tenancy becomes **app-enforced**;
+    `org_members.user_id` is an external auth id. Pick an auth provider in Phase 1
+    (Cloudflare Access, Clerk, or Supabase Auth used as auth-only).
+  - **Supabase Storage** (HTML snapshots, كراسة PDFs) → **Cloudflare R2**.
+  - enums → `TEXT` + `CHECK`; `text[]` → JSON TEXT; `timestamptz` → ISO-8601 UTC TEXT;
+    `gen_random_uuid()` → `DEFAULT (lower(hex(randomblob(16))))`.
+
+- **Follow-up (not yet done):** the worker's `db.py` still targets the Supabase
+  client. It needs a D1 data layer (Cloudflare D1 REST API: account id + API token +
+  database id, or a Workers binding) plus an R2 helper to replace `upload_snapshot`.
+  Phase 0's pure pipeline (normalize/dedupe/match/digest) is unaffected and its tests
+  pass; only the persistence/snapshot IO is pending the D1/R2 rewrite.
+
 ## 2026-06-12 · Phase 0 bootstrap
 
 - **Scraper selectors deferred to a real fixture (rule §3 honored).** The build
