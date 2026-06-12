@@ -11,6 +11,13 @@ html {
   color-scheme: light;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  /* Denser terminal scale — fits at 100% zoom without overflowing. */
+  font-size: 14px;
+}
+@media (min-width: 1280px) {
+  html {
+    font-size: 15px;
+  }
 }
 
 body {

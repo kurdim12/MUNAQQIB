@@ -25,11 +25,11 @@ const outcomes = [
 
 export default function Home() {
   return (
-    <div className="space-y-24">
+    <div className="space-y-16">
       {/* Hero */}
-      <section className="animate-fade-up pt-6 text-center">
+      <section className="animate-fade-up pt-4 text-center">
         <p className="eyebrow">منصّة ذكاء الفرص · عطاءات الأردن</p>
-        <h1 className="mx-auto mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.2] text-ink sm:text-6xl">
+        <h1 className="mx-auto mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.2] text-ink sm:text-5xl">
           محلّلك الخاص للسوق،
           <br />
           يرصد الفرص قبل منافسيك
