@@ -11,23 +11,22 @@ export function TrialBanner({ sub }: { sub: Subscription | null }) {
 
   return (
     <div
-      className={`mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm ${
+      className={`mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm ${
         urgent
           ? "border-red-200 bg-red-50 text-red-800"
-          : "border-brand/30 bg-brand/5 text-brand-dark"
+          : "border-brand/20 bg-brand-50/70 text-brand-dark"
       }`}
     >
-      <span>
-        <span className="font-medium">{TIER_LABELS[sub.tier]}</span>
-        <span className="mx-2 text-slate-300">·</span>
-        {text}
-        <span className="mr-2 text-xs text-slate-400">
-          ({STATUS_LABELS[sub.status]})
+      <span className="flex flex-wrap items-center gap-2">
+        <span className="rounded-md bg-white/70 px-2 py-0.5 text-xs font-bold">
+          {TIER_LABELS[sub.tier]}
         </span>
+        {text}
+        <span className="text-xs text-slate-400">({STATUS_LABELS[sub.status]})</span>
       </span>
       <a
         href="/pricing"
-        className="shrink-0 rounded-md bg-brand px-3 py-1.5 font-medium text-white hover:bg-brand-dark"
+        className="shrink-0 rounded-lg bg-brand px-3.5 py-1.5 font-semibold text-white transition hover:bg-brand-dark"
       >
         ترقية الاشتراك
       </a>

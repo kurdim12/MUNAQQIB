@@ -46,32 +46,44 @@ export default async function TenderAnalysisPage({
   const analysis = allowed ? await getAnalysis(orgId!, id) : null;
 
   return (
-    <section className="space-y-6">
-      <a href="/dashboard" className="text-sm text-slate-400 hover:text-brand">
+    <section className="space-y-6 animate-fade-in">
+      <a
+        href="/dashboard"
+        className="inline-flex items-center gap-1 text-sm text-slate-400 transition hover:text-brand"
+      >
         ← لوحة العطاءات
       </a>
 
-      <header className="rounded-xl border border-slate-200 bg-white p-5">
-        <h1 className="text-xl font-bold text-slate-900">{tender.title}</h1>
-        {tender.entity && <p className="mt-1 text-sm text-slate-500">{tender.entity}</p>}
-        <div className="mt-3 flex items-center gap-4 text-sm">
-          {tender.closing_at && (
-            <span className="text-slate-600">
-              الإغلاق: {formatAmmanDate(tender.closing_at)} · {deadlineLabel(tender.closing_at)}
-            </span>
+      <header className="card overflow-hidden">
+        <div className="bg-gradient-to-l from-brand-50/60 to-white px-6 py-5">
+          <h1 className="text-xl font-extrabold leading-snug text-slate-900">{tender.title}</h1>
+          {tender.entity && (
+            <p className="mt-1.5 flex items-center gap-1.5 text-sm text-slate-500">
+              <span className="text-slate-300">🏛️</span>
+              {tender.entity}
+            </p>
           )}
-          <a
-            href={tender.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-brand hover:text-brand-dark"
-          >
-            صفحة المصدر ←
-          </a>
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+            {tender.closing_at && (
+              <span className="rounded-lg bg-white px-3 py-1.5 font-medium text-slate-700 shadow-sm">
+                ⏳ الإغلاق: {formatAmmanDate(tender.closing_at)} · {deadlineLabel(tender.closing_at)}
+              </span>
+            )}
+            <a
+              href={tender.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg bg-brand px-3 py-1.5 font-semibold text-white transition hover:bg-brand-dark"
+            >
+              صفحة المصدر ←
+            </a>
+          </div>
         </div>
       </header>
 
-      <h2 className="text-lg font-bold text-slate-900">تحليل الكرّاسة</h2>
+      <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900">
+        <span>📄</span> تحليل الكرّاسة
+      </h2>
 
       {!allowed ? (
         <Paywall
@@ -81,9 +93,13 @@ export default async function TenderAnalysisPage({
       ) : analysis ? (
         <AnalysisBrief brief={analysis.brief} />
       ) : (
-        <p className="rounded-lg border border-slate-200 bg-white px-4 py-10 text-center text-slate-500">
-          لم يُحلَّل هذا العطاء بعد. التحليل يُجهَّز تلقائياً ويظهر هنا فور اكتماله.
-        </p>
+        <div className="card flex flex-col items-center px-6 py-14 text-center">
+          <div className="text-4xl">⏳</div>
+          <p className="mt-3 font-medium text-slate-700">لم يُحلَّل هذا العطاء بعد</p>
+          <p className="mt-1 text-sm text-slate-500">
+            التحليل يُجهَّز تلقائياً بالذكاء الاصطناعي ويظهر هنا فور اكتماله.
+          </p>
+        </div>
       )}
     </section>
   );
