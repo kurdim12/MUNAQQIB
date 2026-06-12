@@ -1,0 +1,34 @@
+# --- Secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+.vercel/
+*.tsbuildinfo
+
+# --- Models / large artifacts (downloaded at runtime) ---
+apps/worker/.models/
+
+# --- OS / editor ---
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# --- Local scratch (live HTML snapshots committed under fixtures/ stay tracked) ---
+*.local
+/tmp/

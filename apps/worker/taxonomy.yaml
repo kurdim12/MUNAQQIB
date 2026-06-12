@@ -1,0 +1,70 @@
+# Classification taxonomy — the matching backbone (CLAUDE.md §8).
+#
+# contractor_fields: GTD contractor-classification fields, each with a keyword
+#   lexicon used by the matcher's keyword pass (compared after norm_ar()).
+# supply_categories: JordanBids-style supply category slugs + lexicons.
+#
+# Lexicons are seeds, not final. The design partner's dismissed/saved feedback
+# (matches.dismissed/saved) is the free training signal used to tune them.
+
+contractor_fields:
+  أبنية:
+    grades: [1, 2, 3, 4, 5, 6]
+    lexicon: [انشاء, إنشاء, بناء, تشطيب, مدرسة, مبنى, مباني, هنجر, ترميم, صيانة مباني, اعمال مدنية, مستودع, قاعة, مسجد, عيادة, اعمار]
+  طرق:
+    grades: [1, 2, 3, 4, 5, 6]
+    lexicon: [طريق, طرق, تعبيد, اسفلت, إسفلت, رصف, جسر, عبارة, دوار, تقاطع, خلطة اسفلتية, اكتاف, صيانة طرق]
+  مياه ومجاري:
+    grades: [1, 2, 3, 4, 5, 6]
+    lexicon: [مياه, مجاري, صرف صحي, خط ناقل, شبكة مياه, خزان, محطة ضخ, تنقية, تحلية, انابيب, آبار, حفر بئر]
+  كهرباء:
+    grades: [1, 2, 3, 4, 5, 6]
+    lexicon: [كهرباء, كهربائية, محول, شبكة كهرباء, انارة, إنارة, كوابل, خطوط ضغط, طاقة شمسية, محطة تحويل]
+  ميكانيك:
+    grades: [1, 2, 3, 4, 5, 6]
+    lexicon: [ميكانيك, ميكانيكية, تكييف, تدفئة, تهوية, مصاعد, مضخات, اطفاء حريق, انظمة ميكانيكية]
+  صيانة:
+    grades: [1, 2, 3, 4, 5, 6]
+    lexicon: [صيانة, اصلاح, ترميم, تأهيل, اعمال صيانة, صيانة دورية]
+
+supply_categories:
+  medical:
+    slug: medical
+    label_ar: مستلزمات طبية
+    lexicon: [طبية, مستلزمات طبية, ادوية, دواء, اجهزة طبية, مختبر, مخبرية, مستشفى, جراحية, اشعة, اسنان]
+  it:
+    slug: it
+    label_ar: تكنولوجيا المعلومات
+    lexicon: [حاسوب, حواسيب, شبكات, برمجيات, سيرفر, خوادم, طابعات, اجهزة, تقنية معلومات, كاميرات مراقبة, انظمة]
+  electrical:
+    slug: electrical
+    label_ar: مواد كهربائية
+    lexicon: [مواد كهربائية, كوابل, لمبات, مفاتيح, لوحات كهربائية, مولدات, بطاريات]
+  vehicles:
+    slug: vehicles
+    label_ar: مركبات وآليات
+    lexicon: [مركبات, سيارات, آليات, شاحنات, اطارات, قطع غيار, صيانة مركبات, باصات]
+  food:
+    slug: food
+    label_ar: مواد غذائية
+    lexicon: [مواد غذائية, اغذية, تموين, مطعم, لحوم, خضار, تغذية]
+  furniture:
+    slug: furniture
+    label_ar: اثاث
+    lexicon: [اثاث, مكتبية, كراسي, طاولات, خزائن, اثاث مدرسي]
+  safety:
+    slug: safety
+    label_ar: سلامة عامة
+    lexicon: [سلامة, اطفاء, مكافحة حريق, معدات سلامة, طفايات, انذار]
+  printing:
+    slug: printing
+    label_ar: مطبوعات
+    lexicon: [مطبوعات, طباعة, قرطاسية, احبار, ورق]
+  realestate:
+    slug: realestate
+    label_ar: عقارات وإيجارات
+    lexicon: [استئجار, ايجار, عقار, مبنى للايجار, بدل ايجار]
+  auctions:
+    slug: auctions
+    label_ar: مزايدات
+    lexicon: [مزايدة, بيع, تلزيم, مزاد, عطاء بيع]

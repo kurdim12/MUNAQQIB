@@ -1,0 +1,24 @@
+# Phase 0 design-partner org profile (CLAUDE.md §6).
+# The single hard-coded matching target for the Lifeline pipeline. Replace the
+# placeholder values with the design partner's real classification + delivery
+# details before the first live digest. Removed in Phase 1 (profiles come from
+# the `orgs` table).
+
+name: "شركة المقاولات — الشريك التصميمي"
+sector: contracting          # contracting | supplies | consulting | services
+classification_fields:        # GTD contractor fields (see taxonomy.yaml)
+  - أبنية
+  - طرق
+classification_grade: 3       # 1..6
+supply_categories: []         # suppliers only
+governorates: []              # empty = all governorates
+min_value_jod: null
+max_value_jod: null
+include_keywords:
+  - مدرسة
+  - مبنى
+exclude_keywords:
+  - استشارات
+digest_emails:
+  - partner@example.com       # TODO: real verified address before first send
+telegram_chat_id: null        # optional one-tap connect
