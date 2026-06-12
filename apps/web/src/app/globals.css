@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Numerals stay readable LTR inside the RTL flow. */
+.nums {
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+}

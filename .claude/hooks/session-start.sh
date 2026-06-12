@@ -33,3 +33,15 @@ fi
 } >> "$CLAUDE_ENV_FILE"
 
 echo "MUNAQQIB worker dev deps installed (.venv)."
+
+# --- Web app (apps/web): install node deps so next build / lint / vitest work ---
+WEB_DIR="$CLAUDE_PROJECT_DIR/apps/web"
+if [ -f "$WEB_DIR/package.json" ] && [ ! -d "$WEB_DIR/node_modules" ]; then
+  cd "$WEB_DIR"
+  if [ -f package-lock.json ]; then
+    npm ci --no-audit --no-fund --silent
+  else
+    npm install --no-audit --no-fund --silent
+  fi
+  echo "MUNAQQIB web deps installed (node_modules)."
+fi

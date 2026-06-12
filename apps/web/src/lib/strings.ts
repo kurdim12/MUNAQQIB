@@ -1,0 +1,49 @@
+/** Arabic-first UI copy. English is secondary and lives in code comments only. */
+export const t = {
+  brand: "منقّب",
+  tagline: "كل عطاء بيناسب تصنيفك، بإيميل واحد نظيف كل صباح.",
+  nav: {
+    dashboard: "العطاءات المطابقة",
+    onboarding: "إعداد الحساب",
+  },
+  dashboard: {
+    title: "العطاءات المطابقة لتصنيفك",
+    empty: "لا توجد عطاءات مطابقة بعد. سيصلك أول ملخّص صباحاً الساعة 7:30.",
+    notConfigured:
+      "قاعدة البيانات غير مهيّأة في هذه البيئة — هذه واجهة فارغة للعرض فقط.",
+    score: "نسبة المطابقة",
+    closing: "آخر موعد",
+    docPrice: "ثمن الكرّاسة",
+    governorate: "المحافظة",
+    entity: "الجهة",
+    details: "التفاصيل",
+    reasons: "أسباب المطابقة",
+  },
+  onboarding: {
+    title: "إعداد ملف منشأتك",
+    subtitle: "خطوتان فقط لنبدأ بإرسال العطاءات المطابقة لك.",
+    sector: "نوع النشاط",
+    sectors: {
+      contracting: "مقاولات",
+      supplies: "توريدات",
+      consulting: "استشارات هندسية",
+      services: "خدمات",
+    },
+    classificationFields: "حقول التصنيف (مثال: أبنية، طرق)",
+    classificationGrade: "الدرجة (1–6، للمقاولين)",
+    governorates: "المحافظات المهتمّ بها (اتركها فارغة لكل المملكة)",
+    includeKeywords: "كلمات مفتاحية للتضمين",
+    excludeKeywords: "كلمات مفتاحية للاستبعاد",
+    digestEmail: "بريد استلام الملخّص اليومي",
+    name: "اسم المنشأة",
+    next: "التالي",
+    back: "السابق",
+    submit: "ابدأ التجربة المجانية",
+    creating: "جارٍ الإنشاء…",
+    trialNote: "تجربة مجانية 14 يوماً — بدون بطاقة.",
+    addItem: "إضافة",
+  },
+  common: {
+    required: "هذا الحقل مطلوب",
+  },
+} as const;

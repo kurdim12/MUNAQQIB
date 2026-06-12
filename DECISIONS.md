@@ -26,7 +26,17 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   - enums → `TEXT` + `CHECK`; `text[]` → JSON TEXT; `timestamptz` → ISO-8601 UTC TEXT;
     `gen_random_uuid()` → `DEFAULT (lower(hex(randomblob(16))))`.
 
-- **Persistence layer DONE.** `db.py` is now a D1-backed repository over a single
+- **Phase 1 web app started** (`apps/web`). Stack: **Next.js 15 (App Router) +
+  React 19 + TypeScript + Tailwind v3**, Arabic-first RTL (`<html dir="rtl" lang="ar">`,
+  Tajawal font). The web app reads/writes **D1 via the same Cloudflare REST API the
+  worker uses** (`src/lib/d1.ts` mirrors the Python `d1.py`) rather than a Workers
+  binding — this keeps the app deployable on Vercel/Node and reuses the one auth seam.
+  Every D1 read degrades to `[]` when unconfigured so `next build`/local dev work with
+  no creds. **Auth provider is still undecided**; until it lands, the "current org" is
+  resolved from an `org_id` cookie (set by onboarding) → `DEMO_ORG_ID` env → first org
+  in the DB. This is a temporary dev seam, flagged in code, to be replaced when auth is
+  chosen. First slice: RTL shell, D1 client + typed repo, dashboard reading `matches`,
+  and an onboarding wizard writing `orgs` + a 14-day `trial` subscription.
   `d1.execute` REST seam (`d1.py`), with R2 snapshot storage (`storage.py`, boto3,
   local fallback). Writes: `ensure_org`, `persist_tenders` (upsert-by-hash = the
   cross-run dedupe), `persist_matches`, `log_notification`, `update_source_status`
