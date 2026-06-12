@@ -79,12 +79,16 @@ docker build -t munaqqib-worker -f apps/worker/Dockerfile .
 Run it daily at **04:30 UTC (= 07:30 Asia/Amman; Jordan is permanently UTC+3)** on
 any of these. Set the §2 env vars on the host.
 
-**Railway — simplest:**
-1. New Project → Deploy from GitHub repo.
-2. Service settings → **Dockerfile path** `apps/worker/Dockerfile` (build context = repo root).
-3. Add the env vars.
-4. **Settings → Cron Schedule:** `30 4 * * *`. Railway starts the container on
-   schedule and stops it when the run exits.
+**Railway — simplest (recommended):** `railway.json` at the repo root already
+declares the Dockerfile build, the `30 4 * * *` cron, and `restartPolicyType: NEVER`
+(so the one-shot job doesn't restart-loop). So:
+1. Railway → **New Project → Deploy from GitHub repo** → pick this repo + branch.
+   It reads `railway.json` and builds `apps/worker/Dockerfile` automatically.
+2. **Variables** → add the worker env vars (§2): `CLOUDFLARE_ACCOUNT_ID`,
+   `CLOUDFLARE_API_TOKEN`, `D1_DATABASE_ID`, `RESEND_API_KEY`, `EMAIL_FROM`, and
+   (optional) `R2_*`, `TELEGRAM_*`, `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`.
+3. The cron is already set from `railway.json`. Use **Deploy → Run now** for the
+   first manual run and watch the logs.
 
 **Google Cloud Run Job + Cloud Scheduler — cheapest (pay-per-run, ~free for a daily job):**
 1. Build & push the image to Artifact Registry.
