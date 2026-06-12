@@ -3,6 +3,7 @@ import { Tajawal } from "next/font/google";
 
 import { getSessionSafe } from "@/auth";
 import { signOutAction } from "@/app/signin/actions";
+import { isAdminEmail } from "@/lib/admin";
 import { t } from "@/lib/strings";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSessionSafe();
+  const isAdmin = isAdminEmail(session?.user?.email);
 
   return (
     <html lang="ar" dir="rtl" className={arabic.variable}>
@@ -42,6 +44,11 @@ export default async function RootLayout({
               <a href="/onboarding" className="hover:text-brand">
                 {t.nav.onboarding}
               </a>
+              {isAdmin && (
+                <a href="/admin" className="font-medium text-amber-600 hover:text-amber-700">
+                  {t.nav.admin}
+                </a>
+              )}
               {session?.user ? (
                 <form action={signOutAction} className="flex items-center gap-2">
                   <span className="hidden text-xs text-slate-400 sm:inline" dir="ltr">

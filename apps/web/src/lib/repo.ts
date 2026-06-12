@@ -247,6 +247,56 @@ export async function requestUpgrade(
   );
 }
 
+export interface PendingSub {
+  org_id: string;
+  org_name: string;
+  tier: Tier;
+  cliq_reference: string | null;
+  digest_emails: string[];
+  requested_at: string;
+}
+
+/** Subscriptions awaiting CliQ confirmation, oldest first (admin queue). */
+export async function listPendingSubscriptions(): Promise<PendingSub[]> {
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT s.org_id, o.name AS org_name, s.tier, s.cliq_reference,
+            o.digest_emails, s.created_at AS requested_at
+     FROM subscriptions s JOIN orgs o ON o.id = s.org_id
+     WHERE s.status = 'pending_payment'
+     ORDER BY s.created_at ASC`,
+  );
+  return rows.map((r) => ({
+    org_id: String(r.org_id),
+    org_name: String(r.org_name),
+    tier: r.tier as Tier,
+    cliq_reference: r.cliq_reference ? String(r.cliq_reference) : null,
+    digest_emails: jsonArray(r.digest_emails),
+    requested_at: String(r.requested_at),
+  }));
+}
+
+/**
+ * Confirm a CliQ payment: activate the subscription for one month and stamp the
+ * admin who did it. Guarded to pending_payment so it can't reactivate a cancelled
+ * row. Returns true when a row was actually activated.
+ */
+export async function activateSubscription(
+  orgId: string,
+  adminUserId: string,
+): Promise<boolean> {
+  const periodEnd = new Date(
+    Date.now() + 30 * 24 * 60 * 60 * 1000,
+  ).toISOString();
+  const row = await executeOne<{ org_id: string }>(
+    `UPDATE subscriptions
+     SET status = 'active', current_period_end = ?, activated_by = ?
+     WHERE org_id = ? AND status = 'pending_payment'
+     RETURNING org_id`,
+    [periodEnd, adminUserId, orgId],
+  );
+  return row != null;
+}
+
 // ---------------------------------------------------------------------------
 // Match actions (save / dismiss)
 // ---------------------------------------------------------------------------

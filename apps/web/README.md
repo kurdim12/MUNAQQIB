@@ -47,11 +47,18 @@ user's org via `org_members`; with no `AUTH_SECRET` set it degrades to the dev
 seam (cookie → `DEMO_ORG_ID` → first org) so build/CI/dev run secret-free. Set
 `AUTH_SECRET` + `AUTH_RESEND_KEY` (or `RESEND_API_KEY`) to enable real login.
 
+## Admin
+
+`/admin` (platform staff in `ADMIN_EMAILS`) lists `pending_payment` subscriptions
+and activates them after a CliQ transfer — `activateSubscription` flips to `active`,
+sets `current_period_end` (+30d) + `activated_by`, idempotent via a guarded
+`RETURNING`. Page + action re-check `isAdminEmail`.
+
 ## Open items
 
-- **Admin activation.** Flipping `pending_payment → active` after a CliQ transfer
-  needs an admin role/console (org_members.role). Next billing step.
-- Tier gating (limit features by `subscriptions.tier`) and the analyzer UI.
+- **Tier gating** — limit features by `subscriptions.tier` (e.g. analyzer = pro+).
+- Renewals/expiry handling and a real CliQ webhook (manual confirmation for now).
+- The analyzer UI (Phase 1+ feature).
 
 All timestamps render in `Asia/Amman`; all money in JOD; numbers use Latin
 digits with Arabic words for consistency (see `DECISIONS.md`).

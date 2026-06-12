@@ -26,6 +26,16 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   - enums → `TEXT` + `CHECK`; `text[]` → JSON TEXT; `timestamptz` → ISO-8601 UTC TEXT;
     `gen_random_uuid()` → `DEFAULT (lower(hex(randomblob(16))))`.
 
+- **Billing loop closed — admin CliQ activation.** Platform admins (emails in the
+  new `ADMIN_EMAILS` env, `lib/admin.ts`, unit-tested) get an `/admin` queue of
+  `pending_payment` subscriptions (`listPendingSubscriptions`, org + cliq_reference).
+  "تفعيل" calls `activateSubscription(orgId, adminUserId)` — a guarded
+  `UPDATE ... WHERE status='pending_payment' RETURNING` that flips to `active`, sets
+  `current_period_end` (+30d) and `activated_by`; idempotent (a second click hits no
+  row). Page + action both re-check `isAdminEmail`; non-admins see "غير مصرّح". SQL
+  validated against live D1 and cleaned up. This is platform-admin (env list), not an
+  org role. **Remaining billing work:** tier gating by `subscriptions.tier`, renewals/
+  expiry, and a real CliQ webhook (still manual confirmation for now).
 - **Auth provider DECIDED + implemented: Auth.js (NextAuth v5) + Resend.** Owner
   chose passwordless **email magic-links via Resend** (reuses the existing Resend
   account; no SMS/extra vendor), **JWT sessions**, no vendor lock-in. Auth.js tables
