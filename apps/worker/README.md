@@ -49,9 +49,10 @@ Phase 2 needs the system packages `tesseract-ocr` + `tesseract-ocr-ara`.
 python -m pytest
 
 # Pipeline stages (CLI)
-python -m pipeline.run scrape                 # fetch + snapshot + parse enabled sources
-python -m pipeline.run digest --dry-run       # full pipeline, render digest, don't send
+python -m pipeline.run scrape                 # fetch + snapshot + parse; update source status
+python -m pipeline.run digest --dry-run       # scrape→persist→match→render digest (don't send)
 python -m pipeline.run deadlines --dry-run    # T-7/T-3/T-1 reminders, don't send
+python -m pipeline.run sweep                  # mark past-deadline open tenders closed
 
 # Capture a scraper fixture (rule §3) once a network path to the source exists
 python -m pipeline.scrapers.gtd --snapshot
@@ -68,6 +69,15 @@ uvicorn main:app --host 0.0.0.0 --port 8000
 | scrape    | every 2h, 07:00–19:00     | `POST /run/scrape`    |
 | digest    | 07:30                     | `POST /run/digest`    |
 | deadlines | 08:00                     | `POST /run/deadlines` |
+| sweep     | 00:30                     | `POST /run/sweep`     |
+
+## Datastore
+
+Cloudflare D1 (SQLite) via REST + R2 for snapshots — see `infra/cloudflare/d1/0001_init.sql`
+and DECISIONS.md. Data access is the `db.py` repository over the single `d1.execute`
+seam; every write degrades to a no-op when D1 is unconfigured, so the pipeline and
+tests run fully offline. Set `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`,
+`D1_DATABASE_ID` (+ R2 vars) to persist for real.
 
 ## Status / next actions
 

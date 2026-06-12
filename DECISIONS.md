@@ -26,11 +26,17 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   - enums → `TEXT` + `CHECK`; `text[]` → JSON TEXT; `timestamptz` → ISO-8601 UTC TEXT;
     `gen_random_uuid()` → `DEFAULT (lower(hex(randomblob(16))))`.
 
-- **Follow-up (not yet done):** the worker's `db.py` still targets the Supabase
-  client. It needs a D1 data layer (Cloudflare D1 REST API: account id + API token +
-  database id, or a Workers binding) plus an R2 helper to replace `upload_snapshot`.
-  Phase 0's pure pipeline (normalize/dedupe/match/digest) is unaffected and its tests
-  pass; only the persistence/snapshot IO is pending the D1/R2 rewrite.
+- **Persistence layer DONE.** `db.py` is now a D1-backed repository over a single
+  `d1.execute` REST seam (`d1.py`), with R2 snapshot storage (`storage.py`, boto3,
+  local fallback). Writes: `ensure_org`, `persist_tenders` (upsert-by-hash = the
+  cross-run dedupe), `persist_matches`, `log_notification`, `update_source_status`
+  (alerts the founder at ≥2 consecutive failures), `sweep_closed_tenders`. The
+  orchestrator persists inside `run_digest`; a new `sweep` stage/endpoint runs the
+  closing sweep. Every write no-ops when D1 is unconfigured, so the offline pipeline
+  and the 55-test suite still pass. The exact repository SQL (ON CONFLICT upserts,
+  RETURNING, the match↔tender join, the sweep) was validated against the live D1
+  database and the test rows cleaned up. Snapshot IO moved from Supabase Storage to
+  R2. **Auth provider for Phase-1 multi-tenancy is still open.**
 
 ## 2026-06-12 · Phase 0 bootstrap
 

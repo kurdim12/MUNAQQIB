@@ -46,6 +46,10 @@ def load_partner_profile(path: str | None = None) -> OrgProfile:
 
 
 def scrape_all() -> list[RawTender]:
+    from db import update_source_status
+
+    from .transports.telegram import ops_alert
+
     raw: list[RawTender] = []
     for cls in SCRAPERS:
         scraper = cls()
@@ -53,11 +57,15 @@ def scrape_all() -> list[RawTender]:
             rows = scraper.run()
             logger.info("[%s] scraped %d rows", scraper.source_id, len(rows))
             raw.extend(rows)
+            update_source_status(scraper.source_id, ok=True)
         except Exception as exc:  # noqa: BLE001
             logger.error("[%s] run failed: %s", scraper.source_id, exc)
-            from .transports.telegram import ops_alert
-
-            ops_alert(f"⚠️ منقّب: فشل مصدر {scraper.source_id} — {exc}")
+            failures = update_source_status(scraper.source_id, ok=False)
+            # Alert the founder once the source crosses the failure threshold (§7).
+            if failures >= 2:
+                ops_alert(
+                    f"⚠️ منقّب: مصدر {scraper.source_id} فشل {failures} مرات متتالية — {exc}"
+                )
     return raw
 
 
@@ -69,10 +77,19 @@ def normalize_and_dedupe(raw: list[RawTender]) -> list[Tender]:
 
 
 def run_digest(dry_run: bool = False) -> None:
+    from db import ensure_org, persist_matches, persist_tenders
+
     org = load_partner_profile()
+    org_id = ensure_org(org)  # no-op offline; persists the partner row on D1
     raw = scrape_all()
     tenders = normalize_and_dedupe(raw)
+
+    # Persist before sending — upsert-by-hash is the cross-run dedupe, and matches
+    # feed the (Phase 1) dashboard. Degrades to no-ops when D1 is unconfigured.
+    hash_to_id = persist_tenders(tenders)
     results = match_all(tenders, org)
+    persist_matches(org_id, results, hash_to_id)
+
     by_hash = {t.hash: t for t in tenders}
     items = [
         DigestItem(tender=by_hash[r.tender_hash], score=r.score)
@@ -81,6 +98,14 @@ def run_digest(dry_run: bool = False) -> None:
     ]
     logger.info("Matched %d/%d tenders for %s", len(items), len(tenders), org.name)
     send_digest(org, items, dry_run=dry_run)
+
+
+def run_sweep() -> None:
+    """Daily closing-status sweep: mark past-deadline open tenders as closed (§7)."""
+    from db import sweep_closed_tenders
+
+    n = sweep_closed_tenders()
+    logger.info("Closing sweep: marked %d tenders closed", n)
 
 
 def run_deadlines(dry_run: bool = False) -> None:
@@ -99,7 +124,7 @@ def run_deadlines(dry_run: bool = False) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="MUNAQQIB Phase 0 pipeline")
-    parser.add_argument("stage", choices=["scrape", "digest", "deadlines"])
+    parser.add_argument("stage", choices=["scrape", "digest", "deadlines", "sweep"])
     parser.add_argument("--dry-run", action="store_true", help="render/log, don't send")
     args = parser.parse_args()
 
@@ -110,6 +135,8 @@ def main() -> None:
         run_digest(dry_run=args.dry_run)
     elif args.stage == "deadlines":
         run_deadlines(dry_run=args.dry_run)
+    elif args.stage == "sweep":
+        run_sweep()
 
 
 if __name__ == "__main__":

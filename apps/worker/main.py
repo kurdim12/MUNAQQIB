@@ -16,7 +16,7 @@ import logging
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 
 from config import settings
-from pipeline.run import run_deadlines, run_digest, scrape_all
+from pipeline.run import run_deadlines, run_digest, run_sweep, scrape_all
 
 logging.basicConfig(level=settings.log_level)
 logger = logging.getLogger("worker")
@@ -26,10 +26,14 @@ app = FastAPI(title="MUNAQQIB Worker", version="0.1.0")
 
 @app.get("/health")
 def health() -> dict:
+    import d1
+    import storage
+
     return {
         "status": "ok",
         "tz": settings.tz,
-        "supabase_configured": bool(settings.supabase_url),
+        "d1_configured": d1.is_configured(),
+        "r2_configured": storage.is_configured(),
         "resend_configured": bool(settings.resend_api_key),
     }
 
@@ -44,6 +48,8 @@ def run_stage(stage: str, background: BackgroundTasks, dry_run: bool = False) ->
         background.add_task(run_digest, dry_run)
     elif stage == "deadlines":
         background.add_task(run_deadlines, dry_run)
+    elif stage == "sweep":
+        background.add_task(run_sweep)
     else:
         raise HTTPException(status_code=404, detail=f"unknown stage: {stage}")
     return {"accepted": True, "stage": stage, "dry_run": dry_run}

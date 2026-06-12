@@ -15,6 +15,10 @@ lxml==5.3.0
 # playwright==1.49.1
 
 # --- Data / DB ---
+# Primary datastore is Cloudflare D1 via REST (httpx, above). R2 (S3-compatible)
+# object storage for snapshots + كراسات uses boto3.
+boto3==1.35.99
+# Supabase retained for a possible Auth-only role in Phase 1 (not the datastore).
 supabase==2.11.0
 
 # --- Embeddings (offline, Arabic-capable, 384-dim). Heavy; optional at runtime. ---

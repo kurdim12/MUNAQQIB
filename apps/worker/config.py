@@ -18,7 +18,18 @@ class Settings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
-    # --- Supabase ---
+    # --- Database: Cloudflare D1 (DECISIONS.md 2026-06-12) ---
+    cloudflare_account_id: str = ""
+    cloudflare_api_token: str = ""
+    d1_database_id: str = ""
+
+    # --- Cloudflare R2 (snapshots + uploaded كراسات) ---
+    r2_bucket: str = "munaqqib-snapshots"
+    r2_access_key_id: str = ""
+    r2_secret_access_key: str = ""
+    r2_endpoint: str = ""
+
+    # --- Supabase (legacy / optional; not the primary datastore) ---
     supabase_url: str = ""
     supabase_anon_key: str = ""
     supabase_service_role_key: str = ""
