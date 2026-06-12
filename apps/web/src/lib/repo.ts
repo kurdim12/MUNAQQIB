@@ -368,6 +368,33 @@ export async function getAnalysis(
 }
 
 // ---------------------------------------------------------------------------
+// Layer 1 — source health (operator monitoring)
+// ---------------------------------------------------------------------------
+export interface SourceHealth {
+  id: string;
+  base_url: string | null;
+  enabled: boolean;
+  last_run_at: string | null;
+  last_ok_at: string | null;
+  consecutive_failures: number;
+}
+
+export async function getSources(): Promise<SourceHealth[]> {
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT id, base_url, enabled, last_run_at, last_ok_at, consecutive_failures
+     FROM sources ORDER BY id`,
+  );
+  return rows.map((r) => ({
+    id: String(r.id),
+    base_url: r.base_url ? String(r.base_url) : null,
+    enabled: Number(r.enabled) === 1,
+    last_run_at: r.last_run_at ? String(r.last_run_at) : null,
+    last_ok_at: r.last_ok_at ? String(r.last_ok_at) : null,
+    consecutive_failures: Number(r.consecutive_failures ?? 0),
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Match actions (save / dismiss)
 // ---------------------------------------------------------------------------
 export async function setMatchSaved(

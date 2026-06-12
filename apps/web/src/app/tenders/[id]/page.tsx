@@ -3,6 +3,7 @@ import { Paywall } from "@/components/Paywall";
 import { eligibilityTone } from "@/lib/analysis";
 import { can } from "@/lib/entitlements";
 import { deadlineLabel, formatAmmanDate, formatJod, scorePct } from "@/lib/format";
+import { opportunityQuality, qualityTone } from "@/lib/quality";
 import {
   getAnalysis,
   getCurrentOrgId,
@@ -68,7 +69,16 @@ export default async function OpportunityReport({
       {/* Hero */}
       <header className="panel overflow-hidden">
         <div className="border-b border-line bg-sand/40 px-6 py-6">
-          <p className="eyebrow">تقرير الفرصة · {tender.category ?? "عطاء حكومي"}</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="eyebrow">تقرير الفرصة · {tender.category ?? "عطاء حكومي"}</p>
+            <span
+              className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold ${qualityTone(
+                opportunityQuality(tender).tier,
+              )}`}
+            >
+              {opportunityQuality(tender).label}
+            </span>
+          </div>
           <h1 className="mt-2 font-serif text-2xl font-bold leading-snug text-ink sm:text-3xl">
             {tender.title}
           </h1>

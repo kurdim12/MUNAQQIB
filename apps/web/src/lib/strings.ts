@@ -8,6 +8,7 @@ export const t = {
     pricing: "الأسعار",
     onboarding: "ملف المنشأة",
     admin: "الإدارة",
+    operations: "العمليات",
     signIn: "تسجيل الدخول",
     signOut: "خروج",
   },

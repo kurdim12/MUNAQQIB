@@ -58,12 +58,20 @@ export default async function RootLayout({
                 {t.nav.pricing}
               </a>
               {isAdmin && (
-                <a
-                  href="/admin"
-                  className="rounded-md px-3 py-2 font-medium text-amber-700 transition hover:bg-amber-50"
-                >
-                  {t.nav.admin}
-                </a>
+                <>
+                  <a
+                    href="/operations"
+                    className="rounded-md px-3 py-2 font-medium text-amber-700 transition hover:bg-amber-50"
+                  >
+                    {t.nav.operations}
+                  </a>
+                  <a
+                    href="/admin"
+                    className="rounded-md px-3 py-2 font-medium text-amber-700 transition hover:bg-amber-50"
+                  >
+                    {t.nav.admin}
+                  </a>
+                </>
               )}
               {session?.user ? (
                 <form action={signOutAction} className="flex items-center gap-2 ps-2">

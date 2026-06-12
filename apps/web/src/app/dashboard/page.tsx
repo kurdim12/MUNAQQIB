@@ -3,6 +3,7 @@ import { Paywall } from "@/components/Paywall";
 import { TrialBanner } from "@/components/TrialBanner";
 import { can, hasAccess } from "@/lib/entitlements";
 import { deadlineLabel, scorePct } from "@/lib/format";
+import { opportunityQuality } from "@/lib/quality";
 import {
   getCurrentOrgId,
   getMatchedTenders,
@@ -41,7 +42,11 @@ export default async function CommandCenter({
   const canSaved = !configured || can(sub, "saved");
   const showList = access && (!savedOnly || canSaved);
 
-  const all = orgId && showList ? await getMatchedTenders(orgId, { savedOnly }) : [];
+  const raw = orgId && showList ? await getMatchedTenders(orgId, { savedOnly }) : [];
+  // Layer 6: rank the feed by opportunity quality (highest opportunity first).
+  const all = [...raw].sort(
+    (a, b) => opportunityQuality(b).value - opportunityQuality(a).value,
+  );
   const categories = Array.from(new Set(all.map((x) => x.category).filter(Boolean))) as string[];
   const tenders = cat ? all.filter((x) => x.category === cat) : all;
   const base = savedOnly ? "/dashboard?view=saved" : "/dashboard";
@@ -52,7 +57,7 @@ export default async function CommandCenter({
     const d = x.closing_at ? (new Date(x.closing_at).getTime() - now) / 86_400_000 : 99;
     return d >= 0 && d <= 7;
   });
-  const highConf = all.filter((x) => x.score >= 0.85).length;
+  const highQuality = all.filter((x) => opportunityQuality(x).tier === "high").length;
   const top = all.reduce((m, x) => Math.max(m, x.score), 0);
   const deadlines = [...all]
     .filter((x) => x.closing_at && new Date(x.closing_at).getTime() >= now)
@@ -86,7 +91,7 @@ export default async function CommandCenter({
             {all.length > 0 && (
               <div className="mt-6 grid grid-cols-2 divide-line overflow-hidden rounded-xl border border-line bg-white sm:grid-cols-4 sm:divide-x sm:divide-x-reverse">
                 <Metric label="فرص مطابقة" value={String(all.length)} />
-                <Metric label="مطابقات عالية الثقة" value={String(highConf)} accent="green" />
+                <Metric label="فرص عالية الجودة" value={String(highQuality)} accent="green" />
                 <Metric label="مواعيد خلال الأسبوع" value={String(soon.length)} accent="amber" />
                 <Metric label="أعلى نسبة مطابقة" value={scorePct(top)} />
               </div>

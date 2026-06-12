@@ -1,6 +1,7 @@
 import { MatchActions } from "@/components/MatchActions";
 import type { MatchedTender } from "@/lib/repo";
 import { deadlineLabel, formatAmmanDate, formatJod, scorePct } from "@/lib/format";
+import { opportunityQuality, qualityTone } from "@/lib/quality";
 
 const REASON_LABELS: Record<string, string> = {
   keyword: "كلمة مفتاحية",
@@ -42,6 +43,7 @@ export function OpportunityRow({
   canSave?: boolean;
 }) {
   const reasons = Object.keys(tender.reasons).filter((k) => tender.reasons[k] > 0);
+  const quality = opportunityQuality(tender);
 
   return (
     <article className="group relative flex gap-4 px-4 py-4 transition hover:bg-sand/40 sm:px-5">
@@ -70,11 +72,16 @@ export function OpportunityRow({
               <p className="mt-0.5 truncate text-sm text-ink-muted">{tender.entity}</p>
             )}
           </a>
-          {tender.category && (
-            <span className="shrink-0 rounded-md bg-sand px-2 py-0.5 text-xs font-medium text-ink-soft">
-              {tender.category}
+          <div className="flex shrink-0 items-center gap-1.5">
+            <span className={`rounded-md px-2 py-0.5 text-xs font-semibold ${qualityTone(quality.tier)}`}>
+              {quality.label}
             </span>
-          )}
+            {tender.category && (
+              <span className="rounded-md bg-sand px-2 py-0.5 text-xs font-medium text-ink-soft">
+                {tender.category}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* meta line */}
