@@ -44,7 +44,10 @@ class Settings(BaseSettings):
 
     # --- Email (Resend) ---
     resend_api_key: str = ""
-    email_from: str = "digest@yourdomain"
+    # Resend's shared sender works with no domain verification (test mode delivers
+    # only to your Resend account email). Override with EMAIL_FROM=digest@yourdomain
+    # once that domain is verified in Resend, to send to anyone.
+    email_from: str = "onboarding@resend.dev"
     email_from_name: str = "منقّب"
     public_base_url: str = "https://app.yourdomain"
 
