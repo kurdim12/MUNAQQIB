@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import type { Tier } from "@/lib/billing";
-import { getCurrentOrgId, requestUpgrade } from "@/lib/repo";
+import { getCurrentOrgId, getSubscription, requestUpgrade } from "@/lib/repo";
 
 /**
  * Start an upgrade: generate a CliQ payment reference and flip the subscription
@@ -16,6 +16,12 @@ export async function requestUpgradeAction(formData: FormData) {
 
   const orgId = await getCurrentOrgId();
   if (!orgId) return;
+
+  // Don't downgrade an already-active subscriber into pending_payment (that would
+  // revoke their access). Active subs keep their plan; this is also what protects
+  // the demo org from breaking when someone clicks "upgrade".
+  const sub = await getSubscription(orgId);
+  if (sub?.status === "active") return;
 
   const reference = `MNQ-${tier.slice(0, 3).toUpperCase()}-${Date.now()
     .toString(36)

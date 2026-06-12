@@ -41,9 +41,6 @@ export default async function RootLayout({
               <a href="/pricing" className="hover:text-brand">
                 {t.nav.pricing}
               </a>
-              <a href="/onboarding" className="hover:text-brand">
-                {t.nav.onboarding}
-              </a>
               {isAdmin && (
                 <a href="/admin" className="font-medium text-amber-600 hover:text-amber-700">
                   {t.nav.admin}
