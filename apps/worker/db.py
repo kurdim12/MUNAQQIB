@@ -246,6 +246,88 @@ def persist_analysis(
 
 
 # ---------------------------------------------------------------------------
+# Analyzer producer (Layer 11) — drains queued analyses, persists results
+# ---------------------------------------------------------------------------
+def get_org_profile(org_id: str) -> "OrgProfile | None":
+    """Build an OrgProfile from the orgs row so the analyzer can judge eligibility
+    against the same target the matcher used. Returns None when the org is absent
+    (or D1 is unconfigured)."""
+    rows = d1.execute(
+        """
+        SELECT id, name, sector, classification_fields, classification_grade,
+               supply_categories, governorates, min_value_jod, max_value_jod,
+               include_keywords, exclude_keywords, digest_emails, telegram_chat_id
+        FROM orgs WHERE id = ?
+        """,
+        [org_id],
+    )
+    if not rows:
+        return None
+    r = rows[0]
+
+    def _arr(v) -> list[str]:
+        try:
+            return json.loads(v) if v else []
+        except (TypeError, ValueError):
+            return []
+
+    return OrgProfile(
+        org_id=r["id"],
+        name=r["name"],
+        sector=r["sector"],
+        classification_fields=_arr(r.get("classification_fields")),
+        classification_grade=r.get("classification_grade"),
+        supply_categories=_arr(r.get("supply_categories")),
+        governorates=_arr(r.get("governorates")),
+        min_value_jod=r.get("min_value_jod"),
+        max_value_jod=r.get("max_value_jod"),
+        include_keywords=_arr(r.get("include_keywords")),
+        exclude_keywords=_arr(r.get("exclude_keywords")),
+        digest_emails=_arr(r.get("digest_emails")),
+        telegram_chat_id=r.get("telegram_chat_id"),
+    )
+
+
+def claim_queued_analyses(limit: int = 5) -> list[dict]:
+    """Return up to `limit` queued analyses joined with their tender, oldest first.
+    The producer is the only writer of these rows, so a simple SELECT is a safe
+    claim for the single daily worker (no concurrent drainers in v1)."""
+    return d1.execute(
+        """
+        SELECT a.id AS analysis_id, a.org_id, a.tender_id,
+               t.title AS tender_title, t.entity AS tender_entity, t.url AS tender_url
+        FROM analyses a
+        JOIN tenders t ON t.id = a.tender_id
+        WHERE a.status = 'queued'
+        ORDER BY a.created_at ASC
+        LIMIT ?
+        """,
+        [limit],
+    )
+
+
+def update_analysis(
+    analysis_id: str,
+    status: str,
+    brief: "AnalyzerBrief | None",
+    pages: int,
+    cost_usd: float,
+    file_path: str | None = None,
+) -> None:
+    """Finalize a queued analyses row in place (done | failed)."""
+    result = brief.model_dump_json() if brief is not None else None
+    d1.execute(
+        """
+        UPDATE analyses
+        SET status = ?, result = ?, pages = ?, cost_usd = ?,
+            file_path = COALESCE(?, file_path)
+        WHERE id = ?
+        """,
+        [status, result, pages, cost_usd, file_path, analysis_id],
+    )
+
+
+# ---------------------------------------------------------------------------
 # Subscription lifecycle (Phase 1) — expire active subs past their period end
 # ---------------------------------------------------------------------------
 def expire_subscriptions() -> int:

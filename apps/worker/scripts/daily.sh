@@ -5,4 +5,5 @@ set -eu
 
 python -m pipeline.run digest      # scrape → normalize → dedupe → match → email
 python -m pipeline.run deadlines   # Telegram deadline alerts
+python -m pipeline.run analyze     # drain queued كرّاسة analyses (Layer 11)
 python -m pipeline.run sweep       # close past tenders + expire lapsed subscriptions

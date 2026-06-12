@@ -125,10 +125,22 @@ def run_deadlines(dry_run: bool = False) -> None:
     send_deadline_alerts(org, matched, dry_run=dry_run)
 
 
+def run_analyze_stage(limit: int = 5) -> None:
+    """Drain the analyzer queue (Layer 11). Lazy import keeps the LLM/IO deps out
+    of the lighter scrape/digest paths."""
+    from .analyze_run import run_analyze
+
+    tally = run_analyze(limit=limit)
+    logger.info("Analyzer drain: %s", tally or "queue empty")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="MUNAQQIB Phase 0 pipeline")
-    parser.add_argument("stage", choices=["scrape", "digest", "deadlines", "sweep"])
+    parser.add_argument(
+        "stage", choices=["scrape", "digest", "deadlines", "sweep", "analyze"]
+    )
     parser.add_argument("--dry-run", action="store_true", help="render/log, don't send")
+    parser.add_argument("--limit", type=int, default=5, help="analyze: max docs to drain")
     args = parser.parse_args()
 
     if args.stage == "scrape":
@@ -140,6 +152,8 @@ def main() -> None:
         run_deadlines(dry_run=args.dry_run)
     elif args.stage == "sweep":
         run_sweep()
+    elif args.stage == "analyze":
+        run_analyze_stage(limit=args.limit)
 
 
 if __name__ == "__main__":

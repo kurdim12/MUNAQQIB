@@ -46,7 +46,7 @@ Anthropic + OpenRouter   → analyzer (sonnet) + cheap slots
 | 8 | Digest Generation | ✅ `worker/pipeline/digest.py` (insight-framed) |
 | 9 | Notification | ✅ `worker/pipeline/notify.py` (Telegram) |
 | 10 | **Watchlist** | ✅ `/watchlist` — monitors saved opps (status/deadline/report) |
-| 11 | Document Intelligence | ✅ analyzer core (`worker/pipeline/analyze.py`, ~0.05 JOD/doc) + **war-room UX** + enqueue. Live doc-fetch = blocked. |
+| 11 | Document Intelligence | ✅ analyzer core (`worker/pipeline/analyze.py`, ~0.05 JOD/doc) + **war-room UX** + enqueue + **producer stage** (`analyze_run.py` drains the queue → persists; reader-proxy doc-fetch, in `daily.sh`). Needs LLM keys to run live. |
 | 12 | Competitor Intelligence | ⬜ needs award data (Phase 2) |
 | 13 | **Learning** | ✅ `web/lib/learning.ts` — save/dismiss → category affinity → personalized ranking, tested |
 
@@ -125,8 +125,10 @@ real, relevant data.
 1. **Operate it**: worker secrets on Railway → first real digest → Resend domain.
 2. ~~Unblock GTD~~ ✅ **done** — GTD is live via reader-proxy; parser + fixture +
    tests committed, 5 current works tenders seeded into the demo.
-3. **Analyzer producer**: a `run_analyze` worker stage that drains
-   `analyses.status='queued'`, fetches the doc, runs `analyze_document`, persists.
+3. ~~Analyzer producer~~ ✅ **done** — `pipeline/analyze_run.py` drains
+   `analyses.status='queued'`, fetches the doc (reader-proxy fallback), runs
+   `analyze_document`, persists in place; wired into `daily.sh`. Set
+   `ANTHROPIC_API_KEY` + `OPENROUTER_API_KEY` on the worker to run it live.
 4. **Phase 2 data**: scrape award results → populate L7/L12 (the real moat).
 
 ---
