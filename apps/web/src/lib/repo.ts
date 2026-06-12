@@ -304,9 +304,12 @@ export interface TenderBasics {
   tender_id: string;
   title: string;
   entity: string | null;
+  category: string | null;
   url: string;
   closing_at: string | null;
   doc_price_jod: number | null;
+  score: number;
+  reasons: Record<string, number>;
 }
 
 export interface TenderAnalysis {
@@ -322,7 +325,8 @@ export async function getTenderForOrg(
   tenderId: string,
 ): Promise<TenderBasics | null> {
   const row = await executeOne<Record<string, unknown>>(
-    `SELECT t.id AS tender_id, t.title, t.entity, t.url, t.closing_at, t.doc_price_jod
+    `SELECT t.id AS tender_id, t.title, t.entity, t.category, t.url, t.closing_at,
+            t.doc_price_jod, m.score, m.reasons
      FROM tenders t JOIN matches m ON m.tender_id = t.id
      WHERE m.org_id = ? AND t.id = ? AND m.dismissed = 0
      LIMIT 1`,
@@ -333,9 +337,12 @@ export async function getTenderForOrg(
     tender_id: String(row.tender_id),
     title: String(row.title),
     entity: row.entity ? String(row.entity) : null,
+    category: row.category ? String(row.category) : null,
     url: String(row.url),
     closing_at: row.closing_at ? String(row.closing_at) : null,
     doc_price_jod: row.doc_price_jod != null ? Number(row.doc_price_jod) : null,
+    score: row.score != null ? Number(row.score) : 0,
+    reasons: jsonObject(row.reasons),
   };
 }
 

@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #faf8f4; /* Petra sandstone paper */
+  --foreground: #1c1917; /* warm ink */
 }
 
 html {
@@ -15,39 +15,42 @@ html {
 
 body {
   background:
-    radial-gradient(60rem 40rem at 110% -10%, rgb(204 251 241 / 0.5), transparent 60%),
-    radial-gradient(50rem 40rem at -10% 0%, rgb(240 253 250 / 0.7), transparent 55%),
+    linear-gradient(180deg, #fbfaf7 0%, var(--background) 38%),
     var(--background);
   color: var(--foreground);
   min-height: 100vh;
 }
 
-/* Numerals stay readable LTR inside the RTL flow. */
+/* Tabular, LTR numerals inside the RTL flow. */
 .nums {
   direction: ltr;
   unicode-bidi: embed;
   display: inline-block;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 ::selection {
-  background: #99f6e4;
-  color: #134e4a;
+  background: #d6cdbd;
+  color: #1c1917;
 }
 
-/* Tidy, subtle scrollbar. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #d6cdbd transparent;
 }
 
 @layer components {
-  .card {
-    @apply rounded-2xl border border-slate-200/70 bg-white shadow-card;
+  .panel {
+    @apply rounded-xl border border-line bg-white;
   }
-  .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl bg-brand px-5 py-2.5 font-semibold text-white transition hover:bg-brand-dark active:scale-[0.98];
+  .btn-ink {
+    @apply inline-flex items-center justify-center rounded-lg bg-ink px-5 py-2.5 font-semibold text-paper transition hover:bg-ink-soft active:scale-[0.99];
   }
-  .btn-ghost {
-    @apply inline-flex items-center justify-center rounded-xl border border-slate-300 px-5 py-2.5 font-semibold text-slate-700 transition hover:border-brand hover:text-brand;
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-lg border border-line px-5 py-2.5 font-semibold text-ink transition hover:border-ink/40 hover:bg-sand/50;
+  }
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted;
   }
 }

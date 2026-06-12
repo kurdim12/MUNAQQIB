@@ -8,9 +8,17 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-arabic)", "system-ui", "sans-serif"],
+        // Editorial Arabic serif for headlines — evokes official tender documents.
+        serif: ["var(--font-amiri)", "Georgia", "serif"],
       },
       colors: {
-        // Teal brand scale (منقّب). `brand` = 700.
+        // V2 "Market Intelligence" palette — Petra sandstone + warm ink. Color is
+        // used semantically (green = qualified, amber = review, red = risk/urgent).
+        ink: { DEFAULT: "#1c1917", soft: "#44403c", muted: "#78716c" },
+        paper: "#faf8f4",
+        sand: "#efe9df",
+        line: "#e7e1d8",
+        // Teal kept for backward-compat with secondary screens; new surfaces use ink.
         brand: {
           50: "#f0fdfa",
           100: "#ccfbf1",

@@ -1,11 +1,12 @@
 /** Arabic-first UI copy. English is secondary and lives in code comments only. */
 export const t = {
   brand: "منقّب",
-  tagline: "كل عطاء بيناسب تصنيفك، بإيميل واحد نظيف كل صباح.",
+  tagline: "محلّلك الخاص للسوق — يرصد فرص العطاءات قبل منافسيك.",
   nav: {
-    dashboard: "العطاءات المطابقة",
+    dashboard: "مركز القيادة",
+    intelligence: "ذكاء السوق",
     pricing: "الأسعار",
-    onboarding: "إعداد الحساب",
+    onboarding: "ملف المنشأة",
     admin: "الإدارة",
     signIn: "تسجيل الدخول",
     signOut: "خروج",

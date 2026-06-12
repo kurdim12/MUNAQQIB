@@ -1,113 +1,92 @@
 import type { AnalyzerBrief } from "@/lib/analysis";
-import { eligibilityTone } from "@/lib/analysis";
 import { formatJod, scorePct } from "@/lib/format";
 
-function Field({ label, value, page }: { label: string; value: string; page?: number | null }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="panel p-5">
+      <h3 className="eyebrow mb-3">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Fact({ label, value, page }: { label: string; value: string; page?: number | null }) {
   return (
     <div>
-      <dt className="text-xs text-slate-400">{label}</dt>
-      <dd className="text-sm text-slate-800">
+      <dt className="text-xs text-ink-muted">{label}</dt>
+      <dd className="text-sm font-medium text-ink">
         {value}
-        {page ? <span className="mr-1 text-xs text-slate-400"> (ص {page})</span> : null}
+        {page ? <span className="ms-1 text-xs text-ink-muted">(ص {page})</span> : null}
       </dd>
     </div>
   );
 }
 
-/** Renders an AnalyzerBrief (CLAUDE.md §12.2) as the tender analysis panel. */
+/** The structured intelligence report for a tender (CLAUDE.md §12.2). */
 export function AnalysisBrief({ brief }: { brief: AnalyzerBrief }) {
   return (
-    <div className="space-y-6">
-      {/* Eligibility verdict */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="font-bold text-slate-900">قرار الأهلية</h2>
-          <span
-            className={`rounded-full px-3 py-1 text-sm font-medium ${eligibilityTone(brief.eligibility)}`}
-          >
-            {brief.eligibility}
-          </span>
-        </div>
-        {brief.eligibility_reasoning_ar && (
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            {brief.eligibility_reasoning_ar}
-          </p>
-        )}
-        <p className="mt-2 text-xs text-slate-400">
-          ثقة التحليل: {scorePct(brief.confidence)}
-        </p>
-      </div>
-
-      {/* Scope */}
+    <div className="space-y-5">
       {brief.scope_summary_ar && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-2 font-bold text-slate-900">نطاق العمل</h2>
-          <p className="text-sm leading-relaxed text-slate-700">{brief.scope_summary_ar}</p>
-        </div>
+        <Section title="نطاق العمل">
+          <p className="text-sm leading-relaxed text-ink-soft">{brief.scope_summary_ar}</p>
+        </Section>
       )}
 
-      {/* Key facts */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5">
-        <h2 className="mb-3 font-bold text-slate-900">الحقائق الأساسية</h2>
-        <dl className="grid grid-cols-2 gap-4">
+      <Section title="الحقائق الأساسية">
+        <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {brief.required_classification && (
-            <Field
-              label="التصنيف المطلوب"
-              value={brief.required_classification}
-              page={brief.classification_page}
-            />
+            <Fact label="التصنيف المطلوب" value={brief.required_classification} page={brief.classification_page} />
           )}
           {brief.bid_bond && (
-            <Field label="كفالة دخول العطاء" value={brief.bid_bond} page={brief.bond_page} />
+            <Fact label="كفالة دخول العطاء" value={brief.bid_bond} page={brief.bond_page} />
           )}
           {brief.performance_bond && (
-            <Field label="كفالة حسن التنفيذ" value={brief.performance_bond} />
+            <Fact label="كفالة حسن التنفيذ" value={brief.performance_bond} />
           )}
           {brief.doc_price_jod != null && (
-            <Field label="ثمن الكرّاسة" value={formatJod(brief.doc_price_jod)} />
+            <Fact label="ثمن الكرّاسة" value={formatJod(brief.doc_price_jod)} />
           )}
-          <Field label="جدول الكميات (BOQ)" value={brief.boq_present ? "متوفر" : "غير متوفر"} />
+          <Fact label="جدول الكميات (BOQ)" value={brief.boq_present ? "متوفّر" : "غير متوفّر"} />
         </dl>
-      </div>
+      </Section>
 
-      {/* Key dates */}
       {brief.key_dates.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 font-bold text-slate-900">التواريخ المهمة</h2>
-          <ul className="space-y-2 text-sm">
+        <Section title="الجدول الزمني">
+          <ul className="space-y-2.5 text-sm">
             {brief.key_dates.map((d, i) => (
-              <li key={i} className="flex justify-between border-b border-slate-50 pb-2">
-                <span className="text-slate-700">{d.label}</span>
-                <span className="text-slate-500">
-                  <span className="nums">{d.date}</span>
-                  {d.page ? <span className="mr-1 text-xs text-slate-400"> (ص {d.page})</span> : null}
+              <li key={i} className="flex items-center justify-between border-b border-line pb-2 last:border-0">
+                <span className="text-ink-soft">{d.label}</span>
+                <span className="text-ink-muted">
+                  <span className="nums font-medium text-ink">{d.date}</span>
+                  {d.page ? <span className="ms-1 text-xs">(ص {d.page})</span> : null}
                 </span>
               </li>
             ))}
           </ul>
-        </div>
+        </Section>
       )}
 
-      {/* Submission requirements */}
       {brief.submission_requirements.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 font-bold text-slate-900">متطلبات التقديم</h2>
-          <ul className="space-y-1.5 text-sm text-slate-700">
+        <Section title="الإجراءات المطلوبة قبل التقديم">
+          <ul className="space-y-2 text-sm text-ink-soft">
             {brief.submission_requirements.map((r, i) => (
               <li key={i} className="flex gap-2">
-                <span className="text-brand">•</span>
+                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border border-line text-[10px] text-ink-muted">
+                  {i + 1}
+                </span>
                 <span>{r}</span>
               </li>
             ))}
           </ul>
-        </div>
+        </Section>
       )}
 
-      {/* Risk flags */}
       {brief.risk_flags.length > 0 && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
-          <h2 className="mb-3 font-bold text-amber-900">تنبيهات ومخاطر</h2>
-          <ul className="space-y-1.5 text-sm text-amber-800">
+        <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-5">
+          <h3 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+            تحليل المخاطر
+          </h3>
+          <ul className="space-y-2 text-sm text-amber-900">
             {brief.risk_flags.map((r, i) => (
               <li key={i} className="flex gap-2">
                 <span>⚠️</span>
@@ -117,6 +96,10 @@ export function AnalysisBrief({ brief }: { brief: AnalyzerBrief }) {
           </ul>
         </div>
       )}
+
+      <p className="text-center text-xs text-ink-muted">
+        مستوى ثقة التحليل: <span className="font-medium text-ink">{scorePct(brief.confidence)}</span>
+      </p>
     </div>
   );
 }
