@@ -1,0 +1,10 @@
+# Ruff config for the worker. Default rule set (E/F) is plenty for Phase 0.
+line-length = 100
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "I"]   # pycodestyle errors, pyflakes, import sorting
+ignore = ["E501"]          # long Arabic/HTML strings in digest.py are fine
+
+[lint.per-file-ignores]
+"tests/*" = ["E402"]       # conftest path setup before imports

@@ -16,7 +16,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from models.schemas import OrgProfile, Tender
-
 from util.timez import days_left, fmt_date_ar, now_amman
 
 CLOSING_SOON_HOURS = 72

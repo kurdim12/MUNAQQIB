@@ -11,8 +11,8 @@ import logging
 from config import settings
 from db import log_notification
 from models.schemas import OrgProfile, Tender
-
 from util.timez import days_left, fmt_date_ar
+
 from .digest import DigestItem, build_digest
 from .transports.base import DeliveryResult
 from .transports.email import EmailTransport
