@@ -21,6 +21,7 @@ export const t = {
     governorate: "المحافظة",
     entity: "الجهة",
     details: "التفاصيل",
+    analysis: "التحليل",
     reasons: "أسباب المطابقة",
   },
   onboarding: {

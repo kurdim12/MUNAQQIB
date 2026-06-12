@@ -28,6 +28,7 @@ the dashboard). Set the vars (see root `.env.example`) to talk to the live DB.
 | `/onboarding` | client  | 2-step wizard → server action inserts `orgs` + a 14-day `trial` subscription, sets the `org_id` cookie, redirects to the dashboard |
 | `/dashboard`  | dynamic | Reads `matches ⋈ tenders` for the current org; cards (score, Amman closing + deadline label, JOD doc price, reasons) with **save/dismiss**; All vs ★المحفوظة tabs; trial/subscription banner |
 | `/pricing`    | dynamic | Tier cards (placeholder JOD prices); **CliQ upgrade request** → sets `pending_payment` + `cliq_reference`, shows transfer instructions |
+| `/tenders/[id]` | dynamic | **Analyzer panel** — renders the persisted `AnalyzerBrief` (eligibility, scope, facts, dates, requirements, risks); gated behind the `analyzer` (pro+) entitlement |
 
 ## Layout
 
@@ -63,7 +64,9 @@ paywalled without access; *saving* is pro+ (gated in UI and in `saveMatchAction`
 
 ## Open items
 
-- **Analyzer UI** — the كرّاسة-analysis feature (pro+); the Phase-1 differentiator.
+- **Analyzer end-to-end** — the UI (`/tenders/[id]`) and worker core both exist; what
+  remains is the producer: document fetch (fixture-first — gov doc links are network-
+  blocked) and the `run_analyze` queue stage that drains `analyses.status='queued'`.
 - Renewals/expiry handling and a real CliQ webhook (manual confirmation for now).
 
 All timestamps render in `Asia/Amman`; all money in JOD; numbers use Latin

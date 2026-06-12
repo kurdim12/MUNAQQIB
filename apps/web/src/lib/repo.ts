@@ -2,6 +2,8 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import { getSessionSafe } from "@/auth";
+import type { AnalyzerBrief } from "./analysis";
+import { parseAnalyzerBrief } from "./analysis";
 import type { Subscription, Tier } from "./billing";
 import { execute, executeOne, isConfigured } from "./d1";
 
@@ -295,6 +297,69 @@ export async function activateSubscription(
     [periodEnd, adminUserId, orgId],
   );
   return row != null;
+}
+
+// ---------------------------------------------------------------------------
+// Analyzer (Phase 1) — read the persisted AnalyzerBrief for a tender
+// ---------------------------------------------------------------------------
+export interface TenderBasics {
+  tender_id: string;
+  title: string;
+  entity: string | null;
+  url: string;
+  closing_at: string | null;
+  doc_price_jod: number | null;
+}
+
+export interface TenderAnalysis {
+  brief: AnalyzerBrief;
+  pages: number | null;
+  cost_usd: number | null;
+  created_at: string;
+}
+
+/** A tender the org actually matched (non-dismissed) — authorization + header. */
+export async function getTenderForOrg(
+  orgId: string,
+  tenderId: string,
+): Promise<TenderBasics | null> {
+  const row = await executeOne<Record<string, unknown>>(
+    `SELECT t.id AS tender_id, t.title, t.entity, t.url, t.closing_at, t.doc_price_jod
+     FROM tenders t JOIN matches m ON m.tender_id = t.id
+     WHERE m.org_id = ? AND t.id = ? AND m.dismissed = 0
+     LIMIT 1`,
+    [orgId, tenderId],
+  );
+  if (!row) return null;
+  return {
+    tender_id: String(row.tender_id),
+    title: String(row.title),
+    entity: row.entity ? String(row.entity) : null,
+    url: String(row.url),
+    closing_at: row.closing_at ? String(row.closing_at) : null,
+    doc_price_jod: row.doc_price_jod != null ? Number(row.doc_price_jod) : null,
+  };
+}
+
+/** Latest completed analysis for (org, tender), or null. */
+export async function getAnalysis(
+  orgId: string,
+  tenderId: string,
+): Promise<TenderAnalysis | null> {
+  const row = await executeOne<Record<string, unknown>>(
+    `SELECT result, pages, cost_usd, created_at FROM analyses
+     WHERE org_id = ? AND tender_id = ? AND status = 'done'
+     ORDER BY created_at DESC LIMIT 1`,
+    [orgId, tenderId],
+  );
+  const brief = row ? parseAnalyzerBrief(row.result as string) : null;
+  if (!row || !brief) return null;
+  return {
+    brief,
+    pages: row.pages != null ? Number(row.pages) : null,
+    cost_usd: row.cost_usd != null ? Number(row.cost_usd) : null,
+    created_at: String(row.created_at),
+  };
 }
 
 // ---------------------------------------------------------------------------

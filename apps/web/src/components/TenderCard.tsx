@@ -80,14 +80,22 @@ export function TenderCard({
       )}
 
       <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-        <a
-          href={tender.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm font-medium text-brand hover:text-brand-dark"
-        >
-          {t.dashboard.details} ←
-        </a>
+        <div className="flex items-center gap-4">
+          <a
+            href={`/tenders/${tender.tender_id}`}
+            className="text-sm font-medium text-brand hover:text-brand-dark"
+          >
+            {t.dashboard.analysis} ←
+          </a>
+          <a
+            href={tender.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-slate-400 hover:text-brand"
+          >
+            {t.dashboard.details}
+          </a>
+        </div>
         <MatchActions tenderId={tender.tender_id} saved={tender.saved} canSave={canSave} />
       </div>
     </article>

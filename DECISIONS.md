@@ -26,6 +26,16 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   - enums → `TEXT` + `CHECK`; `text[]` → JSON TEXT; `timestamptz` → ISO-8601 UTC TEXT;
     `gen_random_uuid()` → `DEFAULT (lower(hex(randomblob(16))))`.
 
+- **Analyzer panel (web) — the differentiator is now visible.** `/tenders/[id]`
+  renders the persisted `AnalyzerBrief`: eligibility verdict (color-coded badge),
+  scope, key facts (classification/bonds/fee/BOQ with page refs), key dates,
+  submission requirements, and risk flags. Gated behind the `analyzer` (pro+)
+  entitlement — non-pro sees an upgrade Paywall; pro with no analysis yet sees a
+  "queued" note. Data path: `lib/analysis.ts` (typed `AnalyzerBrief` +
+  `parseAnalyzerBrief`, unit-tested, mirrors the worker schema) →
+  `repo.getTenderForOrg` (authorized via `matches`) + `repo.getAnalysis`. Each match
+  card links to it ("التحليل"). SQL validated against live D1 with a seeded analysis
+  (brief round-trips, Arabic intact) then cleaned up; web suite 21→25.
 - **Analyzer core built (worker, the Phase-1 differentiator — CLAUDE.md §12.2).**
   `pipeline/analyze.py`: two-pass over the existing hybrid `llm_client` slots —
   **pass 1** (cheap extraction, DeepSeek via OpenRouter) pulls the factual fields;
