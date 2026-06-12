@@ -1,4 +1,5 @@
 import { AnalysisBrief } from "@/components/AnalysisBrief";
+import { IntelligenceEngine } from "@/components/IntelligenceEngine";
 import { Paywall } from "@/components/Paywall";
 import { eligibilityTone } from "@/lib/analysis";
 import { can } from "@/lib/entitlements";
@@ -151,13 +152,7 @@ export default async function OpportunityReport({
         ) : analysis ? (
           <AnalysisBrief brief={analysis.brief} />
         ) : (
-          <div className="panel flex flex-col items-center px-6 py-14 text-center">
-            <div className="text-3xl">🛰️</div>
-            <p className="mt-3 font-medium text-ink">محرّك الذكاء يجهّز تقرير هذه الفرصة</p>
-            <p className="mt-1 text-sm text-ink-muted">
-              يُحلَّل المستند آلياً ويظهر التقرير الكامل هنا فور اكتماله.
-            </p>
-          </div>
+          <IntelligenceEngine tenderId={id} />
         )}
       </div>
 

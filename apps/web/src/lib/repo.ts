@@ -368,6 +368,25 @@ export async function getAnalysis(
 }
 
 // ---------------------------------------------------------------------------
+// Layer 11 — analyzer producer (enqueue a document-intelligence job)
+// ---------------------------------------------------------------------------
+/** Queue an analysis for (org, tender) unless one is already queued/done. The
+ *  worker's analyze stage picks up status='queued' rows. */
+export async function enqueueAnalysis(orgId: string, tenderId: string): Promise<void> {
+  const existing = await executeOne<{ x: number }>(
+    `SELECT 1 AS x FROM analyses
+     WHERE org_id = ? AND tender_id = ? AND status IN ('queued', 'done') LIMIT 1`,
+    [orgId, tenderId],
+  );
+  if (existing) return;
+  await execute(
+    `INSERT INTO analyses (org_id, tender_id, file_path, status)
+     VALUES (?, ?, 'pending', 'queued')`,
+    [orgId, tenderId],
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Layer 10 — watchlist (saved opportunities the system monitors)
 // ---------------------------------------------------------------------------
 export interface WatchItem {
