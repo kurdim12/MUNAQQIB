@@ -5,6 +5,19 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
 
 ---
 
+## 2026-06-12 · Deployment + scheduling config (ready-to-ship)
+
+- **CI** (`.github/workflows/ci.yml`): lint + typecheck + tests + build on every
+  push/PR, no secrets — web (tsc/next lint/vitest/next build) and worker (ruff +
+  pytest on the slim `requirements-dev.txt`). **Scheduled digest**
+  (`.github/workflows/digest.yml`): cron **04:30 UTC = 07:30 Asia/Amman** (Jordan is
+  permanently UTC+3) + `workflow_dispatch`; runs `digest → deadlines → sweep` with
+  all secrets injected from Actions. **`DEPLOYMENT.md`** is the runbook: Vercel
+  (root `apps/web`) for the web app, GitHub Actions cron for the worker, and the
+  D1/R2/Resend/Telegram/LLM setup + secret placement. Web deploys serverless; the
+  worker cron installs the full `requirements.txt` (note: move to a container host
+  for scale). `ruff check` clean.
+
 ## 2026-06-12 · JONEPS scraper is LIVE (real parser against a committed snapshot)
 
 - **JONEPS is reachable and now scrapes for real.** The open-tenders list is a plain

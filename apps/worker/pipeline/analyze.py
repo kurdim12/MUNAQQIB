@@ -75,6 +75,7 @@ def extract_text(data: bytes, content_type: str | None = None) -> tuple[str, int
     if is_pdf:
         try:
             from io import BytesIO  # lazy
+
             from pypdf import PdfReader
 
             reader = PdfReader(BytesIO(data))
