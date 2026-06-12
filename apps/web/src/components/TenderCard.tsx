@@ -19,7 +19,13 @@ function deadlineTone(closing: string | null): string {
   return "text-slate-600";
 }
 
-export function TenderCard({ tender }: { tender: MatchedTender }) {
+export function TenderCard({
+  tender,
+  canSave = true,
+}: {
+  tender: MatchedTender;
+  canSave?: boolean;
+}) {
   const reasons = Object.entries(tender.reasons)
     .filter(([, v]) => v > 0)
     .sort((a, b) => b[1] - a[1]);
@@ -82,7 +88,7 @@ export function TenderCard({ tender }: { tender: MatchedTender }) {
         >
           {t.dashboard.details} ←
         </a>
-        <MatchActions tenderId={tender.tender_id} saved={tender.saved} />
+        <MatchActions tenderId={tender.tender_id} saved={tender.saved} canSave={canSave} />
       </div>
     </article>
   );

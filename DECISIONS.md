@@ -26,6 +26,16 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   - enums → `TEXT` + `CHECK`; `text[]` → JSON TEXT; `timestamptz` → ISO-8601 UTC TEXT;
     `gen_random_uuid()` → `DEFAULT (lower(hex(randomblob(16))))`.
 
+- **Tier gating (`lib/entitlements.ts`, unit-tested).** `effectiveTier` →
+  `can(sub, feature)` over a tier ranking (radar<pro<intelligence). **Deliberate
+  product call:** an *active trial* grants FULL (intelligence-level) access so
+  prospects try everything before paying; once it ends, access needs an `active`
+  paid sub (pending_payment/past_due/cancelled/expired-trial = no access). Wired
+  today on the one feature that exists: the dashboard is **paywalled** without access
+  (`Paywall` → /pricing), and *saving* is a pro+ feature — gated in the UI (hidden
+  ★المحفوظة tab + per-card save button) **and** server-side in `saveMatchAction`
+  (defense-in-depth). `analyzer`/`pricing_intel` ranks are pre-defined for when those
+  features land. Local dev (no D1) bypasses gating so the UI is always inspectable.
 - **Billing loop closed — admin CliQ activation.** Platform admins (emails in the
   new `ADMIN_EMAILS` env, `lib/admin.ts`, unit-tested) get an `/admin` queue of
   `pending_payment` subscriptions (`listPendingSubscriptions`, org + cliq_reference).

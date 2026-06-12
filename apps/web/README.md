@@ -54,11 +54,17 @@ and activates them after a CliQ transfer — `activateSubscription` flips to `ac
 sets `current_period_end` (+30d) + `activated_by`, idempotent via a guarded
 `RETURNING`. Page + action re-check `isAdminEmail`.
 
+## Entitlements
+
+`lib/entitlements.ts` maps a subscription to what it unlocks. An active trial =
+full access; after it ends, access needs an `active` paid sub. The dashboard is
+paywalled without access; *saving* is pro+ (gated in UI and in `saveMatchAction`).
+`analyzer`/`pricing_intel` ranks are defined, ready for those features.
+
 ## Open items
 
-- **Tier gating** — limit features by `subscriptions.tier` (e.g. analyzer = pro+).
+- **Analyzer UI** — the كرّاسة-analysis feature (pro+); the Phase-1 differentiator.
 - Renewals/expiry handling and a real CliQ webhook (manual confirmation for now).
-- The analyzer UI (Phase 1+ feature).
 
 All timestamps render in `Asia/Amman`; all money in JOD; numbers use Latin
 digits with Arabic words for consistency (see `DECISIONS.md`).

@@ -8,9 +8,11 @@ import { dismissMatchAction, saveMatchAction } from "@/app/dashboard/actions";
 export function MatchActions({
   tenderId,
   saved,
+  canSave = true,
 }: {
   tenderId: string;
   saved: boolean;
+  canSave?: boolean;
 }) {
   const [isSaved, setIsSaved] = useState(saved);
   const [pending, startTransition] = useTransition();
@@ -27,19 +29,21 @@ export function MatchActions({
 
   return (
     <div className="flex items-center gap-3 text-sm">
-      <button
-        type="button"
-        onClick={toggleSave}
-        disabled={pending}
-        aria-pressed={isSaved}
-        className={`rounded-md px-2.5 py-1 transition ${
-          isSaved
-            ? "bg-brand/10 text-brand"
-            : "text-slate-500 hover:bg-slate-100 hover:text-brand"
-        } disabled:opacity-50`}
-      >
-        {isSaved ? "★ محفوظ" : "☆ حفظ"}
-      </button>
+      {canSave && (
+        <button
+          type="button"
+          onClick={toggleSave}
+          disabled={pending}
+          aria-pressed={isSaved}
+          className={`rounded-md px-2.5 py-1 transition ${
+            isSaved
+              ? "bg-brand/10 text-brand"
+              : "text-slate-500 hover:bg-slate-100 hover:text-brand"
+          } disabled:opacity-50`}
+        >
+          {isSaved ? "★ محفوظ" : "☆ حفظ"}
+        </button>
+      )}
       <button
         type="button"
         onClick={dismiss}
