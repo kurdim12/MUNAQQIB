@@ -37,6 +37,17 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   in the DB. This is a temporary dev seam, flagged in code, to be replaced when auth is
   chosen. First slice: RTL shell, D1 client + typed repo, dashboard reading `matches`,
   and an onboarding wizard writing `orgs` + a 14-day `trial` subscription.
+- **Phase 1 web — interactivity + billing surface.** Added match **save/dismiss**
+  (server actions on `matches.saved`/`dismissed`, optimistic buttons, All vs
+  ★المحفوظة tabs via `?view=saved`); a **trial/subscription banner**
+  (`getSubscription` + `lib/billing.ts` countdown with Arabic grammar); and a
+  **`/pricing`** page with a **CliQ upgrade-request** flow — `requestUpgrade` flips
+  the subscription to `pending_payment` with a generated `cliq_reference`, and the
+  page shows CliQ transfer instructions (alias via `CLIQ_ALIAS`). Payment is
+  confirmed **manually** (CliQ); an admin later flips `pending_payment → active`,
+  which needs the still-undecided auth. **Tier JOD prices in `lib/billing.ts` are
+  PLACEHOLDERS** (rendered as إرشادية/قابلة للتغيير) pending the master brief's
+  pricing table. New pure logic covered by `billing.test.ts` (12 web tests total).
   `d1.execute` REST seam (`d1.py`), with R2 snapshot storage (`storage.py`, boto3,
   local fallback). Writes: `ensure_org`, `persist_tenders` (upsert-by-hash = the
   cross-run dedupe), `persist_matches`, `log_notification`, `update_source_status`

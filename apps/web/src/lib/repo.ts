@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 
+import type { Subscription, Tier } from "./billing";
 import { execute, executeOne, isConfigured } from "./d1";
 
 export { isConfigured };
@@ -100,14 +101,18 @@ export async function getOrg(orgId: string): Promise<Org | null> {
 }
 
 /** Matched, non-dismissed tenders for an org, freshest deadlines first. */
-export async function getMatchedTenders(orgId: string): Promise<MatchedTender[]> {
+export async function getMatchedTenders(
+  orgId: string,
+  opts: { savedOnly?: boolean } = {},
+): Promise<MatchedTender[]> {
+  const savedClause = opts.savedOnly ? "AND m.saved = 1" : "";
   const rows = await execute<Record<string, unknown>>(
     `SELECT t.id AS tender_id, t.title, t.entity, t.category, t.governorate,
             t.closing_at, t.doc_price_jod, t.url, t.status,
             m.score, m.reasons, m.saved
      FROM matches m
      JOIN tenders t ON t.id = m.tender_id
-     WHERE m.org_id = ? AND m.dismissed = 0
+     WHERE m.org_id = ? AND m.dismissed = 0 ${savedClause}
      ORDER BY (t.closing_at IS NULL), t.closing_at ASC, m.score DESC
      LIMIT 200`,
     [orgId],
@@ -177,4 +182,66 @@ export async function createOrgWithTrial(input: CreateOrgInput): Promise<string>
     [org.id, trialEnds],
   );
   return org.id;
+}
+
+// ---------------------------------------------------------------------------
+// Subscriptions
+// ---------------------------------------------------------------------------
+/** Newest subscription row for an org (or null). */
+export async function getSubscription(orgId: string): Promise<Subscription | null> {
+  const row = await executeOne<Record<string, unknown>>(
+    `SELECT tier, status, trial_ends_at, current_period_end, cliq_reference
+     FROM subscriptions WHERE org_id = ? ORDER BY created_at DESC LIMIT 1`,
+    [orgId],
+  );
+  if (!row) return null;
+  return {
+    tier: row.tier as Tier,
+    status: row.status as Subscription["status"],
+    trial_ends_at: row.trial_ends_at ? String(row.trial_ends_at) : null,
+    current_period_end: row.current_period_end ? String(row.current_period_end) : null,
+    cliq_reference: row.cliq_reference ? String(row.cliq_reference) : null,
+  };
+}
+
+/**
+ * Record an upgrade request: set the chosen tier and flip status to
+ * pending_payment (CliQ is confirmed manually — schema's cliq_reference /
+ * activated_by). An admin later flips it to active once payment clears.
+ */
+export async function requestUpgrade(
+  orgId: string,
+  tier: Tier,
+  cliqReference: string,
+): Promise<void> {
+  await execute(
+    `UPDATE subscriptions SET tier = ?, status = 'pending_payment', cliq_reference = ?
+     WHERE org_id = ?`,
+    [tier, cliqReference, orgId],
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Match actions (save / dismiss)
+// ---------------------------------------------------------------------------
+export async function setMatchSaved(
+  orgId: string,
+  tenderId: string,
+  saved: boolean,
+): Promise<void> {
+  await execute(`UPDATE matches SET saved = ? WHERE org_id = ? AND tender_id = ?`, [
+    saved ? 1 : 0,
+    orgId,
+    tenderId,
+  ]);
+}
+
+export async function setMatchDismissed(
+  orgId: string,
+  tenderId: string,
+): Promise<void> {
+  await execute(
+    `UPDATE matches SET dismissed = 1 WHERE org_id = ? AND tender_id = ?`,
+    [orgId, tenderId],
+  );
 }

@@ -26,7 +26,8 @@ the dashboard). Set the vars (see root `.env.example`) to talk to the live DB.
 | ------------- | ------- | ------------ |
 | `/`           | static  | Landing + CTA |
 | `/onboarding` | client  | 2-step wizard → server action inserts `orgs` + a 14-day `trial` subscription, sets the `org_id` cookie, redirects to the dashboard |
-| `/dashboard`  | dynamic | Reads `matches ⋈ tenders` for the current org; renders cards (score, Amman closing date + deadline label, JOD doc price, match reasons) |
+| `/dashboard`  | dynamic | Reads `matches ⋈ tenders` for the current org; cards (score, Amman closing + deadline label, JOD doc price, reasons) with **save/dismiss**; All vs ★المحفوظة tabs; trial/subscription banner |
+| `/pricing`    | dynamic | Tier cards (placeholder JOD prices); **CliQ upgrade request** → sets `pending_payment` + `cliq_reference`, shows transfer instructions |
 
 ## Layout
 

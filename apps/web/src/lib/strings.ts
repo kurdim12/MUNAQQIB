@@ -4,6 +4,7 @@ export const t = {
   tagline: "كل عطاء بيناسب تصنيفك، بإيميل واحد نظيف كل صباح.",
   nav: {
     dashboard: "العطاءات المطابقة",
+    pricing: "الأسعار",
     onboarding: "إعداد الحساب",
   },
   dashboard: {

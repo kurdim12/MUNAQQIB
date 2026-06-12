@@ -1,3 +1,4 @@
+import { MatchActions } from "@/components/MatchActions";
 import type { MatchedTender } from "@/lib/repo";
 import { deadlineLabel, formatAmmanDate, formatJod, scorePct } from "@/lib/format";
 import { t } from "@/lib/strings";
@@ -72,7 +73,7 @@ export function TenderCard({ tender }: { tender: MatchedTender }) {
         </div>
       )}
 
-      <div className="mt-4 border-t border-slate-100 pt-3">
+      <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
         <a
           href={tender.url}
           target="_blank"
@@ -81,6 +82,7 @@ export function TenderCard({ tender }: { tender: MatchedTender }) {
         >
           {t.dashboard.details} ←
         </a>
+        <MatchActions tenderId={tender.tender_id} saved={tender.saved} />
       </div>
     </article>
   );

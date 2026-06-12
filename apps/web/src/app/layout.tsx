@@ -32,6 +32,9 @@ export default function RootLayout({
               <a href="/dashboard" className="hover:text-brand">
                 {t.nav.dashboard}
               </a>
+              <a href="/pricing" className="hover:text-brand">
+                {t.nav.pricing}
+              </a>
               <a href="/onboarding" className="hover:text-brand">
                 {t.nav.onboarding}
               </a>
