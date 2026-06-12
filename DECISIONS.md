@@ -5,18 +5,25 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
 
 ---
 
-## 2026-06-12 · Deployment + scheduling config (ready-to-ship)
+## 2026-06-12 · Scheduling moved OFF GitHub Actions → scheduled container
 
-- **CI** (`.github/workflows/ci.yml`): lint + typecheck + tests + build on every
-  push/PR, no secrets — web (tsc/next lint/vitest/next build) and worker (ruff +
-  pytest on the slim `requirements-dev.txt`). **Scheduled digest**
-  (`.github/workflows/digest.yml`): cron **04:30 UTC = 07:30 Asia/Amman** (Jordan is
-  permanently UTC+3) + `workflow_dispatch`; runs `digest → deadlines → sweep` with
-  all secrets injected from Actions. **`DEPLOYMENT.md`** is the runbook: Vercel
-  (root `apps/web`) for the web app, GitHub Actions cron for the worker, and the
-  D1/R2/Resend/Telegram/LLM setup + secret placement. Web deploys serverless; the
-  worker cron installs the full `requirements.txt` (note: move to a container host
-  for scale). `ruff check` clean.
+- **GitHub Actions doesn't run for this account.** The first CI run failed in ~3s
+  with `runner_id: 0`, no runner assigned, and zero steps executed — a
+  provisioning/billing-level block (Actions disabled or no Actions minutes), not a
+  config or code bug. Re-pushing the same YAML fails identically. **Removed both
+  workflows** (`ci.yml`, `digest.yml`).
+- **Worker now ships as a portable container** (`apps/worker/Dockerfile` →
+  `scripts/daily.sh` = digest → deadlines → sweep) run on a cron by any host —
+  **Railway** (cron schedule, recommended), **Cloud Run Job + Cloud Scheduler**
+  (cheapest), **Render** cron, or a **VPS** `crontab`. Schedule `30 4 * * *` UTC =
+  07:30 Asia/Amman. `DEPLOYMENT.md` rewritten accordingly (no Actions). CI is
+  replaced by Vercel's build-on-deploy for web + local/Claude-session `pytest`/
+  `vitest` for tests.
+
+### (superseded) Deployment + scheduling via GitHub Actions
+
+- Original plan used `.github/workflows/{ci,digest}.yml`; removed above because the
+  account can't run Actions runners.
 
 ## 2026-06-12 · JONEPS scraper is LIVE (real parser against a committed snapshot)
 

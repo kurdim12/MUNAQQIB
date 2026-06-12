@@ -1,11 +1,12 @@
 # Deployment & Operations — MUNAQQIB (منقّب)
 
-How to take this repo from "tested in CI" to "running in production." Two
-deployables, plus the managed services they talk to.
+How to take this repo from "tested locally" to "running in production." Two
+deployables, plus the managed services they talk to. **No GitHub Actions** — the
+worker ships as a portable container you schedule on a normal host.
 
 ```
 ┌─────────────┐   magic-link login, dashboard, analyzer, billing
-│  apps/web   │   Next.js 15 → Vercel (serverless)
+│  apps/web   │   Next.js 15 → Vercel (serverless; builds + lints on deploy)
 └──────┬──────┘
        │  reads/writes (D1 REST)
 ┌──────▼──────┐   D1 (DB) · R2 (snapshots + كراسات) · Resend (email) · Telegram
@@ -13,12 +14,12 @@ deployables, plus the managed services they talk to.
 └──────▲──────┘
        │  scrape → match → digest → notify (daily 07:30 Amman)
 ┌──────┴──────┐
-│ apps/worker │   Python → GitHub Actions cron (.github/workflows/digest.yml)
-└─────────────┘
+│ apps/worker │   Python → Docker image (apps/worker/Dockerfile),
+└─────────────┘   run on a cron schedule by any container host
 ```
 
-CI (`.github/workflows/ci.yml`) runs lint + typecheck + tests + build on every
-push — no secrets required.
+Tests run locally / in Claude sessions (`cd apps/web && npx vitest run`;
+`cd apps/worker && pytest`). Vercel validates the web build on every deploy.
 
 ---
 
@@ -46,9 +47,9 @@ The full set lives in `.env.example`. They go in two places:
   `AUTH_SECRET` (`openssl rand -base64 32`), `AUTH_RESEND_KEY` (or `RESEND_API_KEY`),
   `EMAIL_FROM`, `ADMIN_EMAILS`, `CLIQ_ALIAS`. Without `AUTH_SECRET` the app runs
   in the dev seam (no login) — **set it in production.**
-- **GitHub → repo → Settings → Secrets and variables → Actions** (the worker
-  cron): every var referenced in `.github/workflows/digest.yml` — the Cloudflare,
-  R2, LLM, Resend, and Telegram secrets.
+- **The worker host's environment** (env vars / secrets on whatever runs the
+  container): every var the pipeline needs — the Cloudflare, R2, LLM, Resend, and
+  Telegram values from `.env.example`. On a VPS, keep them in an `--env-file`.
 
 Never commit a real `.env`.
 
@@ -66,20 +67,43 @@ Never commit a real `.env`.
 
 ---
 
-## 4. Schedule the worker (GitHub Actions)
+## 4. Schedule the worker (a container on a cron — no GitHub Actions)
 
-`.github/workflows/digest.yml` already runs **07:30 Asia/Amman** (04:30 UTC —
-Jordan is permanently UTC+3). After adding the Actions secrets (§2):
+The worker is a one-shot Python container (`apps/worker/Dockerfile` → runs
+`scripts/daily.sh` = digest → deadlines → sweep). Build context is the repo root:
 
-1. Enable Actions for the repo.
-2. Trigger the **first run by hand**: Actions → *Daily digest* → *Run workflow*.
-3. Watch the logs: it scrapes JONEPS (live), matches against
-   `apps/worker/partner_profile.yaml`, emails the digest, fires Telegram deadline
-   alerts, then runs the housekeeping sweep.
+```bash
+docker build -t munaqqib-worker -f apps/worker/Dockerfile .
+```
 
-> The cron job installs the full `requirements.txt` (embeddings + analyzer; torch
-> is heavy). For higher cadence or scale, move the worker to a container host
-> (Cloud Run / Railway / Fly) and keep this workflow as the scheduler trigger.
+Run it daily at **04:30 UTC (= 07:30 Asia/Amman; Jordan is permanently UTC+3)** on
+any of these. Set the §2 env vars on the host.
+
+**Railway — simplest:**
+1. New Project → Deploy from GitHub repo.
+2. Service settings → **Dockerfile path** `apps/worker/Dockerfile` (build context = repo root).
+3. Add the env vars.
+4. **Settings → Cron Schedule:** `30 4 * * *`. Railway starts the container on
+   schedule and stops it when the run exits.
+
+**Google Cloud Run Job + Cloud Scheduler — cheapest (pay-per-run, ~free for a daily job):**
+1. Build & push the image to Artifact Registry.
+2. Create a Cloud Run **Job** from it (not a Service).
+3. Add a Cloud Scheduler cron `30 4 * * *` (UTC) that triggers the job.
+
+**Any VPS (Hetzner/DigitalOcean) — most control:**
+```bash
+# build once, then in crontab -e:
+30 4 * * *  docker run --rm --env-file /opt/munaqqib.env munaqqib-worker
+```
+
+**Render** also offers native Cron Jobs (Dockerfile path `apps/worker/Dockerfile`,
+schedule `30 4 * * *`) if you prefer it.
+
+Trigger the **first run by hand** (Railway/Render: "Run now"; VPS: run the
+`docker run`) and watch the logs: it scrapes JONEPS live, matches against
+`apps/worker/partner_profile.yaml`, emails the digest, fires Telegram alerts, then
+sweeps. To run a single stage: `docker run ... munaqqib-worker python -m pipeline.run digest`.
 
 ---
 
