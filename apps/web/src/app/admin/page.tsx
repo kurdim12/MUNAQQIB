@@ -14,14 +14,14 @@ export default async function AdminPage() {
   if (!isAdminEmail(email)) {
     return (
       <section className="py-10 text-center">
-        <h1 className="text-xl font-bold text-slate-900">غير مصرّح</h1>
-        <p className="mt-2 text-slate-600">
+        <h1 className="text-xl font-bold text-ink">غير مصرّح</h1>
+        <p className="mt-2 text-ink-soft">
           هذه الصفحة مخصّصة لطاقم المنصّة فقط.
         </p>
         {!session && (
           <a
             href="/signin"
-            className="mt-4 inline-block rounded-lg bg-brand px-4 py-2 font-medium text-white hover:bg-brand-dark"
+            className="mt-4 inline-block rounded-lg bg-ink px-4 py-2 font-medium text-white hover:bg-ink-soft"
           >
             تسجيل الدخول
           </a>
@@ -34,19 +34,19 @@ export default async function AdminPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold text-slate-900">تأكيد المدفوعات (كليك)</h1>
-      <p className="mt-1 text-slate-600">
+      <h1 className="text-2xl font-bold text-ink">تأكيد المدفوعات (كليك)</h1>
+      <p className="mt-1 text-ink-soft">
         طلبات الترقية بانتظار تأكيد التحويل عبر كليك. فعّل الاشتراك بعد استلام الدفعة.
       </p>
 
       {pending.length === 0 ? (
-        <p className="mt-8 rounded-lg border border-slate-200 bg-white px-4 py-10 text-center text-slate-500">
+        <p className="mt-8 rounded-lg border border-line bg-white px-4 py-10 text-center text-ink-muted">
           لا توجد طلبات معلّقة.
         </p>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <div className="mt-6 overflow-hidden rounded-lg border border-line bg-white">
           <table className="w-full text-right text-sm">
-            <thead className="bg-slate-50 text-slate-500">
+            <thead className="bg-sand/40 text-ink-muted">
               <tr>
                 <th className="px-4 py-3 font-medium">المنشأة</th>
                 <th className="px-4 py-3 font-medium">الخطة</th>
@@ -55,12 +55,12 @@ export default async function AdminPage() {
                 <th className="px-4 py-3 font-medium"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-line">
               {pending.map((p) => (
                 <tr key={p.org_id}>
                   <td className="px-4 py-3">
-                    <div className="font-medium text-slate-900">{p.org_name}</div>
-                    <div className="text-xs text-slate-400" dir="ltr">
+                    <div className="font-medium text-ink">{p.org_name}</div>
+                    <div className="text-xs text-ink-muted" dir="ltr">
                       {p.digest_emails[0] ?? "—"}
                     </div>
                   </td>
@@ -68,7 +68,7 @@ export default async function AdminPage() {
                   <td className="px-4 py-3 font-mono text-xs">
                     {p.cliq_reference ?? "—"}
                   </td>
-                  <td className="px-4 py-3 text-slate-500">
+                  <td className="px-4 py-3 text-ink-muted">
                     {formatAmmanDate(p.requested_at)}
                   </td>
                   <td className="px-4 py-3">
@@ -76,7 +76,7 @@ export default async function AdminPage() {
                       <input type="hidden" name="orgId" value={p.org_id} />
                       <button
                         type="submit"
-                        className="rounded-md bg-brand px-3 py-1.5 font-medium text-white hover:bg-brand-dark"
+                        className="rounded-md bg-ink px-3 py-1.5 font-medium text-white hover:bg-ink-soft"
                       >
                         تفعيل
                       </button>

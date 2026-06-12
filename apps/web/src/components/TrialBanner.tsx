@@ -14,7 +14,7 @@ export function TrialBanner({ sub }: { sub: Subscription | null }) {
       className={`mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm ${
         urgent
           ? "border-red-200 bg-red-50 text-red-800"
-          : "border-brand/20 bg-brand-50/70 text-brand-dark"
+          : "border-line bg-sand/50 text-ink"
       }`}
     >
       <span className="flex flex-wrap items-center gap-2">
@@ -22,11 +22,11 @@ export function TrialBanner({ sub }: { sub: Subscription | null }) {
           {TIER_LABELS[sub.tier]}
         </span>
         {text}
-        <span className="text-xs text-slate-400">({STATUS_LABELS[sub.status]})</span>
+        <span className="text-xs text-ink-muted">({STATUS_LABELS[sub.status]})</span>
       </span>
       <a
         href="/pricing"
-        className="shrink-0 rounded-lg bg-brand px-3.5 py-1.5 font-semibold text-white transition hover:bg-brand-dark"
+        className="shrink-0 rounded-lg bg-ink px-3.5 py-1.5 font-semibold text-white transition hover:bg-ink-soft"
       >
         ترقية الاشتراك
       </a>

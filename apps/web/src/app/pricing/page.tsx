@@ -15,11 +15,11 @@ export default async function PricingPage() {
   return (
     <section className="animate-fade-in">
       <div className="text-center">
-        <h1 className="text-3xl font-extrabold text-slate-900">الخطط والأسعار</h1>
-        <p className="mx-auto mt-2 max-w-lg text-slate-600">
+        <h1 className="text-3xl font-extrabold text-ink">الخطط والأسعار</h1>
+        <p className="mx-auto mt-2 max-w-lg text-ink-soft">
           ابدأ بتجربة مجانية 14 يوماً، ثم اختر الخطة المناسبة لمنشأتك.
         </p>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-ink-muted">
           الأسعار بالدينار الأردني شهرياً، وهي إرشادية وقابلة للتغيير.
         </p>
       </div>
@@ -32,7 +32,7 @@ export default async function PricingPage() {
             الاسم المستعار <span className="font-mono">{CLIQ_ALIAS}</span> مع ذكر الرقم
             المرجعي:
           </p>
-          <p className="mt-2 rounded-lg bg-white px-3 py-2 font-mono text-base text-slate-800">
+          <p className="mt-2 rounded-lg bg-white px-3 py-2 font-mono text-base text-ink">
             {pending.cliq_reference}
           </p>
           <p className="mt-2 text-xs">سيُفعّل اشتراكك خلال ساعات من تأكيد الدفع.</p>
@@ -48,27 +48,27 @@ export default async function PricingPage() {
               key={plan.tier}
               className={`relative flex flex-col rounded-2xl bg-white p-6 transition ${
                 featured
-                  ? "border-2 border-brand shadow-card-hover md:-translate-y-3"
-                  : "border border-slate-200 shadow-card hover:-translate-y-1 hover:shadow-card-hover"
+                  ? "border-2 border-ink shadow-card-hover md:-translate-y-3"
+                  : "border border-line shadow-card hover:-translate-y-1 hover:shadow-card-hover"
               }`}
             >
               {featured && (
-                <span className="absolute -top-3 right-6 rounded-full bg-brand px-3 py-1 text-xs font-bold text-white shadow-sm">
+                <span className="absolute -top-3 right-6 rounded-full bg-ink px-3 py-1 text-xs font-bold text-white shadow-sm">
                   الأكثر شيوعاً
                 </span>
               )}
-              <h2 className="text-lg font-bold text-slate-900">{plan.name}</h2>
-              <p className="mt-1 min-h-[2.5rem] text-sm text-slate-500">{plan.tagline}</p>
+              <h2 className="text-lg font-bold text-ink">{plan.name}</h2>
+              <p className="mt-1 min-h-[2.5rem] text-sm text-ink-muted">{plan.tagline}</p>
               <p className="mt-3 flex items-baseline gap-1">
-                <span className="nums text-4xl font-extrabold text-slate-900">
+                <span className="nums text-4xl font-extrabold text-ink">
                   {plan.monthlyJod}
                 </span>
-                <span className="text-sm text-slate-500">د.أ / شهرياً</span>
+                <span className="text-sm text-ink-muted">د.أ / شهرياً</span>
               </p>
-              <ul className="mt-5 flex-1 space-y-2.5 text-sm text-slate-600">
+              <ul className="mt-5 flex-1 space-y-2.5 text-sm text-ink-soft">
                 {plan.features.map((f) => (
                   <li key={f} className="flex gap-2">
-                    <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-brand-50 text-[10px] text-brand">
+                    <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-sand/50 text-[10px] text-ink">
                       ✓
                     </span>
                     <span>{f}</span>
@@ -82,10 +82,10 @@ export default async function PricingPage() {
                   disabled={isCurrent}
                   className={`w-full rounded-xl px-4 py-2.5 font-semibold transition active:scale-[0.98] disabled:cursor-default disabled:active:scale-100 ${
                     isCurrent
-                      ? "bg-slate-100 text-slate-500"
+                      ? "bg-sand text-ink-muted"
                       : featured
-                        ? "bg-brand text-white hover:bg-brand-dark"
-                        : "border border-brand/30 text-brand hover:bg-brand-50"
+                        ? "bg-ink text-white hover:bg-ink-soft"
+                        : "border border-line text-ink hover:bg-sand/50"
                   }`}
                 >
                   {isCurrent ? "✓ خطتك الحالية" : `الترقية إلى ${TIER_LABELS[plan.tier]}`}
