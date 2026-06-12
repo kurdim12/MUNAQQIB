@@ -113,9 +113,10 @@ sweeps. To run a single stage: `docker run ... munaqqib-worker python -m pipelin
 
 ## 5. Known gaps before the Phase-0 acceptance gate
 
-- **GTD source is not live.** `gtd.gov.jo` serves an empty shell to the honest
-  identifying UA (§8 forbids spoofing a browser to evade it). It needs a headless
-  browser (Playwright) path. **JONEPS is live and scraping for real.**
+- **GTD + JONEPS both live.** GTD bot-walls cloud IPs (54-byte shell), so the
+  scraper falls back to a reader proxy (`SCRAPER_READER_PROXY`, default set) that
+  fetches server-side — no browser-spoofing (§8-clean). Keep the proxy until the
+  worker can egress from a Jordanian IP.
 - **JONEPS closing date + doc price** need detail-page enrichment (the listing only
   has the publish date); until then deadline alerts won't fire for JONEPS tenders.
 - **Tier prices** in `apps/web/src/lib/billing.ts` are placeholders pending the
