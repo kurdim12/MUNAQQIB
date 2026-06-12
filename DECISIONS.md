@@ -26,6 +26,21 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   - enums → `TEXT` + `CHECK`; `text[]` → JSON TEXT; `timestamptz` → ISO-8601 UTC TEXT;
     `gen_random_uuid()` → `DEFAULT (lower(hex(randomblob(16))))`.
 
+- **Analyzer core built (worker, the Phase-1 differentiator — CLAUDE.md §12.2).**
+  `pipeline/analyze.py`: two-pass over the existing hybrid `llm_client` slots —
+  **pass 1** (cheap extraction, DeepSeek via OpenRouter) pulls the factual fields;
+  **pass 2** (`claude-sonnet-4-6`, Anthropic-direct, the never-downgrade slot)
+  decides eligibility (مؤهل / غير مؤهل / يتطلب مراجعة) + Arabic reasoning + risk
+  flags + confidence. Output is the existing `AnalyzerBrief` pydantic contract;
+  `db.persist_analysis` writes the `analyses` row (result JSON, pages, cost_usd).
+  **Cost discipline (CLAUDE.md §7):** inputs are hard-capped (`MAX_DOC_CHARS`/
+  `MAX_PASS2_CHARS`), worst-case documented + verified at **~0.049 JOD/doc** (ceiling
+  1.0, target ~0.3) using the authoritative Sonnet 4.6 rates ($3/$15 per M); a budget
+  guard refuses pass 2 if the running estimate breaches 1.0 JOD. The LLM façade is
+  **injected** so the 6 new tests run fully offline (worker suite 55→61). No new deps
+  (`pypdf`/`anthropic`/`openai` already present). **Not yet wired:** document fetch
+  (gov doc links blocked by the build network — fixture-first, like the scrapers),
+  the queue stage, and the web UI panel behind the `analyzer` (pro+) gate.
 - **Tier gating (`lib/entitlements.ts`, unit-tested).** `effectiveTier` →
   `can(sub, feature)` over a tier ranking (radar<pro<intelligence). **Deliberate
   product call:** an *active trial* grants FULL (intelligence-level) access so

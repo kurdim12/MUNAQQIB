@@ -17,9 +17,13 @@ from __future__ import annotations
 import json
 import logging
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 import d1
 from models.schemas import MatchResult, OrgProfile, Tender
+
+if TYPE_CHECKING:
+    from models.schemas import AnalyzerBrief
 from storage import upload as r2_upload
 
 logger = logging.getLogger(__name__)
@@ -215,3 +219,27 @@ def sweep_closed_tenders() -> int:
         [_now_iso()],
     )
     return len(rows)
+
+
+# ---------------------------------------------------------------------------
+# Analyzer (Phase 1) — persist an AnalyzerBrief (CLAUDE.md §12.2)
+# ---------------------------------------------------------------------------
+def persist_analysis(
+    org_id: str | None,
+    tender_id: str | None,
+    file_path: str,
+    status: str,
+    brief: "AnalyzerBrief | None",
+    pages: int,
+    cost_usd: float,
+) -> None:
+    """Insert one analyses row. `result` is the AnalyzerBrief as JSON (or NULL on
+    failure). No-ops when D1 is unconfigured, like the other writers."""
+    result = brief.model_dump_json() if brief is not None else None
+    d1.execute(
+        """
+        INSERT INTO analyses (org_id, tender_id, file_path, status, result, pages, cost_usd)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        [org_id, tender_id, file_path, status, result, pages, cost_usd],
+    )
