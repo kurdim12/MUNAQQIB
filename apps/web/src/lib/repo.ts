@@ -79,14 +79,12 @@ export async function getCurrentOrgId(): Promise<string | null> {
     return row?.org_id ?? null;
   }
 
-  // --- dev seam (no auth configured) ---
+  // --- public/demo seam (no logged-in user) ---
+  // Falls back to the seeded demo org so the dashboard opens without login.
+  // Set DEMO_ORG_ID to override; logged-in users always see their own org above.
   const cookieOrg = (await cookies()).get("org_id")?.value;
   if (cookieOrg) return cookieOrg;
-  if (process.env.DEMO_ORG_ID) return process.env.DEMO_ORG_ID;
-  const row = await executeOne<{ id: string }>(
-    "SELECT id FROM orgs ORDER BY created_at ASC LIMIT 1",
-  );
-  return row?.id ?? null;
+  return process.env.DEMO_ORG_ID ?? "demo_org_v1";
 }
 
 export async function getOrg(orgId: string): Promise<Org | null> {
