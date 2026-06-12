@@ -7,7 +7,7 @@ export function TrialBanner({ sub }: { sub: Subscription | null }) {
   const text = trialBannerText(sub);
   if (!text) return null;
 
-  const urgent = sub.status === "trial" && text.includes("انتهت");
+  const urgent = text.includes("انتهت") || sub.status === "past_due";
 
   return (
     <div

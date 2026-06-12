@@ -117,6 +117,15 @@ def test_sweep_closed_returns_count(monkeypatch):
     assert "status='closed'" in sql and "status='open'" in sql
 
 
+def test_expire_subscriptions_returns_count(monkeypatch):
+    fake = _install(monkeypatch)
+    fake.responder = lambda sql, p: [{"org_id": "o1"}]
+    assert db.expire_subscriptions() == 1
+    sql, _ = fake.calls[0]
+    assert "status='past_due'" in sql and "status='active'" in sql
+    assert "current_period_end <" in sql
+
+
 def test_log_notification_inserts(monkeypatch):
     fake = _install(monkeypatch)
     db.log_notification("org1", "digest", "email", {"n": 3}, "sent")

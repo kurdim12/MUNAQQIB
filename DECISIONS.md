@@ -61,6 +61,14 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
   ★المحفوظة tab + per-card save button) **and** server-side in `saveMatchAction`
   (defense-in-depth). `analyzer`/`pricing_intel` ranks are pre-defined for when those
   features land. Local dev (no D1) bypasses gating so the UI is always inspectable.
+- **Subscription renewal/expiry — lifecycle hardened.** Fixed a real entitlements
+  gap: an `active` sub past its `current_period_end` kept full access. Now
+  `effectiveTier` denies access once the period ends (even before the daily sweep),
+  `trialBannerText` warns ("انتهت صلاحية اشتراكك — يُرجى التجديد"), and the worker's
+  `run_sweep` calls a new `db.expire_subscriptions()` that flips lapsed `active`
+  rows to `past_due` (future-dated subs untouched — verified against live D1). Both
+  the entitlements check and the banner are unit-tested; the sweep SQL is covered by
+  a FakeD1 test (worker 61→62, web 25→26).
 - **Billing loop closed — admin CliQ activation.** Platform admins (emails in the
   new `ADMIN_EMAILS` env, `lib/admin.ts`, unit-tested) get an `/admin` queue of
   `pending_payment` subscriptions (`listPendingSubscriptions`, org + cliq_reference).

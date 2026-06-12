@@ -24,21 +24,29 @@ const RANK: Record<Tier, number> = { trial: 0, radar: 1, pro: 2, intelligence: 3
 
 /**
  * The tier a subscription effectively has RIGHT NOW, or null for no access.
- * Active paid → its tier; live trial → intelligence (full); otherwise null.
+ * Active paid (and not past its current_period_end) → its tier; live trial →
+ * intelligence (full); otherwise null. The period-end check denies access even
+ * before the worker's daily sweep flips the row to past_due.
  */
 export function effectiveTier(
-  sub: Pick<Subscription, "tier" | "status" | "trial_ends_at"> | null,
+  sub: Pick<Subscription, "tier" | "status" | "trial_ends_at" | "current_period_end"> | null,
   now: Date = new Date(),
 ): Tier | null {
   if (!sub) return null;
-  if (sub.status === "active") return sub.tier;
+  if (sub.status === "active") {
+    if (sub.current_period_end) {
+      const end = new Date(sub.current_period_end);
+      if (!Number.isNaN(end.getTime()) && end.getTime() <= now.getTime()) return null;
+    }
+    return sub.tier;
+  }
   if (sub.status === "trial" && trialDaysLeft(sub, now) > 0) return "intelligence";
   return null;
 }
 
 /** Does the subscription currently unlock `feature`? */
 export function can(
-  sub: Pick<Subscription, "tier" | "status" | "trial_ends_at"> | null,
+  sub: Pick<Subscription, "tier" | "status" | "trial_ends_at" | "current_period_end"> | null,
   feature: Feature,
   now: Date = new Date(),
 ): boolean {
@@ -49,7 +57,7 @@ export function can(
 
 /** Any access at all (live trial or active paid). */
 export function hasAccess(
-  sub: Pick<Subscription, "tier" | "status" | "trial_ends_at"> | null,
+  sub: Pick<Subscription, "tier" | "status" | "trial_ends_at" | "current_period_end"> | null,
   now: Date = new Date(),
 ): boolean {
   return effectiveTier(sub, now) !== null;

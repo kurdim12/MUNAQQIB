@@ -243,3 +243,23 @@ def persist_analysis(
         """,
         [org_id, tender_id, file_path, status, result, pages, cost_usd],
     )
+
+
+# ---------------------------------------------------------------------------
+# Subscription lifecycle (Phase 1) — expire active subs past their period end
+# ---------------------------------------------------------------------------
+def expire_subscriptions() -> int:
+    """Flip active subscriptions whose paid period has ended to past_due, so the
+    web entitlements gate denies access until renewal. Returns rows touched.
+
+    (Expired *trials* are not flipped — they keep status='trial' and the web
+    entitlements treat them as no-access once trial_ends_at passes.)"""
+    rows = d1.execute(
+        """
+        UPDATE subscriptions SET status='past_due'
+        WHERE status='active' AND current_period_end IS NOT NULL AND current_period_end < ?
+        RETURNING org_id
+        """,
+        [_now_iso()],
+    )
+    return len(rows)

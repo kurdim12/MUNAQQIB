@@ -97,7 +97,7 @@ export function trialDaysLeft(
 
 /** Short Arabic line describing the subscription state for the banner. */
 export function trialBannerText(
-  sub: Pick<Subscription, "status" | "trial_ends_at" | "tier">,
+  sub: Pick<Subscription, "status" | "trial_ends_at" | "tier" | "current_period_end">,
   now: Date = new Date(),
 ): string | null {
   if (sub.status === "trial") {
@@ -111,5 +111,18 @@ export function trialBannerText(
     return "طلب الترقية قيد المعالجة — سيُفعّل اشتراكك بعد تأكيد الدفع عبر كليك.";
   }
   if (sub.status === "past_due") return "اشتراكك متأخّر السداد — يُرجى التجديد.";
-  return null; // active / cancelled → no banner
+  if (sub.status === "active" && periodEnded(sub, now)) {
+    return "انتهت صلاحية اشتراكك — يُرجى التجديد للمتابعة.";
+  }
+  return null; // active & current / cancelled → no banner
+}
+
+/** True when a subscription's paid period has a date and it's in the past. */
+export function periodEnded(
+  sub: Pick<Subscription, "current_period_end">,
+  now: Date = new Date(),
+): boolean {
+  if (!sub.current_period_end) return false;
+  const end = new Date(sub.current_period_end);
+  return !Number.isNaN(end.getTime()) && end.getTime() <= now.getTime();
 }

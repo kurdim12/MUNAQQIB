@@ -101,11 +101,14 @@ def run_digest(dry_run: bool = False) -> None:
 
 
 def run_sweep() -> None:
-    """Daily closing-status sweep: mark past-deadline open tenders as closed (§7)."""
-    from db import sweep_closed_tenders
+    """Daily housekeeping sweep: close past-deadline tenders (§7) and expire any
+    paid subscriptions whose period has ended."""
+    from db import expire_subscriptions, sweep_closed_tenders
 
     n = sweep_closed_tenders()
     logger.info("Closing sweep: marked %d tenders closed", n)
+    s = expire_subscriptions()
+    logger.info("Subscription sweep: marked %d subscriptions past_due", s)
 
 
 def run_deadlines(dry_run: bool = False) -> None:
