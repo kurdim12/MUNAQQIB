@@ -368,6 +368,35 @@ export async function getAnalysis(
 }
 
 // ---------------------------------------------------------------------------
+// Layer 13 — learning signals (per-category save/dismiss behavior)
+// ---------------------------------------------------------------------------
+export interface CategoryAffinityRow {
+  category: string;
+  saved: number;
+  dismissed: number;
+  total: number;
+}
+
+export async function getCategoryAffinity(orgId: string): Promise<CategoryAffinityRow[]> {
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT t.category AS category,
+            SUM(CASE WHEN m.saved = 1 THEN 1 ELSE 0 END) AS saved,
+            SUM(CASE WHEN m.dismissed = 1 THEN 1 ELSE 0 END) AS dismissed,
+            COUNT(*) AS total
+     FROM matches m JOIN tenders t ON t.id = m.tender_id
+     WHERE m.org_id = ? AND t.category IS NOT NULL
+     GROUP BY t.category`,
+    [orgId],
+  );
+  return rows.map((r) => ({
+    category: String(r.category),
+    saved: Number(r.saved ?? 0),
+    dismissed: Number(r.dismissed ?? 0),
+    total: Number(r.total ?? 0),
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Layer 1 — source health (operator monitoring)
 // ---------------------------------------------------------------------------
 export interface SourceHealth {

@@ -3,8 +3,10 @@ import { Paywall } from "@/components/Paywall";
 import { TrialBanner } from "@/components/TrialBanner";
 import { can, hasAccess } from "@/lib/entitlements";
 import { deadlineLabel, scorePct } from "@/lib/format";
+import { buildAffinity, personalizeValue, preferredCategories } from "@/lib/learning";
 import { opportunityQuality } from "@/lib/quality";
 import {
+  getCategoryAffinity,
   getCurrentOrgId,
   getMatchedTenders,
   getSubscription,
@@ -43,10 +45,13 @@ export default async function CommandCenter({
   const showList = access && (!savedOnly || canSaved);
 
   const raw = orgId && showList ? await getMatchedTenders(orgId, { savedOnly }) : [];
-  // Layer 6: rank the feed by opportunity quality (highest opportunity first).
-  const all = [...raw].sort(
-    (a, b) => opportunityQuality(b).value - opportunityQuality(a).value,
-  );
+  // Layer 13: learn category affinity from save/dismiss behavior, then
+  // Layer 6: rank the feed by opportunity quality personalized to the user.
+  const affinity = orgId && showList ? buildAffinity(await getCategoryAffinity(orgId)) : {};
+  const preferred = preferredCategories(affinity);
+  const rankValue = (t: MatchedTender) =>
+    personalizeValue(opportunityQuality(t).value, t.category, affinity);
+  const all = [...raw].sort((a, b) => rankValue(b) - rankValue(a));
   const categories = Array.from(new Set(all.map((x) => x.category).filter(Boolean))) as string[];
   const tenders = cat ? all.filter((x) => x.category === cat) : all;
   const base = savedOnly ? "/dashboard?view=saved" : "/dashboard";
@@ -141,6 +146,7 @@ export default async function CommandCenter({
 
             {/* Right rail */}
             <aside className="space-y-6">
+              {preferred.length > 0 && <LearningPanel preferred={preferred} />}
               <DeadlinesRail deadlines={deadlines} />
               <SignalsRail count={all.length} />
             </aside>
@@ -157,6 +163,26 @@ function Metric({ label, value, accent }: { label: string; value: string; accent
     <div className="px-4 py-5">
       <div className={`nums text-3xl font-bold ${color}`}>{value}</div>
       <div className="mt-1 text-xs text-ink-muted">{label}</div>
+    </div>
+  );
+}
+
+function LearningPanel({ preferred }: { preferred: string[] }) {
+  return (
+    <div className="rounded-xl border border-line bg-ink p-4 text-paper">
+      <h3 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400">
+        ما تعلّمه النظام عنك
+      </h3>
+      <p className="mt-2 text-sm text-stone-300">
+        من حفظك وتجاهلك للفرص، نرفع ترتيب ما يشبه اهتماماتك:
+      </p>
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {preferred.slice(0, 4).map((c) => (
+          <span key={c} className="rounded-md bg-white/10 px-2.5 py-1 text-xs text-stone-100">
+            {c}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
