@@ -25,7 +25,7 @@ export default async function OperationsPage() {
   if (!isAdminEmail(session?.user?.email)) {
     return (
       <section className="py-16 text-center">
-        <h1 className="font-serif text-2xl font-bold text-ink">غير مصرّح</h1>
+        <h1 className="text-2xl font-extrabold text-ink">غير مصرّح</h1>
         <p className="mt-2 text-ink-soft">هذه الصفحة مخصّصة لطاقم التشغيل فقط.</p>
       </section>
     );
@@ -37,11 +37,11 @@ export default async function OperationsPage() {
     <section className="animate-fade-in">
       <header className="mb-6">
         <p className="eyebrow">التشغيل · مراقبة المصادر</p>
-        <h1 className="mt-2 font-serif text-3xl font-bold text-ink">صحّة محرّك الاكتشاف</h1>
+        <h1 className="mt-2 text-3xl font-extrabold text-ink">صحّة محرّك الاكتشاف</h1>
         <p className="mt-1.5 text-ink-soft">حالة كل مصدر، آخر تشغيل ونجاح، وعدد الإخفاقات المتتالية.</p>
       </header>
 
-      <div className="overflow-hidden rounded-xl border border-line bg-white">
+      <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-card">
         <div className="grid grid-cols-[1.4fr_0.8fr_1fr_1fr_0.7fr] gap-2 border-b border-line bg-sand/40 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
           <span>المصدر</span>
           <span>الحالة</span>

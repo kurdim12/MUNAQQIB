@@ -24,7 +24,7 @@ export default async function RegisterPage({
   const error = errCode ? ERRORS[errCode] : null;
   return (
     <section className="mx-auto flex max-w-md flex-col items-center py-12 text-center animate-fade-up">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink text-xl font-bold text-white shadow-card">
+      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-gradient text-xl font-bold text-white shadow-glow">
         م
       </span>
       <h1 className="mt-5 text-2xl font-extrabold text-ink">أنشئ حساب شركتك</h1>
@@ -49,7 +49,7 @@ export default async function RegisterPage({
             type="text"
             required
             placeholder="مثال: شركة الإعمار للمقاولات"
-            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/10"
+            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
           />
         </div>
         <div>
@@ -61,7 +61,7 @@ export default async function RegisterPage({
             name="sector"
             required
             defaultValue="contracting"
-            className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm transition focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/10"
+            className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
           >
             {SECTORS.map((s) => (
               <option key={s.value} value={s.value}>
@@ -82,7 +82,7 @@ export default async function RegisterPage({
             required
             autoComplete="email"
             placeholder="you@company.com"
-            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/10"
+            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
           />
         </div>
         <div>
@@ -98,12 +98,12 @@ export default async function RegisterPage({
             minLength={8}
             autoComplete="new-password"
             placeholder="٨ أحرف على الأقل"
-            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/10"
+            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
           />
         </div>
         <button
           type="submit"
-          className="w-full rounded-xl bg-ink px-4 py-2.5 font-semibold text-white transition hover:bg-ink-soft active:scale-[0.98]"
+          className="btn-primary w-full text-sm"
         >
           إنشاء الحساب والدخول
         </button>

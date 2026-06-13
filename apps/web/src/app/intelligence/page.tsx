@@ -37,7 +37,7 @@ export default async function MarketIntelligence() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-400">
             ذكاء السوق · محطّة المعلومات
           </p>
-          <h1 className="mt-2 font-serif text-3xl font-bold">ما لا يراه منافسوك</h1>
+          <h1 className="mt-2 text-3xl font-extrabold">ما لا يراه منافسوك</h1>
           <p className="mt-1.5 text-sm text-stone-300">
             خلاصة نشاط السوق المبنية على العطاءات التي تخصّ نشاطك.
           </p>

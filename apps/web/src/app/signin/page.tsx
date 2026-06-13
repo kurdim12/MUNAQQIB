@@ -10,7 +10,7 @@ export default async function SignInPage({
   const hasError = (await searchParams)?.error;
   return (
     <section className="mx-auto flex max-w-md flex-col items-center py-12 text-center animate-fade-up">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink text-xl font-bold text-white shadow-card">
+      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-gradient text-xl font-bold text-white shadow-glow">
         م
       </span>
       <h1 className="mt-5 text-2xl font-extrabold text-ink">تسجيل الدخول</h1>
@@ -37,7 +37,7 @@ export default async function SignInPage({
             required
             autoComplete="email"
             placeholder="you@example.com"
-            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/10"
+            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
           />
         </div>
         <div>
@@ -52,13 +52,10 @@ export default async function SignInPage({
             required
             autoComplete="current-password"
             placeholder="••••••••"
-            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/10"
+            className="w-full rounded-xl border border-line px-4 py-2.5 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
           />
         </div>
-        <button
-          type="submit"
-          className="w-full rounded-xl bg-ink px-4 py-2.5 font-semibold text-white transition hover:bg-ink-soft active:scale-[0.98]"
-        >
+        <button type="submit" className="btn-primary w-full text-sm">
           تسجيل الدخول
         </button>
       </form>

@@ -25,7 +25,7 @@ export default function OnboardingPage() {
   const step1Valid = name.trim().length >= 2;
   const canSubmit = step1Valid && /\S+@\S+\.\S+/.test(email.trim());
   const input =
-    "w-full rounded-lg border border-line bg-white px-3 py-2 text-sm transition focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/10";
+    "w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15";
 
   function submit() {
     setError(null);
@@ -47,11 +47,20 @@ export default function OnboardingPage() {
   return (
     <section className="mx-auto max-w-xl animate-fade-in">
       <p className="eyebrow">إعداد ملف المنشأة</p>
-      <h1 className="mt-2 font-serif text-3xl font-bold text-ink">{t.onboarding.title}</h1>
+      <h1 className="mt-2 text-3xl font-extrabold text-ink">{t.onboarding.title}</h1>
       <p className="mt-1.5 text-ink-soft">{t.onboarding.subtitle}</p>
 
-      <div className="mt-2 text-sm text-ink-muted">
-        الخطوة <span className="nums">{step}</span> من <span className="nums">2</span>
+      {/* progress */}
+      <div className="mt-4 flex items-center gap-2">
+        <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
+          <span
+            className="block h-full rounded-full bg-primary-gradient transition-all"
+            style={{ width: step === 1 ? "50%" : "100%" }}
+          />
+        </span>
+        <span className="text-xs text-ink-muted">
+          <span className="nums">{step}</span> / <span className="nums">2</span>
+        </span>
       </div>
 
       <div className="panel mt-6 space-y-5 p-6">
@@ -68,10 +77,10 @@ export default function OnboardingPage() {
                     key={s}
                     type="button"
                     onClick={() => setSector(s)}
-                    className={`rounded-lg border px-3 py-1.5 text-sm transition ${
+                    className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
                       sector === s
-                        ? "border-ink bg-ink text-paper"
-                        : "border-line text-ink-soft hover:border-ink/40"
+                        ? "border-primary bg-primary-50 text-primary-800"
+                        : "border-line text-ink-soft hover:border-primary/40"
                     }`}
                   >
                     {t.onboarding.sectors[s]}
@@ -105,7 +114,7 @@ export default function OnboardingPage() {
                 type="button"
                 disabled={!step1Valid}
                 onClick={() => setStep(2)}
-                className="btn-ink disabled:opacity-40"
+                className="btn-primary text-sm disabled:opacity-40"
               >
                 {t.onboarding.next}
               </button>
@@ -130,7 +139,7 @@ export default function OnboardingPage() {
                 type="button"
                 disabled={!canSubmit || pending}
                 onClick={submit}
-                className="btn-ink disabled:opacity-40"
+                className="btn-primary text-sm disabled:opacity-40"
               >
                 {pending ? t.onboarding.creating : t.onboarding.submit}
               </button>
