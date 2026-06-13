@@ -28,4 +28,5 @@ export async function requestUpgradeAction(formData: FormData) {
     .toUpperCase()}`;
   await requestUpgrade(orgId, tier, reference);
   revalidatePath("/pricing");
+  revalidatePath("/billing");
 }

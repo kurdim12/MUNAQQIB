@@ -81,6 +81,9 @@ export default async function RootLayout({
               )}
               {session?.user ? (
                 <form action={signOutAction} className="flex items-center gap-2 ps-2">
+                  <a href="/billing" className="rounded-md px-3 py-2 transition hover:bg-sand">
+                    {t.nav.billing}
+                  </a>
                   <span className="hidden text-xs text-ink-muted sm:inline" dir="ltr">
                     {session.user.email}
                   </span>

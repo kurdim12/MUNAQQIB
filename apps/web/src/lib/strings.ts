@@ -8,6 +8,7 @@ export const t = {
     intelligence: "ذكاء السوق",
     pricing: "الأسعار",
     settings: "الإعدادات",
+    billing: "الفوترة",
     onboarding: "ملف المنشأة",
     admin: "الإدارة",
     operations: "العمليات",
