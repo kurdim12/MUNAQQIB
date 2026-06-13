@@ -58,7 +58,7 @@ Anthropic + OpenRouter   → analyzer (sonnet) + cheap slots
 | Route | What |
 |---|---|
 | `/` | Landing (outcome-led, intelligence framing) |
-| `/dashboard` | **Command Center** — morning briefing, ranked opportunity rows, deadlines + signals + learning rail |
+| `/dashboard` | **Command Center** — decision pipeline: one briefing line → Priority-3 act-now cards → compact rows grouped by lifecycle stage; deadlines + learning rail |
 | `/tenders/[id]` | **Opportunity Report** — score, days, verdict, why-matched, intelligence report, war-room |
 | `/watchlist` | Monitored saved opportunities |
 | `/intelligence` | **Market Intelligence** (dark terminal) — buyers/categories; award data gated to intelligence tier |
