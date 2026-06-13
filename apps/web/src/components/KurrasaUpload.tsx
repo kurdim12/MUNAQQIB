@@ -23,10 +23,12 @@ export function KurrasaUpload({ tenderId }: { tenderId: string }) {
   return (
     <div className="rounded-xl border border-dashed border-line bg-white p-6 text-center">
       <div className="text-2xl">📄</div>
-      <h3 className="mt-2 font-serif text-lg font-bold text-ink">حلّل الكرّاسة</h3>
+      <h3 className="mt-2 font-serif text-lg font-bold text-ink">
+        حلّل كرّاسة العطاء <span className="font-normal text-ink-muted">(وثائق العطاء)</span>
+      </h3>
       <p className="mx-auto mt-1 max-w-md text-sm text-ink-soft">
-        ارفع كرّاسة العطاء (PDF) ليقرأها محلّلنا: الأهلية، الكفالات، المواعيد، والمخاطر —
-        قبل أن تقضي ساعات في قراءتها.
+        ارفع ملف وثائق العطاء (PDF) ليقرأها محلّلنا ويلخّص لك: هل أنت مؤهّل؟ ما الكفالات
+        المطلوبة؟ المواعيد والمخاطر — قبل أن تقضي ساعات في قراءتها.
       </p>
 
       <form action={onSubmit} className="mt-4 flex flex-col items-center gap-3">

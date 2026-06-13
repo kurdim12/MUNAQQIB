@@ -103,10 +103,10 @@ export default async function CommandCenter() {
             <h1 className="mt-2 font-serif text-3xl font-bold text-ink sm:text-4xl">{hi}</h1>
             <p className="mt-2 text-lg leading-relaxed text-ink-soft">
               {all.length === 0
-                ? "ما زلنا نراقب السوق نيابة عنك — لا فرص مطابقة بعد."
+                ? "ما زلنا نراقب السوق نيابة عنك — لا عطاءات تناسب شركتك بعد."
                 : priority.length > 0
-                  ? `رصدنا لك ${all.length} فرصة مطابقة، منها ${priority.length} تستحقّ قرارك اليوم.`
-                  : `رصدنا لك ${all.length} فرصة مطابقة — لا شيء عاجل اليوم.`}
+                  ? `وجدنا ${all.length} عطاءً يناسب تصنيف شركتك، منها ${priority.length} يستحقّ قرارك اليوم.`
+                  : `وجدنا ${all.length} عطاءً يناسب تصنيف شركتك — لا شيء عاجل اليوم.`}
             </p>
           </header>
 
@@ -119,7 +119,12 @@ export default async function CommandCenter() {
                   {/* Tier 2 — Priority (the only place the accent appears) */}
                   {priority.length > 0 && (
                     <div>
-                      <h2 className="eyebrow mb-3">تستحقّ قرارك اليوم</h2>
+                      <div className="mb-1 flex items-baseline justify-between gap-2">
+                        <h2 className="font-serif text-lg font-bold text-ink">يستحقّ قرارك اليوم</h2>
+                      </div>
+                      <p className="mb-3 text-xs text-ink-muted">
+                        النسبة المئوية = مدى مطابقة العطاء لتصنيف شركتك ونشاطها.
+                      </p>
                       <div className="space-y-3">
                         {priority.map((t) => (
                           <PriorityCard key={t.tender_id} tender={t} />
@@ -132,7 +137,7 @@ export default async function CommandCenter() {
                   {groups.length > 0 && (
                     <div>
                       <div className="mb-3 flex items-center justify-between">
-                        <h2 className="eyebrow">خطّ الفرص</h2>
+                        <h2 className="font-serif text-lg font-bold text-ink">كل العطاءات المطابقة</h2>
                         {canSaved && (
                           <a href="/watchlist" className="text-sm font-medium text-ink-muted hover:text-ink">
                             ★ المتابعة
@@ -162,9 +167,12 @@ export default async function CommandCenter() {
 
             {/* Right rail — supplementary, never competing */}
             <aside className="space-y-6">
-              {preferred.length > 0 && <LearningPanel preferred={preferred} />}
               <DeadlinesRail deadlines={deadlines} />
-              <SignalsRail count={all.length} />
+              {preferred.length > 0 && <LearningPanel preferred={preferred} />}
+              <p className="px-1 text-xs leading-relaxed text-ink-muted">
+                نراقب يومياً دائرة العطاءات الحكومية (GTD) والمنظومة الإلكترونية (JONEPS)
+                ونطابق كل عطاء مع تصنيف شركتك.
+              </p>
             </aside>
           </div>
         </>
@@ -265,26 +273,6 @@ function DeadlinesRail({ deadlines }: { deadlines: MatchedTender[] }) {
           ))}
         </ul>
       )}
-    </div>
-  );
-}
-
-function SignalsRail({ count }: { count: number }) {
-  return (
-    <div className="panel p-4">
-      <h3 className="eyebrow mb-3">إشارات السوق</h3>
-      <dl className="space-y-2.5 text-sm">
-        <Signal k="المصادر المراقَبة" v="GTD · JONEPS" />
-        <Signal k="فرص مطابقة" v={String(count)} />
-      </dl>
-    </div>
-  );
-}
-function Signal({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex items-center justify-between">
-      <dt className="text-ink-muted">{k}</dt>
-      <dd className="nums font-medium text-ink">{v}</dd>
     </div>
   );
 }
