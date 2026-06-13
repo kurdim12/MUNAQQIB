@@ -1,10 +1,9 @@
 /**
  * Subscription tiers + trial helpers (pure — unit-tested in billing.test.ts).
  *
- * NOTE: the JOD prices below are PLACEHOLDERS pending the master brief's pricing
- * table (DECISIONS.md). The UI renders them as "indicative" (قابلة للتغيير); do not
- * treat them as final. Tier *names* and the four-tier shape match the D1 schema
- * (subscriptions.tier CHECK constraint).
+ * Prices are the LOCKED master-brief tiers: Radar 15 / Pro 79 / Intelligence 199
+ * JOD/month (annual = 2 months free). Tier names + the four-tier shape match the
+ * D1 schema (subscriptions.tier CHECK constraint). Billing is manual CliQ (v1).
  */
 export type Tier = "trial" | "radar" | "pro" | "intelligence";
 export type SubStatus =
@@ -25,7 +24,7 @@ export interface Subscription {
 export interface TierPlan {
   tier: Tier;
   name: string;
-  monthlyJod: number; // placeholder
+  monthlyJod: number;
   tagline: string;
   features: string[];
 }
@@ -35,35 +34,36 @@ export const PLANS: TierPlan[] = [
     tier: "radar",
     name: "رادار",
     monthlyJod: 15,
-    tagline: "الملخّص الصباحي المطابق لتصنيفك.",
+    tagline: "ابدأ هنا: لا يفوتك عطاء يناسب تصنيفك.",
     features: [
-      "ملخّص إيميل يومي بالعطاءات المطابقة",
-      "تنبيهات تيليجرام للمواعيد النهائية",
-      "مصدرَا GTD و JONEPS",
+      "إيميل صباحي يومي بالعطاءات المطابقة لتصنيف شركتك",
+      "تنبيهات للمواعيد النهائية عبر تيليجرام",
+      "مصدرا GTD و JONEPS الرسميان",
+      "لوحة تحكّم بالفرص المطابقة",
     ],
   },
   {
     tier: "pro",
     name: "برو",
-    monthlyJod: 35,
-    tagline: "تحليل الكرّاسات وذكاء المواعيد.",
+    monthlyJod: 79,
+    tagline: "للجادّين: حلّل الكرّاسة وقرّر بثقة.",
     features: [
       "كل مزايا رادار",
-      "تحليل كرّاسة العطاء بالذكاء الاصطناعي",
-      "مصادر إضافية (أمانة عمّان، الصناعة)",
-      "حفظ العطاءات ومتابعتها",
+      "تحليل كرّاسة العطاء: الأهلية، الكفالات، المواعيد، والمخاطر",
+      "متابعة العطاءات عبر مراحلها حتى القرار",
+      "حتى ٣ مستخدمين · تصدير CSV",
     ],
   },
   {
     tier: "intelligence",
     name: "إنتليجنس",
-    monthlyJod: 75,
-    tagline: "أسعار الإحالات وذكاء المنافسة.",
+    monthlyJod: 199,
+    tagline: "سعّر عروضك ببيانات السوق الحقيقية.",
     features: [
       "كل مزايا برو",
-      "بيانات الإحالات والأسعار التاريخية",
-      "تحليل المنافسين",
-      "أولوية في الدعم",
+      "أسعار الإحالات التاريخية لتسعير عروضك",
+      "مَن يفوز عادةً في كل جهة وتصنيف",
+      "تحليل كرّاسات بلا حدود · حتى ١٠ مستخدمين · أولوية بالدعم",
     ],
   },
 ];

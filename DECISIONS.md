@@ -253,3 +253,12 @@ Append-only record of non-obvious choices. Newest at the top. Each entry:
 - **mkurdi account:** `info@mkurdi.com` (owner of the seeded mkurdi org, Pro/active)
   now has a password set, so it can log in immediately — no domain verification
   needed for sign-in anymore.
+
+## 2026-06-13 — Pricing locked at Radar 15 / Pro 79 / Intelligence 199 JOD
+
+- The Screen & Flow spec sets the authoritative tiers; updated `web/lib/billing.ts`
+  from the old placeholders (15/35/75) to **15 / 79 / 199 JOD/month** with concrete
+  feature copy. Removed the "indicative/placeholder" framing. Annual = 2 months free
+  (×10), shown via a monthly/annual toggle. Billing remains manual CliQ (v1).
+- Pricing page rebuilt to Screen 2: 3 cards (Pro anchored "الأكثر اختياراً"),
+  comparison table, CliQ note, FAQ — in the bold-modern design system.
