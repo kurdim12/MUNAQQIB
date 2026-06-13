@@ -95,41 +95,33 @@ export default async function MarketIntelligence() {
               </dl>
             </div>
 
-            {/* Premium: award prices + competitors */}
-            <div className="relative bg-ink p-6 md:col-span-2">
+            {/* Award prices + competitors — needs the historical awards backfill */}
+            <div className="bg-ink p-6 md:col-span-2">
               <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400">
                 أسعار الإحالات وذكاء المنافسين
               </h2>
-              {premium ? (
-                <p className="mt-3 text-sm text-stone-300">
-                  بيانات الإحالات التاريخية وتحليل المنافسين قيد التجهيز لمنشأتك (المرحلة 2).
-                </p>
-              ) : (
-                <div className="relative mt-4">
-                  <div className="pointer-events-none select-none space-y-2 blur-sm">
-                    {["شركة الإنشاءات المتحدة — 1.2M د.أ", "مجموعة البناء الوطنية — 880K د.أ", "متوسط سعر الإحالة — 740K د.أ"].map(
-                      (x) => (
-                        <div key={x} className="flex items-center justify-between rounded-md bg-white/5 px-4 py-2 text-sm text-stone-200">
-                          <span>{x}</span>
-                          <span className="nums text-stone-400">▮▮▮</span>
-                        </div>
-                      ),
+              <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-5">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">🏗️</span>
+                  <div>
+                    <p className="text-sm font-medium text-stone-100">
+                      نبني قاعدة بيانات أسعار الإحالات التاريخية — تتوسّع أسبوعياً.
+                    </p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-stone-400">
+                      قريباً سترى هنا: من يفوز عادةً في كل جهة، نطاقات الأسعار الفائزة لكل تصنيف،
+                      وموقع عرضك مقابل السوق — مبنيّة على نتائج فتح العطاءات الفعلية، لا تخمين.
+                    </p>
+                    {!premium && (
+                      <a
+                        href="/pricing"
+                        className="mt-4 inline-block rounded-lg bg-paper px-4 py-2 text-sm font-semibold text-ink transition hover:bg-sand"
+                      >
+                        متوفّرة ضمن باقة إنتليجنس ←
+                      </a>
                     )}
                   </div>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                    <span className="text-2xl">🔒</span>
-                    <p className="mt-2 text-sm font-medium text-stone-100">
-                      أسعار الإحالات وتحليل المنافسين ضمن باقة إنتليجنس
-                    </p>
-                    <a
-                      href="/pricing"
-                      className="mt-3 rounded-lg bg-paper px-4 py-2 text-sm font-semibold text-ink transition hover:bg-sand"
-                    >
-                      الترقية لكشف البيانات
-                    </a>
-                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         )}
