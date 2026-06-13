@@ -47,7 +47,7 @@ Anthropic + OpenRouter   → analyzer (sonnet) + cheap slots
 | 8 | Digest Generation | ✅ `worker/pipeline/digest.py` (insight-framed) |
 | 9 | Notification | ✅ `worker/pipeline/notify.py` (Telegram) |
 | 10 | **Watchlist** | ✅ `/watchlist` — monitors saved opps (status/deadline/report) |
-| 11 | Document Intelligence | ✅ analyzer core (`worker/pipeline/analyze.py`, ~0.05 JOD/doc) + **war-room UX** + enqueue + **producer stage** (`analyze_run.py` drains the queue → persists; reader-proxy doc-fetch, in `daily.sh`). Needs LLM keys to run live. |
+| 11 | Document Intelligence | ✅ analyzer core (`worker/pipeline/analyze.py`, ~0.05 JOD/doc) + **L4 كرّاسة upload** (PDF → unpdf text extract → queue → worker analyzes `doc_text`) + producer stage (`analyze_run.py`, in `daily.sh`) → page-cited brief, framed as a preliminary AI review. Needs LLM keys on the worker to run live. |
 | 12 | Competitor Intelligence | ⬜ needs award data (Phase 2) |
 | 13 | **Learning** | ✅ `web/lib/learning.ts` — save/dismiss → category affinity → personalized ranking, tested |
 

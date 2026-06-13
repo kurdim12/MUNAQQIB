@@ -1,5 +1,5 @@
 import { AnalysisBrief } from "@/components/AnalysisBrief";
-import { IntelligenceEngine } from "@/components/IntelligenceEngine";
+import { KurrasaUpload } from "@/components/KurrasaUpload";
 import { OpportunityState } from "@/components/OpportunityState";
 import { Paywall } from "@/components/Paywall";
 import { eligibilityTone } from "@/lib/analysis";
@@ -8,6 +8,7 @@ import { deadlineLabel, formatAmmanDate, formatJod, scorePct } from "@/lib/forma
 import { opportunityQuality, qualityTone } from "@/lib/quality";
 import {
   getAnalysis,
+  getAnalysisState,
   getCurrentOrgId,
   getSubscription,
   getTenderForOrg,
@@ -59,6 +60,7 @@ export default async function OpportunityReport({
   const sub = orgId ? await getSubscription(orgId) : null;
   const allowed = can(sub, "analyzer");
   const analysis = allowed ? await getAnalysis(orgId!, id) : null;
+  const analysisState = allowed && !analysis ? await getAnalysisState(orgId!, id) : "none";
   const days = daysRemaining(tender.closing_at);
   const reasons = Object.keys(tender.reasons).filter((k) => tender.reasons[k] > 0);
 
@@ -154,9 +156,29 @@ export default async function OpportunityReport({
             body="رقِّ اشتراكك إلى باقة برو للحصول على تقرير كامل: الأهلية، الكفالات، المواعيد، والمخاطر — قبل أن تقضي ساعات في قراءة المستندات."
           />
         ) : analysis ? (
-          <AnalysisBrief brief={analysis.brief} />
+          <>
+            <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              مراجعة أولية بالذكاء الاصطناعي — راجِع الكرّاسة الأصلية قبل القرار.
+            </p>
+            <AnalysisBrief brief={analysis.brief} />
+          </>
+        ) : analysisState === "queued" ? (
+          <div className="rounded-xl border border-line bg-white p-6 text-center">
+            <div className="text-2xl">⏳</div>
+            <p className="mt-2 font-medium text-ink">الكرّاسة قيد التحليل…</p>
+            <p className="mt-1 text-sm text-ink-muted">
+              يقرأ المحلّل المستند ويستخرج الأهلية والمواعيد والمخاطر. حدّث الصفحة بعد قليل.
+            </p>
+          </div>
         ) : (
-          <IntelligenceEngine tenderId={id} />
+          <>
+            {analysisState === "failed" && (
+              <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                تعذّر التحليل السابق — أعد رفع الكرّاسة (PDF نصّي وليس صورة ممسوحة).
+              </p>
+            )}
+            <KurrasaUpload tenderId={id} />
+          </>
         )}
       </div>
 

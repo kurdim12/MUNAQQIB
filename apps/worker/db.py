@@ -298,7 +298,7 @@ def claim_queued_analyses(limit: int = 5) -> list[dict]:
     claim for the single daily worker (no concurrent drainers in v1)."""
     return d1.execute(
         """
-        SELECT a.id AS analysis_id, a.org_id, a.tender_id,
+        SELECT a.id AS analysis_id, a.org_id, a.tender_id, a.doc_text,
                t.title AS tender_title, t.entity AS tender_entity, t.url AS tender_url
         FROM analyses a
         JOIN tenders t ON t.id = a.tender_id

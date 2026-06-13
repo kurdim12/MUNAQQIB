@@ -110,7 +110,12 @@ def _analyze_one(row: dict, *, complete_fn=None) -> str:
     if profile is None:
         profile = OrgProfile(name="—", sector="contracting")
 
-    text, pages = fetch_doc_text(url)
+    # Prefer the user-uploaded كرّاسة text (L4); fall back to fetching the URL.
+    uploaded = (row.get("doc_text") or "").strip()
+    if uploaded:
+        text, pages = uploaded, 1
+    else:
+        text, pages = fetch_doc_text(url)
     if not text.strip():
         update_analysis(analysis_id, "failed", None, 0, 0.0, file_path=url)
         logger.warning("[analyze] %s: no document text at %s", analysis_id, url)

@@ -496,6 +496,41 @@ export async function enqueueAnalysis(orgId: string, tenderId: string): Promise<
   );
 }
 
+/** L4 — queue an analysis from an uploaded كرّاسة's extracted text. Supersedes
+ *  any prior queued row for (org, tender) so a re-upload re-analyzes. The worker
+ *  analyze stage consumes doc_text directly (no URL fetch). */
+export async function enqueueAnalysisWithText(
+  orgId: string,
+  tenderId: string,
+  docText: string,
+  fileName: string,
+): Promise<void> {
+  await execute(
+    `DELETE FROM analyses WHERE org_id = ? AND tender_id = ? AND status = 'queued'`,
+    [orgId, tenderId],
+  );
+  await execute(
+    `INSERT INTO analyses (org_id, tender_id, file_path, status, doc_text)
+     VALUES (?, ?, ?, 'queued', ?)`,
+    [orgId, tenderId, fileName, docText],
+  );
+}
+
+/** Status of the most recent analysis row for (org, tender): queued | done |
+ *  failed | none — drives the war-room/upload UI states. */
+export async function getAnalysisState(
+  orgId: string,
+  tenderId: string,
+): Promise<"queued" | "done" | "failed" | "none"> {
+  const row = await executeOne<{ status: string }>(
+    `SELECT status FROM analyses WHERE org_id = ? AND tender_id = ?
+     ORDER BY created_at DESC LIMIT 1`,
+    [orgId, tenderId],
+  );
+  const s = row?.status;
+  return s === "queued" || s === "done" || s === "failed" ? s : "none";
+}
+
 // ---------------------------------------------------------------------------
 // Layer 10 — watchlist (saved opportunities the system monitors)
 // ---------------------------------------------------------------------------

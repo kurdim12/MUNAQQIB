@@ -78,6 +78,28 @@ def test_empty_queue_is_noop(monkeypatch):
     assert ar.run_analyze(limit=5, complete_fn=_stub_complete) == {}
 
 
+def test_uploaded_doc_text_skips_url_fetch(monkeypatch):
+    # L4: a row carrying uploaded doc_text must analyze it without fetching the URL.
+    saved = _patch_common(monkeypatch)
+
+    def _boom(url):  # fetch must NOT be called when doc_text is present
+        raise AssertionError("fetch_doc_text called despite uploaded doc_text")
+
+    monkeypatch.setattr(ar, "fetch_doc_text", _boom)
+    monkeypatch.setattr(
+        ar, "claim_queued_analyses",
+        lambda limit: [{
+            "analysis_id": "a3", "org_id": "demo_org_v1", "tender_id": "gtd_52-2026",
+            "tender_title": "صيانة الطريق", "tender_entity": "GTD",
+            "tender_url": "https://gtd.gov.jo/x",
+            "doc_text": "نص الكرّاسة المرفوعة من المستخدم " * 30,
+        }],
+    )
+    tally = ar.run_analyze(limit=5, complete_fn=_stub_complete)
+    assert tally == {"done": 1}
+    assert saved["status"] == "done"
+
+
 def test_html_to_text_strips_markup():
     out = ar._html_to_text("<html><body><h1>عنوان</h1><script>x()</script><p>نص</p></body></html>")
     assert "عنوان" in out and "نص" in out and "x()" not in out
