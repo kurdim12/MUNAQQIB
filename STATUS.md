@@ -65,7 +65,10 @@ Anthropic + OpenRouter   → analyzer (sonnet) + cheap slots
 | `/pricing` | Tier cards + CliQ upgrade request |
 | `/signin` | Email + password login (Auth.js Credentials); magic-link fallback |
 | `/register` | Self-serve company signup (email + password → org + 14-day trial) |
-| `/onboarding` | Company profile wizard |
+| `/onboarding` | Company profile wizard → hands off to `/onboarding/ready` |
+| `/onboarding/ready` | **Trial hook** (الفرص الأولى) — first live matches + "عطاءات فاتتك" |
+| `/settings` | **الإعدادات** — tabbed: profile (re-matches) · delivery · team · account |
+| `/billing` | **الفوترة** — current plan, CliQ invoice, plan selector (manual CliQ) |
 | `/admin` | CliQ payment activation (operator) |
 | `/operations` | Source-health monitor (operator) |
 | ⌘K | Global command palette |
