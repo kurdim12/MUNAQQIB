@@ -63,11 +63,20 @@ export default async function CommandCenter() {
   const { hi, date } = ammanGreeting();
   const now = Date.now();
 
-  // Tier 2 — "act now": high-quality, soonest-closing first, capped at 3.
-  const priority = all
-    .filter((t) => opportunityQuality(t).tier === "high")
+  // Tier 2 — "act now": a strong match closing soon. (Quality tier alone was too
+  // strict with embeddings off, so the urgent 77%/2-day match never surfaced.)
+  const isActNow = (t: MatchedTender) => {
+    const d = daysOrInf(t.closing_at);
+    return t.score >= 0.6 && d >= 0 && d <= 10;
+  };
+  let priority = all
+    .filter(isActNow)
     .sort((a, b) => daysOrInf(a.closing_at) - daysOrInf(b.closing_at))
     .slice(0, 3);
+  // Nothing time-critical but we do have matches → still lead with the best 2.
+  const actNowCount = priority.length;
+  if (priority.length === 0) priority = all.slice(0, Math.min(2, all.length));
+  const priorityHeading = actNowCount > 0 ? "يستحقّ قرارك اليوم" : "أبرز العطاءات لك";
   const prioritySet = new Set(priority.map((t) => t.tender_id));
 
   // Tier 3 — the pipeline: everything else, grouped by lifecycle stage.
@@ -104,9 +113,9 @@ export default async function CommandCenter() {
             <p className="mt-2 text-lg leading-relaxed text-ink-soft">
               {all.length === 0
                 ? "ما زلنا نراقب السوق نيابة عنك — لا عطاءات تناسب شركتك بعد."
-                : priority.length > 0
-                  ? `وجدنا ${all.length} عطاءً يناسب تصنيف شركتك، منها ${priority.length} يستحقّ قرارك اليوم.`
-                  : `وجدنا ${all.length} عطاءً يناسب تصنيف شركتك — لا شيء عاجل اليوم.`}
+                : actNowCount > 0
+                  ? `وجدنا ${all.length} عطاءً يناسب تصنيف شركتك، منها ${actNowCount} يستحقّ قرارك اليوم.`
+                  : `وجدنا ${all.length} عطاءً يناسب تصنيف شركتك — راجِع أبرزها بالأسفل.`}
             </p>
           </header>
 
@@ -116,16 +125,14 @@ export default async function CommandCenter() {
                 <EmptyState />
               ) : (
                 <>
-                  {/* Tier 2 — Priority (the only place the accent appears) */}
+                  {/* Tier 2 — Priority (rich, vivid act-now cards) */}
                   {priority.length > 0 && (
                     <div>
-                      <div className="mb-1 flex items-baseline justify-between gap-2">
-                        <h2 className="font-serif text-lg font-bold text-ink">يستحقّ قرارك اليوم</h2>
-                      </div>
-                      <p className="mb-3 text-xs text-ink-muted">
-                        النسبة المئوية = مدى مطابقة العطاء لتصنيف شركتك ونشاطها.
+                      <h2 className="text-xl font-extrabold text-ink">{priorityHeading}</h2>
+                      <p className="mb-4 mt-0.5 text-xs text-ink-muted">
+                        النسبة = مدى مطابقة العطاء لتصنيف شركتك ونشاطها.
                       </p>
-                      <div className="space-y-3">
+                      <div className="grid gap-4 sm:grid-cols-2">
                         {priority.map((t) => (
                           <PriorityCard key={t.tender_id} tender={t} />
                         ))}
@@ -147,11 +154,13 @@ export default async function CommandCenter() {
                       <div className="space-y-6">
                         {groups.map((grp) => (
                           <div key={grp.g}>
-                            <div className="mb-1.5 flex items-baseline gap-2">
-                              <h3 className="text-xs font-semibold text-ink-muted">{grp.label}</h3>
-                              <span className="nums text-xs text-ink-muted">{grp.items.length}</span>
+                            <div className="mb-2 flex items-center gap-2">
+                              <h3 className="text-sm font-bold text-ink">{grp.label}</h3>
+                              <span className="nums rounded-full bg-sand px-2 py-0.5 text-xs font-semibold text-ink-soft">
+                                {grp.items.length}
+                              </span>
                             </div>
-                            <div className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-white">
+                            <div className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-card">
                               {grp.items.map((t) => (
                                 <PipelineRow key={t.tender_id} tender={t} />
                               ))}
@@ -181,53 +190,68 @@ export default async function CommandCenter() {
   );
 }
 
-/** Tier 2 — a rich, act-now card. Four elements: title, match%, countdown, action.
- *  The accent (ink edge) lives only here. */
+/** Tier 2 — a rich, vivid act-now card: score badge, title, entity, category,
+ *  countdown (red when urgent), and a primary call-to-action. */
 function PriorityCard({ tender }: { tender: MatchedTender }) {
   const days = daysOrInf(tender.closing_at);
-  const urgent = days <= 3;
+  const urgent = days >= 0 && days <= 3;
   return (
     <a
       href={`/tenders/${tender.tender_id}`}
-      className="block rounded-xl border border-line border-s-4 border-s-ink bg-white p-5 transition hover:shadow-card"
+      className={`group flex flex-col rounded-2xl border bg-white p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover ${
+        urgent ? "border-red-200" : "border-line"
+      }`}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h3 dir="auto" className="font-serif text-lg font-bold leading-snug text-ink line-clamp-2">
-            {tender.title}
-          </h3>
-          {tender.entity && <p className="mt-1 truncate text-sm text-ink-muted">{tender.entity}</p>}
-        </div>
-        <div className="shrink-0 text-center">
-          <div className="nums text-2xl font-bold leading-none text-ink">{scorePct(tender.score)}</div>
-          <div className="mt-1 text-[10px] text-ink-muted">مطابقة</div>
-        </div>
+      <div className="flex items-start justify-between gap-3">
+        <span className="inline-flex flex-col items-center justify-center rounded-xl bg-primary-50 px-3 py-2 leading-none">
+          <span className="nums text-xl font-extrabold text-primary-700">{scorePct(tender.score)}</span>
+          <span className="mt-1 text-[9px] font-semibold text-primary-700/70">مطابقة</span>
+        </span>
+        {tender.category && <span className="chip">{tender.category}</span>}
       </div>
+      <h3 dir="auto" className="mt-3 line-clamp-2 text-base font-bold leading-snug text-ink">
+        {tender.title}
+      </h3>
+      {tender.entity && <p className="mt-1 truncate text-xs text-ink-muted">{tender.entity}</p>}
       <div className="mt-4 flex items-center justify-between">
-        <span className={`text-sm font-medium ${urgent ? "text-red-700" : "text-ink-soft"}`} dir="auto">
+        <span
+          dir="auto"
+          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
+            urgent ? "bg-red-100 text-red-700" : "bg-sand text-ink-soft"
+          }`}
+        >
           ⏱ {deadlineLabel(tender.closing_at)}
         </span>
-        <span className="text-sm font-semibold text-ink">التقرير ←</span>
+        <span className="text-sm font-bold text-primary-700 group-hover:underline">عرض التقرير ←</span>
       </div>
     </a>
   );
 }
 
-/** Tier 3 — a compact pipeline row: match%, title, days-left. Detail on click. */
+/** Tier 3 — a compact pipeline row: colored score pill, title + entity, days-left. */
 function PipelineRow({ tender }: { tender: MatchedTender }) {
   const days = daysOrInf(tender.closing_at);
+  const urgent = days >= 0 && days <= 3;
+  const strong = tender.score >= 0.6;
   return (
     <a
       href={`/tenders/${tender.tender_id}`}
-      className="flex items-center gap-3 px-4 py-3 transition hover:bg-sand/40"
+      className="flex items-center gap-3 px-4 py-3 transition hover:bg-primary-50/40"
     >
-      <span className="nums w-11 shrink-0 text-sm font-bold text-ink-soft">{scorePct(tender.score)}</span>
-      <span dir="auto" className="min-w-0 flex-1 truncate text-sm text-ink">
-        {tender.title}
-      </span>
       <span
-        className={`shrink-0 text-xs ${days <= 3 ? "font-medium text-red-700" : "text-ink-muted"}`}
+        className={`nums shrink-0 rounded-lg px-2 py-1 text-sm font-bold ${
+          strong ? "bg-primary-50 text-primary-700" : "bg-sand text-ink-soft"
+        }`}
+      >
+        {scorePct(tender.score)}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p dir="auto" className="truncate text-sm font-medium text-ink">{tender.title}</p>
+        {tender.entity && <p dir="auto" className="truncate text-xs text-ink-muted">{tender.entity}</p>}
+      </div>
+      <span
         dir="auto"
+        className={`shrink-0 text-xs ${urgent ? "font-semibold text-red-700" : "text-ink-muted"}`}
       >
         {deadlineLabel(tender.closing_at)}
       </span>
