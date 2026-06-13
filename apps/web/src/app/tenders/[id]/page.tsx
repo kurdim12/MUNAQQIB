@@ -1,5 +1,6 @@
 import { AnalysisBrief } from "@/components/AnalysisBrief";
 import { IntelligenceEngine } from "@/components/IntelligenceEngine";
+import { OpportunityState } from "@/components/OpportunityState";
 import { Paywall } from "@/components/Paywall";
 import { eligibilityTone } from "@/lib/analysis";
 import { can } from "@/lib/entitlements";
@@ -105,6 +106,9 @@ export default async function OpportunityReport({
           </div>
         </dl>
       </header>
+
+      {/* Lifecycle (L2) — where the decision is made and tracked */}
+      <OpportunityState tenderId={id} status={tender.opportunity_status} />
 
       {/* Verdict — can I win this? */}
       {analysis && (

@@ -1,7 +1,15 @@
 import { MatchActions } from "@/components/MatchActions";
 import type { MatchedTender } from "@/lib/repo";
 import { deadlineLabel, formatAmmanDate, formatJod, scorePct } from "@/lib/format";
+import { OPP_LABELS, statusTone } from "@/lib/opportunity";
 import { opportunityQuality, qualityTone } from "@/lib/quality";
+
+const STAGE_TONE: Record<string, string> = {
+  green: "bg-green-100 text-green-800",
+  amber: "bg-amber-100 text-amber-800",
+  red: "bg-red-100 text-red-700",
+  neutral: "bg-sand text-ink-soft",
+};
 
 const REASON_LABELS: Record<string, string> = {
   keyword: "كلمة مفتاحية",
@@ -73,6 +81,13 @@ export function OpportunityRow({
             )}
           </a>
           <div className="flex shrink-0 items-center gap-1.5">
+            {tender.opportunity_status !== "new" && (
+              <span
+                className={`rounded-md px-2 py-0.5 text-xs font-semibold ${STAGE_TONE[statusTone(tender.opportunity_status)]}`}
+              >
+                {OPP_LABELS[tender.opportunity_status]}
+              </span>
+            )}
             <span className={`rounded-md px-2 py-0.5 text-xs font-semibold ${qualityTone(quality.tier)}`}>
               {quality.label}
             </span>

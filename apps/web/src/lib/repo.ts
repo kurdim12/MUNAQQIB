@@ -6,6 +6,12 @@ import type { AnalyzerBrief } from "./analysis";
 import { parseAnalyzerBrief } from "./analysis";
 import type { Subscription, Tier } from "./billing";
 import { execute, executeOne, isConfigured } from "./d1";
+import {
+  canTransition,
+  decisionFor,
+  type OppStatus,
+  outcomeFor,
+} from "./opportunity";
 
 export { isConfigured };
 
@@ -40,6 +46,7 @@ export interface MatchedTender {
   score: number;
   reasons: Record<string, number>;
   saved: boolean;
+  opportunity_status: OppStatus;
 }
 
 function jsonArray(value: unknown): string[] {
@@ -122,7 +129,7 @@ export async function getMatchedTenders(
   const rows = await execute<Record<string, unknown>>(
     `SELECT t.id AS tender_id, t.title, t.entity, t.category, t.governorate,
             t.closing_at, t.doc_price_jod, t.url, t.status,
-            m.score, m.reasons, m.saved
+            m.score, m.reasons, m.saved, m.opportunity_status
      FROM matches m
      JOIN tenders t ON t.id = m.tender_id
      WHERE m.org_id = ? AND m.dismissed = 0 ${savedClause}
@@ -146,6 +153,7 @@ export async function getMatchedTenders(
     score: Number(r.score),
     reasons: jsonObject(r.reasons),
     saved: Boolean(r.saved),
+    opportunity_status: (r.opportunity_status as OppStatus) ?? "new",
   }));
 }
 
@@ -333,6 +341,7 @@ export interface TenderBasics {
   doc_price_jod: number | null;
   score: number;
   reasons: Record<string, number>;
+  opportunity_status: OppStatus;
 }
 
 export interface TenderAnalysis {
@@ -349,7 +358,7 @@ export async function getTenderForOrg(
 ): Promise<TenderBasics | null> {
   const row = await executeOne<Record<string, unknown>>(
     `SELECT t.id AS tender_id, t.title, t.entity, t.category, t.url, t.closing_at,
-            t.doc_price_jod, m.score, m.reasons
+            t.doc_price_jod, m.score, m.reasons, m.opportunity_status
      FROM tenders t JOIN matches m ON m.tender_id = t.id
      WHERE m.org_id = ? AND t.id = ? AND m.dismissed = 0
      LIMIT 1`,
@@ -366,7 +375,85 @@ export async function getTenderForOrg(
     doc_price_jod: row.doc_price_jod != null ? Number(row.doc_price_jod) : null,
     score: row.score != null ? Number(row.score) : 0,
     reasons: jsonObject(row.reasons),
+    opportunity_status: (row.opportunity_status as OppStatus) ?? "new",
   };
+}
+
+// ---------------------------------------------------------------------------
+// Layer 2 — opportunity lifecycle (transition + event log)
+// ---------------------------------------------------------------------------
+export interface OpportunityEvent {
+  from_status: string | null;
+  to_status: string;
+  at: string;
+}
+
+/** Current opportunity_status for (org, tender), or null if not a match. */
+export async function getOpportunityStatus(
+  orgId: string,
+  tenderId: string,
+): Promise<OppStatus | null> {
+  const row = await executeOne<{ s: string }>(
+    `SELECT opportunity_status AS s FROM matches WHERE org_id = ? AND tender_id = ?`,
+    [orgId, tenderId],
+  );
+  return row ? ((row.s as OppStatus) ?? "new") : null;
+}
+
+/** Move an opportunity to `to` if the transition is legal. Persists the new
+ *  state (+ decision/outcome/timestamps), keeps saved/dismissed in sync for the
+ *  current surfaces, and appends an immutable event. Returns the applied status
+ *  (or the unchanged current one when the move is illegal / not a match). */
+export async function transitionOpportunity(
+  orgId: string,
+  tenderId: string,
+  to: OppStatus,
+): Promise<OppStatus | null> {
+  const from = await getOpportunityStatus(orgId, tenderId);
+  if (from === null) return null;
+  if (from === to || !canTransition(from, to)) return from;
+
+  const now = new Date().toISOString();
+  const decision = decisionFor(to);
+  const outcome = outcomeFor(to);
+  // Keep the legacy flags coherent: pass hides it, anything else un-hides; saved
+  // marks it as in the user's active pipeline (review onward).
+  const dismissed = to === "pass" ? 1 : 0;
+  const saved = to === "pass" || to === "new" ? 0 : 1;
+
+  await execute(
+    `UPDATE matches
+       SET opportunity_status = ?, status_changed_at = ?,
+           decision = COALESCE(?, decision),
+           outcome = COALESCE(?, outcome),
+           decided_at = CASE WHEN ? IS NOT NULL THEN ? ELSE decided_at END,
+           dismissed = ?, saved = ?
+     WHERE org_id = ? AND tender_id = ?`,
+    [to, now, decision, outcome, decision, now, dismissed, saved, orgId, tenderId],
+  );
+  await execute(
+    `INSERT INTO opportunity_events (org_id, tender_id, from_status, to_status, at)
+     VALUES (?, ?, ?, ?, ?)`,
+    [orgId, tenderId, from, to, now],
+  );
+  return to;
+}
+
+/** The transition history for (org, tender), newest first. */
+export async function getOpportunityEvents(
+  orgId: string,
+  tenderId: string,
+): Promise<OpportunityEvent[]> {
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT from_status, to_status, at FROM opportunity_events
+     WHERE org_id = ? AND tender_id = ? ORDER BY at DESC LIMIT 50`,
+    [orgId, tenderId],
+  );
+  return rows.map((r) => ({
+    from_status: r.from_status ? String(r.from_status) : null,
+    to_status: String(r.to_status),
+    at: String(r.at),
+  }));
 }
 
 /** Latest completed analysis for (org, tender), or null. */

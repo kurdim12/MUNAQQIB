@@ -40,7 +40,8 @@ Anthropic + OpenRouter   → analyzer (sonnet) + cheap slots
 | 2 | Normalization | ✅ `worker/pipeline/normalize.py` → unified Tender |
 | 3 | Deduplication | ✅ `worker/pipeline/dedupe.py` (hash upsert); semantic dedupe = enhancement |
 | 4 | Enrichment | ◐ embeddings + taxonomy; entity profiles = Phase 2 |
-| 5 | Matching | ✅ `worker/pipeline/match.py` (keyword + embeddings, with "why") |
+| 5 | Matching | ✅ `worker/pipeline/match.py` (keyword + embeddings, with "why"); **per-org** in the daily run (`get_all_org_profiles`) so every tenant gets its own ranked matches |
+| 2 | **Opportunity lifecycle** | ✅ L2 state model — `lib/opportunity.ts` (جديد→مراجعة→محلَّل→تقديم/تجاهل→متابعة→ربح/خسارة), `matches.opportunity_status` + `opportunity_events` log; driven from the detail page, visible on rows |
 | 6 | **Opportunity Quality** | ✅ `web/lib/quality.ts` (High/Med/Low ranking), tested |
 | 7 | Market Intelligence | ◐ `/intelligence` (top buyers, category mix); award/price DB = Phase 2 |
 | 8 | Digest Generation | ✅ `worker/pipeline/digest.py` (insight-framed) |
