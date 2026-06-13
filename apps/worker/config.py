@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     llm_pass1_model: str = "deepseek/deepseek-chat"
     llm_pass2_model: str = "claude-sonnet-4-6"
     llm_fallback_model: str = "deepseek/deepseek-chat"
+    # Cheap Anthropic model for pass-1 when only an ANTHROPIC_API_KEY is set
+    # (no OpenRouter) — lets a single Anthropic key run the whole analyzer.
+    llm_pass1_anthropic_model: str = "claude-haiku-4-5-20251001"
 
     # --- Email (Resend) ---
     resend_api_key: str = ""

@@ -78,12 +78,19 @@ def complete(slot: str, system: str, user: str, max_tokens: int = 2048) -> str:
                 _openrouter_model_id(settings.llm_pass2_model), system, user, max_tokens
             )
         raise RuntimeError("no LLM key for pass2 (set OPENROUTER_API_KEY or ANTHROPIC_API_KEY)")
-    model = {
-        "pass1": settings.llm_pass1_model,
-        "fallback": settings.llm_fallback_model,
-        "awards": settings.llm_fallback_model,
-    }.get(slot, settings.llm_fallback_model)
-    return _openrouter_chat(model, system, user, max_tokens)
+    # Cheap slots (pass1 / fallback / awards): OpenRouter when keyed, else a cheap
+    # Anthropic model — so a single key of either provider runs the analyzer.
+    if settings.openrouter_api_key:
+        model = {
+            "pass1": settings.llm_pass1_model,
+            "fallback": settings.llm_fallback_model,
+            "awards": settings.llm_fallback_model,
+        }.get(slot, settings.llm_fallback_model)
+        return _openrouter_chat(model, system, user, max_tokens)
+    if settings.anthropic_api_key:
+        logger.info("cheap slot '%s' via Anthropic Haiku (no OPENROUTER_API_KEY set)", slot)
+        return _anthropic_chat(settings.llm_pass1_anthropic_model, system, user, max_tokens)
+    raise RuntimeError("no LLM key configured (set OPENROUTER_API_KEY or ANTHROPIC_API_KEY)")
 
 
 def _openrouter_model_id(model: str) -> str:

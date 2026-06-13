@@ -16,6 +16,24 @@ def test_pass1_always_openrouter(monkeypatch):
     assert calls[0][0] == "openrouter"
 
 
+def test_pass1_falls_back_to_anthropic_haiku_single_key(monkeypatch):
+    calls = _stub_providers(monkeypatch)
+    monkeypatch.setattr(lc.settings, "openrouter_api_key", "", raising=False)
+    monkeypatch.setattr(lc.settings, "anthropic_api_key", "x", raising=False)
+    monkeypatch.setattr(lc.settings, "llm_pass1_anthropic_model", "claude-haiku-4-5-20251001", raising=False)
+    lc.complete("pass1", "s", "u")
+    assert calls[0] == ("anthropic", "claude-haiku-4-5-20251001")
+
+
+def test_anthropic_only_runs_whole_analyzer(monkeypatch):
+    calls = _stub_providers(monkeypatch)
+    monkeypatch.setattr(lc.settings, "openrouter_api_key", "", raising=False)
+    monkeypatch.setattr(lc.settings, "anthropic_api_key", "x", raising=False)
+    lc.complete("pass1", "s", "u")
+    lc.complete("eligibility", "s", "u")
+    assert [c[0] for c in calls] == ["anthropic", "anthropic"]  # both passes keyed to one provider
+
+
 def test_pass2_prefers_anthropic_when_keyed(monkeypatch):
     calls = _stub_providers(monkeypatch)
     monkeypatch.setattr(lc.settings, "anthropic_api_key", "x", raising=False)
