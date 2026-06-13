@@ -45,21 +45,20 @@ export default function Home() {
         <p className="mt-4 text-sm text-ink-muted">تجربة مجانية 14 يوماً · بدون بطاقة</p>
       </section>
 
-      {/* Briefing strip */}
+      {/* How it works — honest, no invented metrics */}
       <section className="mx-auto max-w-4xl overflow-hidden rounded-xl border border-line bg-white">
         <div className="border-b border-line bg-sand/40 px-5 py-3">
-          <p className="eyebrow">نموذج إحاطة الصباح</p>
+          <p className="eyebrow">كيف يعمل</p>
         </div>
-        <div className="grid grid-cols-2 divide-line sm:grid-cols-4 sm:divide-x sm:divide-x-reverse">
+        <div className="grid grid-cols-1 divide-line sm:grid-cols-3 sm:divide-x sm:divide-x-reverse">
           {[
-            { v: "17", l: "فرصة جديدة اليوم" },
-            { v: "4", l: "مطابقات عالية الثقة" },
-            { v: "3", l: "مواعيد هذا الأسبوع" },
-            { v: "94%", l: "أعلى نسبة مطابقة" },
+            { k: "نراقب", t: "نرصد العطاءات الحكومية على مدار الساعة من مصادرها الرسمية." },
+            { k: "نطابق", t: "نحسب ملاءمة كل عطاء لتصنيفك — بدرجة وسبب واضح، لا تخمين." },
+            { k: "نوصّل", t: "إحاطة صباحية واحدة بما يخصّك فقط، مع رابط المصدر الرسمي." },
           ].map((s) => (
-            <div key={s.l} className="px-4 py-6 text-center">
-              <div className="nums text-3xl font-bold text-ink">{s.v}</div>
-              <div className="mt-1 text-xs text-ink-muted">{s.l}</div>
+            <div key={s.k} className="px-5 py-6 text-center">
+              <div className="font-serif text-lg font-bold text-ink">{s.k}</div>
+              <div className="mt-1.5 text-sm leading-relaxed text-ink-soft">{s.t}</div>
             </div>
           ))}
         </div>

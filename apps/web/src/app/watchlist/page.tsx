@@ -103,7 +103,6 @@ function WatchRow({ item }: { item: WatchItem }) {
               <span className="ms-1 text-xs text-ink-muted">({formatAmmanDate(item.closing_at)})</span>
             )}
           </span>
-          <span className="text-xs text-ink-muted">آخر فحص: اليوم 7:30 ص</span>
           {item.has_analysis && (
             <a href={`/tenders/${item.tender_id}`} className="text-xs font-medium text-green-700">
               ✓ التقرير جاهز
