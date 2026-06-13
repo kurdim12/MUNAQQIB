@@ -65,12 +65,28 @@ def complete(slot: str, system: str, user: str, max_tokens: int = 2048) -> str:
 
     slot ∈ {'pass1','fallback','awards'} → OpenRouter cheap model
     slot ∈ {'pass2','eligibility'}       → Anthropic direct (claude-sonnet-4-6)
+        when ANTHROPIC_API_KEY is set (preferred — never downgrade); otherwise the
+        SAME sonnet-class model via OpenRouter, so a single OpenRouter key runs
+        the whole analyzer.
     """
     if slot in ("pass2", "eligibility"):
-        return _anthropic_chat(settings.llm_pass2_model, system, user, max_tokens)
+        if settings.anthropic_api_key:
+            return _anthropic_chat(settings.llm_pass2_model, system, user, max_tokens)
+        if settings.openrouter_api_key:
+            logger.info("pass2 via OpenRouter (no ANTHROPIC_API_KEY set)")
+            return _openrouter_chat(
+                _openrouter_model_id(settings.llm_pass2_model), system, user, max_tokens
+            )
+        raise RuntimeError("no LLM key for pass2 (set OPENROUTER_API_KEY or ANTHROPIC_API_KEY)")
     model = {
         "pass1": settings.llm_pass1_model,
         "fallback": settings.llm_fallback_model,
         "awards": settings.llm_fallback_model,
     }.get(slot, settings.llm_fallback_model)
     return _openrouter_chat(model, system, user, max_tokens)
+
+
+def _openrouter_model_id(model: str) -> str:
+    """OpenRouter ids are namespaced (`anthropic/…`); prefix a bare Anthropic
+    model name so the pass-2 model can be served via OpenRouter too."""
+    return model if "/" in model else f"anthropic/{model}"
