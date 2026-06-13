@@ -120,6 +120,25 @@ export async function getOrg(orgId: string): Promise<Org | null> {
   };
 }
 
+/** Trial-hook data: matched tenders that already CLOSED (the loss-aversion punch
+ *  — "these would have matched you, and you missed them"). Real rows only. */
+export async function getMissedMatches(orgId: string): Promise<MatchedTender[]> {
+  const nowIso = new Date().toISOString();
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT t.id AS tender_id, t.title, t.entity, t.category, t.governorate,
+            t.closing_at, t.doc_price_jod, t.url, t.status,
+            m.score, m.reasons, m.saved, m.opportunity_status
+     FROM matches m
+     JOIN tenders t ON t.id = m.tender_id
+     WHERE m.org_id = ?
+       AND (t.status IN ('closed','awarded') OR (t.closing_at IS NOT NULL AND t.closing_at < ?))
+     ORDER BY t.closing_at DESC
+     LIMIT 5`,
+    [orgId, nowIso],
+  );
+  return rows.map(rowToMatched);
+}
+
 /** Matched, non-dismissed tenders for an org, freshest deadlines first. */
 export async function getMatchedTenders(
   orgId: string,
@@ -137,7 +156,12 @@ export async function getMatchedTenders(
      LIMIT 200`,
     [orgId],
   );
-  return rows.map((r) => ({
+  return rows.map(rowToMatched);
+}
+
+/** Shared mapper: a matches⋈tenders row → MatchedTender. */
+function rowToMatched(r: Record<string, unknown>): MatchedTender {
+  return {
     tender_id: String(r.tender_id),
     title: String(r.title),
     entity: r.entity ? String(r.entity) : null,
@@ -154,7 +178,7 @@ export async function getMatchedTenders(
     reasons: jsonObject(r.reasons),
     saved: Boolean(r.saved),
     opportunity_status: (r.opportunity_status as OppStatus) ?? "new",
-  }));
+  };
 }
 
 // ---------------------------------------------------------------------------

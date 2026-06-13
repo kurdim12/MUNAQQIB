@@ -52,5 +52,6 @@ export async function createOrgAction(
     path: "/",
     maxAge: 60 * 60 * 24 * 365,
   });
-  redirect("/dashboard");
+  // Hand off to the trial hook (الفرص الأولى) — first value before the dashboard.
+  redirect("/onboarding/ready");
 }
