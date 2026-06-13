@@ -53,17 +53,26 @@ export function OpportunityState({
         </p>
       ) : (
         <div className="mt-3 flex flex-wrap gap-2">
-          {moves.map((to) => (
-            <button
-              key={to}
-              type="button"
-              disabled={pending}
-              onClick={() => go(to)}
-              className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium text-ink transition hover:border-ink/40 hover:bg-sand/60 disabled:opacity-50"
-            >
-              {OPP_LABELS[to]}
-            </button>
-          ))}
+          {moves.map((to) => {
+            const tone = statusTone(to);
+            const cls =
+              tone === "green"
+                ? "bg-primary-gradient text-white shadow-glow hover:brightness-105"
+                : tone === "red"
+                  ? "border border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
+                  : "border border-line bg-white text-ink hover:border-primary/40 hover:bg-primary-50/40";
+            return (
+              <button
+                key={to}
+                type="button"
+                disabled={pending}
+                onClick={() => go(to)}
+                className={`rounded-xl px-4 py-2 text-sm font-bold transition disabled:opacity-50 ${cls}`}
+              >
+                {OPP_LABELS[to]}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
