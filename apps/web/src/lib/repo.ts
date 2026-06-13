@@ -541,6 +541,7 @@ export interface WatchItem {
   category: string | null;
   closing_at: string | null;
   status: string; // open | closed | awarded
+  opportunity_status: OppStatus; // bid | tracking
   doc_price_jod: number | null;
   score: number;
   has_analysis: boolean;
@@ -549,14 +550,16 @@ export interface WatchItem {
 /** Saved (watched) opportunities for an org, soonest deadline first. The worker's
  *  daily sweep keeps `status`/`closing_at` current, so this reflects live state. */
 export async function getWatchlist(orgId: string): Promise<WatchItem[]> {
+  // Window 4 — the in-flight slice only: submitted (bid) + tracking. Pre-decision
+  // items live on the dashboard (Window 2); the windows never overlap.
   const rows = await execute<Record<string, unknown>>(
     `SELECT t.id AS tender_id, t.title, t.entity, t.category, t.closing_at,
-            t.status, t.doc_price_jod, m.score,
+            t.status, t.doc_price_jod, m.score, m.opportunity_status,
             (SELECT 1 FROM analyses a
              WHERE a.org_id = m.org_id AND a.tender_id = t.id AND a.status = 'done'
              LIMIT 1) AS has_analysis
      FROM matches m JOIN tenders t ON t.id = m.tender_id
-     WHERE m.org_id = ? AND m.saved = 1 AND m.dismissed = 0
+     WHERE m.org_id = ? AND m.opportunity_status IN ('bid','tracking')
      ORDER BY (t.closing_at IS NULL), t.closing_at ASC`,
     [orgId],
   );
@@ -567,6 +570,7 @@ export async function getWatchlist(orgId: string): Promise<WatchItem[]> {
     category: r.category ? String(r.category) : null,
     closing_at: r.closing_at ? String(r.closing_at) : null,
     status: String(r.status ?? "open"),
+    opportunity_status: (r.opportunity_status as OppStatus) ?? "bid",
     doc_price_jod: r.doc_price_jod != null ? Number(r.doc_price_jod) : null,
     score: r.score != null ? Number(r.score) : 0,
     has_analysis: Number(r.has_analysis ?? 0) === 1,

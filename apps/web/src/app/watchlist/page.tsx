@@ -1,7 +1,8 @@
-import { MatchActions } from "@/components/MatchActions";
+import { OpportunityState } from "@/components/OpportunityState";
 import { Paywall } from "@/components/Paywall";
 import { hasAccess } from "@/lib/entitlements";
 import { deadlineLabel, formatAmmanDate, scorePct } from "@/lib/format";
+import { OPP_LABELS, statusTone } from "@/lib/opportunity";
 import {
   getCurrentOrgId,
   getSubscription,
@@ -12,11 +13,12 @@ import {
 
 export const dynamic = "force-dynamic";
 
-function statusBadge(status: string): { label: string; tone: string } {
-  if (status === "awarded") return { label: "تمّت الإحالة", tone: "bg-amber-100 text-amber-800" };
-  if (status === "closed") return { label: "مُغلق", tone: "bg-stone-100 text-stone-600" };
-  return { label: "قيد المراقبة", tone: "bg-green-100 text-green-700" };
-}
+const STAGE_TONE: Record<string, string> = {
+  green: "bg-primary-100 text-primary-800",
+  amber: "bg-amber-100 text-amber-800",
+  red: "bg-red-100 text-red-700",
+  neutral: "bg-sand text-ink-soft",
+};
 
 function daysLeft(closing: string | null): number | null {
   if (!closing) return null;
@@ -30,20 +32,20 @@ export default async function WatchlistPage() {
   const access = !configured || hasAccess(sub);
 
   const items = orgId && access ? await getWatchlist(orgId) : [];
-  const monitoring = items.filter((i) => i.status === "open").length;
-  const closed = items.filter((i) => i.status !== "open").length;
-  const soon = items.filter((i) => {
+  const submitted = items.filter((i) => i.opportunity_status === "bid").length;
+  const tracking = items.filter((i) => i.opportunity_status === "tracking").length;
+  const critical = items.filter((i) => {
     const d = daysLeft(i.closing_at);
-    return d !== null && d >= 0 && d <= 7;
+    return d !== null && d >= 0 && d <= 3;
   }).length;
 
   return (
     <section className="animate-fade-in">
-      <header className="mb-6">
-        <p className="eyebrow">قائمة المتابعة · مراقبة مستمرّة</p>
-        <h1 className="mt-2 font-serif text-3xl font-bold text-ink">نراقبها نيابةً عنك</h1>
-        <p className="mt-1.5 text-ink-soft">
-          الفرص التي تحفظها نتابع مواعيدها وحالتها وملاحقها — لن تحتاج للتحقّق يدوياً مرّة أخرى.
+      <header className="mb-7">
+        <p className="eyebrow">المتابعة · العطاءات قيد التنفيذ</p>
+        <h1 className="mt-2 text-3xl font-extrabold text-ink sm:text-4xl">عطاءاتك قيد المتابعة</h1>
+        <p className="mt-2 text-ink-soft">
+          العطاءات التي قرّرت التقديم عليها أو تتابعها — نراقب مواعيدها، وتسجّل نتيجتها هنا.
         </p>
       </header>
 
@@ -51,22 +53,24 @@ export default async function WatchlistPage() {
         <Paywall />
       ) : items.length === 0 ? (
         <div className="panel flex flex-col items-center px-6 py-16 text-center">
-          <div className="text-3xl">★</div>
-          <p className="mt-3 font-medium text-ink">قائمة المتابعة فارغة</p>
-          <p className="mt-1 text-sm text-ink-muted">احفظ أي فرصة من مركز القيادة وسنتولّى مراقبتها.</p>
-          <a href="/dashboard" className="mt-4 btn-ink text-sm">تصفّح الفرص ←</a>
+          <div className="text-3xl">📌</div>
+          <p className="mt-3 font-bold text-ink">لا عطاءات قيد المتابعة بعد.</p>
+          <p className="mt-1 max-w-sm text-sm text-ink-muted">
+            حين تقرّر «تقديم» على عطاء من صفحة التفاصيل، سيظهر هنا لتتابع موعده وتسجّل نتيجته.
+          </p>
+          <a href="/dashboard" className="btn-primary mt-5 text-sm">تصفّح العطاءات الجديدة ←</a>
         </div>
       ) : (
         <>
           <div className="mb-6 grid grid-cols-3 gap-3">
-            <Metric label="قيد المراقبة" value={String(monitoring)} accent="green" />
-            <Metric label="مواعيد خلال الأسبوع" value={String(soon)} accent="amber" />
-            <Metric label="مُغلقة / محالة" value={String(closed)} />
+            <Metric label="قدّمنا عليها" value={String(submitted)} accent="primary" />
+            <Metric label="قيد المتابعة" value={String(tracking)} accent="amber" />
+            <Metric label="مواعيد حرجة (٣ أيام)" value={String(critical)} accent="red" />
           </div>
 
-          <div className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-white">
+          <div className="space-y-4">
             {items.map((it) => (
-              <WatchRow key={it.tender_id} item={it} />
+              <WatchCard key={it.tender_id} item={it} />
             ))}
           </div>
         </>
@@ -75,64 +79,76 @@ export default async function WatchlistPage() {
   );
 }
 
-function WatchRow({ item }: { item: WatchItem }) {
-  const s = statusBadge(item.status);
+function WatchCard({ item }: { item: WatchItem }) {
   const d = daysLeft(item.closing_at);
   const urgent = d !== null && d >= 0 && d <= 3;
   return (
-    <article className="flex gap-4 px-4 py-4 transition hover:bg-sand/40 sm:px-5">
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className={`rounded-md px-2 py-0.5 text-xs font-semibold ${s.tone}`}>{s.label}</span>
-          {item.category && (
-            <span className="rounded-md bg-sand px-2 py-0.5 text-xs text-ink-soft">{item.category}</span>
-          )}
-          <span className="nums text-xs text-ink-muted">مطابقة {scorePct(item.score)}</span>
-        </div>
-        <a href={`/tenders/${item.tender_id}`}>
-          <h3 className="mt-1.5 truncate font-serif text-[17px] font-bold text-ink hover:underline">
-            {item.title}
-          </h3>
-        </a>
-        {item.entity && <p className="truncate text-sm text-ink-muted">{item.entity}</p>}
-
-        <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-          <span className={urgent ? "font-semibold text-red-700" : "text-ink-soft"}>
-            ⏱ {deadlineLabel(item.closing_at)}
-            {item.closing_at && (
-              <span className="ms-1 text-xs text-ink-muted">({formatAmmanDate(item.closing_at)})</span>
+    <article className="panel p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${STAGE_TONE[statusTone(item.opportunity_status)]}`}>
+              {OPP_LABELS[item.opportunity_status]}
+            </span>
+            {item.category && <span className="chip">{item.category}</span>}
+            <span className="nums text-xs text-ink-muted">مطابقة {scorePct(item.score)}</span>
+          </div>
+          <a href={`/tenders/${item.tender_id}`}>
+            <h3 dir="auto" className="mt-2 line-clamp-2 text-base font-bold text-ink hover:underline">
+              {item.title}
+            </h3>
+          </a>
+          {item.entity && <p className="mt-1 truncate text-xs text-ink-muted">{item.entity}</p>}
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+            <span dir="auto" className={urgent ? "font-semibold text-red-700" : "text-ink-soft"}>
+              ⏱ {deadlineLabel(item.closing_at)}
+              {item.closing_at && (
+                <span className="ms-1 text-xs text-ink-muted">({formatAmmanDate(item.closing_at)})</span>
+              )}
+            </span>
+            {item.has_analysis && (
+              <a href={`/tenders/${item.tender_id}`} className="text-xs font-semibold text-primary-700">
+                ✓ التقرير جاهز
+              </a>
             )}
-          </span>
-          {item.has_analysis && (
-            <a href={`/tenders/${item.tender_id}`} className="text-xs font-medium text-green-700">
-              ✓ التقرير جاهز
-            </a>
-          )}
+          </div>
         </div>
-
-        <p className="mt-2 text-xs text-ink-muted">
-          نراقب: الموعد النهائي · حالة العطاء · الملاحق والتعديلات
-        </p>
-      </div>
-
-      <div className="flex shrink-0 flex-col items-end justify-between gap-2">
         <a
           href={`/tenders/${item.tender_id}`}
-          className="rounded-lg bg-ink px-3 py-1.5 text-xs font-semibold text-paper transition hover:bg-ink-soft"
+          className="shrink-0 rounded-lg bg-ink px-3 py-1.5 text-xs font-semibold text-paper transition hover:bg-ink-soft"
         >
-          التقرير ←
+          التفاصيل ←
         </a>
-        <MatchActions tenderId={item.tender_id} saved canSave />
+      </div>
+
+      {/* Window 4 writes the outcome (ربح / خسارة) right here */}
+      <div className="mt-4 border-t border-line pt-4">
+        <OpportunityState tenderId={item.tender_id} status={item.opportunity_status} />
       </div>
     </article>
   );
 }
 
-function Metric({ label, value, accent }: { label: string; value: string; accent?: "green" | "amber" }) {
-  const color = accent === "green" ? "text-green-700" : accent === "amber" ? "text-amber-700" : "text-ink";
+function Metric({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: "primary" | "amber" | "red";
+}) {
+  const color =
+    accent === "primary"
+      ? "text-primary-700"
+      : accent === "amber"
+        ? "text-amber-700"
+        : accent === "red"
+          ? "text-red-700"
+          : "text-ink";
   return (
     <div className="panel p-4 text-center">
-      <div className={`nums text-2xl font-bold ${color}`}>{value}</div>
+      <div className={`nums text-2xl font-extrabold ${color}`}>{value}</div>
       <div className="mt-1 text-xs text-ink-muted">{label}</div>
     </div>
   );

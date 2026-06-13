@@ -59,35 +59,41 @@ export default async function CommandCenter() {
   const rankValue = (t: MatchedTender) =>
     personalizeValue(opportunityQuality(t).value, t.category, affinity);
   const all = [...raw].sort((a, b) => rankValue(b) - rankValue(a));
+  // Window 2 — the FRONT slice only (pre-decision: جديد + قيد المراجعة + محلَّل).
+  // Submitted/tracking live in المتابعة (Window 4); terminal states leave the
+  // loop. The windows never overlap — each reads a distinct slice of one column.
+  const FRONT = new Set(["new", "reviewing", "analyzed"]);
+  const front = all.filter((t) => FRONT.has(t.opportunity_status));
+  const inFlight = all.filter(
+    (t) => t.opportunity_status === "bid" || t.opportunity_status === "tracking",
+  ).length;
 
   const { hi, date } = ammanGreeting();
   const now = Date.now();
 
-  // Tier 2 — "act now": a strong match closing soon. (Quality tier alone was too
-  // strict with embeddings off, so the urgent 77%/2-day match never surfaced.)
+  // Tier 2 — "act now": a strong match closing soon, from the front slice.
   const isActNow = (t: MatchedTender) => {
     const d = daysOrInf(t.closing_at);
     return t.score >= 0.6 && d >= 0 && d <= 10;
   };
-  let priority = all
+  let priority = front
     .filter(isActNow)
     .sort((a, b) => daysOrInf(a.closing_at) - daysOrInf(b.closing_at))
     .slice(0, 3);
-  // Nothing time-critical but we do have matches → still lead with the best 2.
   const actNowCount = priority.length;
-  if (priority.length === 0) priority = all.slice(0, Math.min(2, all.length));
+  if (priority.length === 0) priority = front.slice(0, Math.min(2, front.length));
   const priorityHeading = actNowCount > 0 ? "يستحقّ قرارك اليوم" : "أبرز العطاءات لك";
   const prioritySet = new Set(priority.map((t) => t.tender_id));
 
-  // Tier 3 — the pipeline: everything else, grouped by lifecycle stage.
-  const rest = all.filter((t) => !prioritySet.has(t.tender_id));
+  // Tier 3 — the rest of the front, grouped by lifecycle stage.
+  const rest = front.filter((t) => !prioritySet.has(t.tender_id));
   const groups = STAGE_ORDER.map((g) => ({
     g,
     label: STAGE_LABEL[g],
     items: rest.filter((t) => OPP_STAGE_GROUP[t.opportunity_status] === g),
   })).filter((x) => x.items.length > 0);
 
-  const deadlines = [...all]
+  const deadlines = [...front]
     .filter((x) => x.closing_at && new Date(x.closing_at).getTime() >= now)
     .sort((a, b) => new Date(a.closing_at!).getTime() - new Date(b.closing_at!).getTime())
     .slice(0, 5);
@@ -111,18 +117,20 @@ export default async function CommandCenter() {
             <p className="eyebrow">إحاطة الصباح · {date}</p>
             <h1 className="mt-2 font-serif text-3xl font-bold text-ink sm:text-4xl">{hi}</h1>
             <p className="mt-2 text-lg leading-relaxed text-ink-soft">
-              {all.length === 0
-                ? "ما زلنا نراقب السوق نيابة عنك — لا عطاءات تناسب شركتك بعد."
+              {front.length === 0
+                ? inFlight > 0
+                  ? "لا عطاءات جديدة بانتظار قرارك — تابع ما قدّمته في صفحة المتابعة."
+                  : "ما زلنا نراقب السوق نيابة عنك — لا عطاءات تناسب شركتك بعد."
                 : actNowCount > 0
-                  ? `وجدنا ${all.length} عطاءً يناسب تصنيف شركتك، منها ${actNowCount} يستحقّ قرارك اليوم.`
-                  : `وجدنا ${all.length} عطاءً يناسب تصنيف شركتك — راجِع أبرزها بالأسفل.`}
+                  ? `وجدنا ${front.length} عطاءً بانتظار مراجعتك، منها ${actNowCount} يستحقّ قرارك اليوم.`
+                  : `لديك ${front.length} عطاءً بانتظار مراجعتك — راجِع أبرزها بالأسفل.`}
             </p>
           </header>
 
           <div className="grid gap-8 lg:grid-cols-[1fr_17rem]">
             <div className="space-y-9">
-              {all.length === 0 ? (
-                <EmptyState />
+              {front.length === 0 ? (
+                <EmptyState inFlight={inFlight} />
               ) : (
                 <>
                   {/* Tier 2 — Priority (rich, vivid act-now cards) */}
@@ -301,12 +309,19 @@ function DeadlinesRail({ deadlines }: { deadlines: MatchedTender[] }) {
   );
 }
 
-function EmptyState() {
+function EmptyState({ inFlight }: { inFlight: number }) {
   return (
     <div className="panel flex flex-col items-center px-6 py-16 text-center">
       <div className="text-3xl">🛰️</div>
-      <p className="mt-3 font-medium text-ink">لا فرص مطابقة اليوم.</p>
-      <p className="mt-1 text-sm text-ink-muted">ما زلنا نراقب السوق نيابة عنك.</p>
+      <p className="mt-3 font-bold text-ink">لا عطاءات جديدة بانتظار قرارك.</p>
+      <p className="mt-1 text-sm text-ink-muted">
+        ما زلنا نراقب السوق نيابة عنك — ستصلك العطاءات الجديدة في إحاطة الصباح.
+      </p>
+      {inFlight > 0 && (
+        <a href="/watchlist" className="mt-4 text-sm font-semibold text-primary-700 underline">
+          لديك {inFlight} قيد المتابعة ←
+        </a>
+      )}
     </div>
   );
 }
