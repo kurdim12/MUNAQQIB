@@ -7,6 +7,7 @@ export const t = {
     watchlist: "المتابعة",
     intelligence: "ذكاء السوق",
     pricing: "الأسعار",
+    settings: "الإعدادات",
     onboarding: "ملف المنشأة",
     admin: "الإدارة",
     operations: "العمليات",

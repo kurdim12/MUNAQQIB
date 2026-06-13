@@ -60,6 +60,9 @@ export default async function RootLayout({
               <a href="/pricing" className="rounded-md px-3 py-2 transition hover:bg-sand">
                 {t.nav.pricing}
               </a>
+              <a href="/settings" className="rounded-md px-3 py-2 transition hover:bg-sand">
+                {t.nav.settings}
+              </a>
               {isAdmin && (
                 <>
                   <a

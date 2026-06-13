@@ -242,6 +242,64 @@ export async function createOrgWithTrial(
   return org.id;
 }
 
+/** Settings — update the matcher-driving org profile. The worker re-matches on
+ *  its next run (matching is the Python worker's job), so saving here changes
+ *  what enters as «جديد» from the next sweep. */
+export interface OrgProfileInput {
+  name: string;
+  sector: Sector;
+  classification_fields: string[];
+  classification_grade: number | null;
+  supply_categories: string[];
+  governorates: string[];
+  include_keywords: string[];
+  exclude_keywords: string[];
+}
+export async function updateOrgProfile(orgId: string, p: OrgProfileInput): Promise<void> {
+  await execute(
+    `UPDATE orgs SET name=?, sector=?, classification_fields=?, classification_grade=?,
+       supply_categories=?, governorates=?, include_keywords=?, exclude_keywords=?
+     WHERE id=?`,
+    [
+      p.name,
+      p.sector,
+      JSON.stringify(p.classification_fields),
+      p.classification_grade,
+      JSON.stringify(p.supply_categories),
+      JSON.stringify(p.governorates),
+      JSON.stringify(p.include_keywords),
+      JSON.stringify(p.exclude_keywords),
+      orgId,
+    ],
+  );
+}
+
+/** Settings — delivery: which addresses get the 07:30 digest. */
+export async function updateDigestEmails(orgId: string, emails: string[]): Promise<void> {
+  await execute(`UPDATE orgs SET digest_emails=? WHERE id=?`, [JSON.stringify(emails), orgId]);
+}
+
+export interface OrgMember {
+  user_id: string;
+  email: string | null;
+  name: string | null;
+  role: string;
+}
+export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
+  const rows = await execute<Record<string, unknown>>(
+    `SELECT om.user_id, om.role, u.email, u.name
+     FROM org_members om LEFT JOIN users u ON u.id = om.user_id
+     WHERE om.org_id = ? ORDER BY om.role`,
+    [orgId],
+  );
+  return rows.map((r) => ({
+    user_id: String(r.user_id),
+    email: r.email ? String(r.email) : null,
+    name: r.name ? String(r.name) : null,
+    role: String(r.role ?? "member"),
+  }));
+}
+
 /** True if a user already exists with this email (case-insensitive). */
 export async function emailExists(email: string): Promise<boolean> {
   const row = await executeOne<{ x: number }>(
