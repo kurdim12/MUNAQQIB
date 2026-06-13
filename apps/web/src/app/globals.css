@@ -49,15 +49,27 @@ body {
 
 @layer components {
   .panel {
-    @apply rounded-xl border border-line bg-white;
+    @apply rounded-2xl border border-line bg-white shadow-card;
+  }
+  /* Primary CTA — gradient, bold, modern SaaS. */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-primary-gradient px-6 py-3 font-bold text-white shadow-glow transition hover:brightness-105 active:scale-[0.99];
   }
   .btn-ink {
-    @apply inline-flex items-center justify-center rounded-lg bg-ink px-5 py-2.5 font-semibold text-paper transition hover:bg-ink-soft active:scale-[0.99];
+    @apply inline-flex items-center justify-center rounded-xl bg-ink px-5 py-2.5 font-semibold text-paper transition hover:bg-ink-soft active:scale-[0.99];
   }
   .btn-outline {
-    @apply inline-flex items-center justify-center rounded-lg border border-line px-5 py-2.5 font-semibold text-ink transition hover:border-ink/40 hover:bg-sand/50;
+    @apply inline-flex items-center justify-center rounded-xl border border-line bg-white px-6 py-3 font-semibold text-ink transition hover:border-primary/40 hover:bg-primary-50/40;
   }
   .eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted;
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-700;
+  }
+  /* Gradient headline accent. */
+  .text-gradient {
+    @apply bg-primary-gradient bg-clip-text text-transparent;
+  }
+  /* Soft pill/chip. */
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-ink-soft;
   }
 }

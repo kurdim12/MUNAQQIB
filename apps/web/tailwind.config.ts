@@ -12,13 +12,28 @@ const config: Config = {
         serif: ["var(--font-amiri)", "Georgia", "serif"],
       },
       colors: {
-        // V2 "Market Intelligence" palette — Petra sandstone + warm ink. Color is
-        // used semantically (green = qualified, amber = review, red = risk/urgent).
+        // Warm ink text + paper base keep Arabic readable; a vivid emerald primary
+        // and accent drive the "bold modern SaaS" surfaces (CTAs, gradients, highlights).
         ink: { DEFAULT: "#1c1917", soft: "#44403c", muted: "#78716c" },
         paper: "#faf8f4",
         sand: "#efe9df",
         line: "#e7e1d8",
-        // Teal kept for backward-compat with secondary screens; new surfaces use ink.
+        primary: {
+          50: "#ecfdf5",
+          100: "#d1fae5",
+          200: "#a7f3d0",
+          300: "#6ee7b7",
+          400: "#34d399",
+          500: "#10b981",
+          600: "#059669",
+          700: "#047857",
+          800: "#065f46",
+          900: "#064e3b",
+          950: "#022c22",
+          DEFAULT: "#059669",
+        },
+        accent: { DEFAULT: "#f59e0b", soft: "#fbbf24" }, // amber energy for highlights
+        // Legacy teal alias kept so older screens don't break.
         brand: {
           50: "#f0fdfa",
           100: "#ccfbf1",
@@ -36,9 +51,19 @@ const config: Config = {
           light: "#5eead4",
         },
       },
+      borderRadius: {
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+      },
       boxShadow: {
         card: "0 1px 2px 0 rgb(15 23 42 / 0.04), 0 4px 16px -8px rgb(15 23 42 / 0.10)",
-        "card-hover": "0 8px 30px -12px rgb(15 118 110 / 0.22)",
+        "card-hover": "0 12px 40px -14px rgb(5 150 105 / 0.28)",
+        glow: "0 10px 40px -10px rgb(5 150 105 / 0.45)",
+      },
+      backgroundImage: {
+        "primary-gradient": "linear-gradient(135deg, #059669 0%, #0d9488 50%, #047857 100%)",
+        "hero-glow":
+          "radial-gradient(60% 60% at 80% 0%, rgba(16,185,129,0.14) 0%, rgba(16,185,129,0) 60%), radial-gradient(50% 50% at 10% 10%, rgba(245,158,11,0.10) 0%, rgba(245,158,11,0) 55%)",
       },
       keyframes: {
         "fade-up": {
