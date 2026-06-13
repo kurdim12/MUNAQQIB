@@ -32,3 +32,6 @@ apps/worker/.models/
 # --- Local scratch (live HTML snapshots committed under fixtures/ stay tracked) ---
 *.local
 /tmp/
+
+# One-off harvest snapshots (canonical fixtures are committed separately)
+apps/worker/fixtures/*_listing_2026*T*Z.html

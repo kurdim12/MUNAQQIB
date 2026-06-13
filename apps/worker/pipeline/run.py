@@ -77,27 +77,42 @@ def normalize_and_dedupe(raw: list[RawTender]) -> list[Tender]:
 
 
 def run_digest(dry_run: bool = False) -> None:
-    from db import ensure_org, persist_matches, persist_tenders
+    """Scrape once, then match + email **per org in the DB** (L1: each tenant gets
+    its own ranked matches). Falls back to the YAML partner profile only when the
+    DB has no orgs (offline/bootstrap)."""
+    from db import (
+        ensure_org,
+        get_all_org_profiles,
+        persist_matches,
+        persist_tenders,
+    )
 
-    org = load_partner_profile()
-    org_id = ensure_org(org)  # no-op offline; persists the partner row on D1
     raw = scrape_all()
     tenders = normalize_and_dedupe(raw)
-
-    # Persist before sending — upsert-by-hash is the cross-run dedupe, and matches
-    # feed the (Phase 1) dashboard. Degrades to no-ops when D1 is unconfigured.
+    # Persist before matching — upsert-by-hash is the cross-run dedupe and yields
+    # the row ids matches reference. Degrades to no-ops when D1 is unconfigured.
     hash_to_id = persist_tenders(tenders)
-    results = match_all(tenders, org)
-    persist_matches(org_id, results, hash_to_id)
 
-    by_hash = {t.hash: t for t in tenders}
-    items = [
-        DigestItem(tender=by_hash[r.tender_hash], score=r.score)
-        for r in results
-        if r.matched and r.tender_hash in by_hash
-    ]
-    logger.info("Matched %d/%d tenders for %s", len(items), len(tenders), org.name)
-    send_digest(org, items, dry_run=dry_run)
+    orgs = get_all_org_profiles()
+    if not orgs:  # offline / fresh DB — fall back to the bootstrap partner profile
+        partner = load_partner_profile()
+        partner.org_id = ensure_org(partner)
+        orgs = [partner]
+
+    for org in orgs:
+        results = match_all(tenders, org)
+        persist_matches(org.org_id, results, hash_to_id)
+        by_hash = {t.hash: t for t in tenders}
+        items = [
+            DigestItem(tender=by_hash[r.tender_hash], score=r.score)
+            for r in results
+            if r.matched and r.tender_hash in by_hash
+        ]
+        logger.info("Matched %d/%d tenders for %s", len(items), len(tenders), org.name)
+        if org.digest_emails:
+            send_digest(org, items, dry_run=dry_run)
+        else:
+            logger.info("No digest_emails for %s — matches persisted, no email.", org.name)
 
 
 def run_sweep() -> None:

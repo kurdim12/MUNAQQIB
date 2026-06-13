@@ -248,23 +248,12 @@ def persist_analysis(
 # ---------------------------------------------------------------------------
 # Analyzer producer (Layer 11) — drains queued analyses, persists results
 # ---------------------------------------------------------------------------
-def get_org_profile(org_id: str) -> "OrgProfile | None":
-    """Build an OrgProfile from the orgs row so the analyzer can judge eligibility
-    against the same target the matcher used. Returns None when the org is absent
-    (or D1 is unconfigured)."""
-    rows = d1.execute(
-        """
-        SELECT id, name, sector, classification_fields, classification_grade,
+_ORG_COLS = """id, name, sector, classification_fields, classification_grade,
                supply_categories, governorates, min_value_jod, max_value_jod,
-               include_keywords, exclude_keywords, digest_emails, telegram_chat_id
-        FROM orgs WHERE id = ?
-        """,
-        [org_id],
-    )
-    if not rows:
-        return None
-    r = rows[0]
+               include_keywords, exclude_keywords, digest_emails, telegram_chat_id"""
 
+
+def _row_to_profile(r: dict) -> "OrgProfile":
     def _arr(v) -> list[str]:
         try:
             return json.loads(v) if v else []
@@ -286,6 +275,21 @@ def get_org_profile(org_id: str) -> "OrgProfile | None":
         digest_emails=_arr(r.get("digest_emails")),
         telegram_chat_id=r.get("telegram_chat_id"),
     )
+
+
+def get_org_profile(org_id: str) -> "OrgProfile | None":
+    """Build an OrgProfile from the orgs row so the analyzer can judge eligibility
+    against the same target the matcher used. Returns None when the org is absent
+    (or D1 is unconfigured)."""
+    rows = d1.execute(f"SELECT {_ORG_COLS} FROM orgs WHERE id = ?", [org_id])
+    return _row_to_profile(rows[0]) if rows else None
+
+
+def get_all_org_profiles() -> "list[OrgProfile]":
+    """Every org in the DB as an OrgProfile — the matcher runs once per org so each
+    tenant gets its own ranked matches (L1). Empty when D1 is unconfigured."""
+    rows = d1.execute(f"SELECT {_ORG_COLS} FROM orgs ORDER BY created_at ASC")
+    return [_row_to_profile(r) for r in rows]
 
 
 def claim_queued_analyses(limit: int = 5) -> list[dict]:
